@@ -1,0 +1,378 @@
+import { create } from "zustand";
+import { Habit } from "@/types";
+import { persist } from "zustand/middleware";
+import {
+  addHabit as addHabitToFirestore,
+  getUserHabits,
+  deleteHabit as deleteHabitFromFirestore,
+  updateHabit,
+  getCustomCategories as getCustomCategoriesFromFirestore,
+  addCustomCategory as addCustomCategoryToFirestore,
+  deleteCustomCategory as deleteCustomCategoryFromFirestore,
+} from "@/lib/firestore";
+import { auth } from "@/lib/firebase";
+import { calculateStreaks, getTodayString } from "./utils";
+import { DEFAULT_HABIT_COLOR } from "./habitColors";
+
+type Filter = "all" | "completed" | "incomplete";
+
+type Store = {
+  localHabits: Habit[];  // 非ログイン時のローカル保存
+  habits: Habit[];       // Firestore習慣
+  filter: Filter;
+  categories: string[];  // すべてのカテゴリ（デフォルト + カスタム）
+  fetchHabits: () => Promise<void>;
+  fetchCategories: () => Promise<void>;
+  addHabit: (habit: Habit) => Promise<void>;
+  toggleHabitStatus: (id: string) => Promise<void>;
+  deleteHabit: (id: string) => Promise<void>;
+  editHabit: (id: string, newTitle: string) => Promise<void>;
+  editCategory: (id: string, newCategory: string) => Promise<void>;
+  editColor: (id: string, newColor: string) => Promise<void>;
+  addCategory: (category: string) => Promise<void>;
+  deleteCategory: (category: string) => Promise<void>;
+  setFilter: (filter: Filter) => void;
+  resetFilters: () => void;
+  addLocalHabit: (habit: Habit) => void;
+  clearLocalHabits: () => void;
+};
+
+export const useStore = create<Store>()(
+  persist(
+    (set, get) => ({
+      localHabits: [],
+      habits: [],
+      filter: "all",
+      categories: ["生活習慣", "運動", "健康", "学習", "仕事", "趣味", "お金"], // デフォルトカテゴリ
+
+      fetchHabits: async () => {
+        try {
+          const user = auth.currentUser;
+          if (!user) return;
+          const habits = await getUserHabits();
+          // 今日の日付を取得
+          const today = getTodayString();
+          // 各習慣について、更新すべきフィールドを記録
+          const habitUpdates = new Map<string, Partial<Habit>>();
+
+          const syncedHabits = habits.map(habit => {
+            const normalizedHabit = {
+              ...habit,
+              color: habit.color || DEFAULT_HABIT_COLOR,
+            };
+            const shouldBeCompleted = habit.completedDates?.includes(today) || false;
+            const { longestStreak, currentStreak } = calculateStreaks(habit.completedDates || []);
+            
+            // 更新が必要なフィールドを記録
+            const updates: Partial<Habit> = {};
+            
+            if (habit.completed !== shouldBeCompleted) {
+              updates.completed = shouldBeCompleted;
+            }
+            
+            if (habit.longestStreak !== longestStreak || habit.currentStreak !== currentStreak) {
+              updates.currentStreak = currentStreak;
+              updates.longestStreak = longestStreak;
+            }
+            
+            // 更新がある場合のみ、マップに追加
+            if (!habit.color) {
+              updates.color = DEFAULT_HABIT_COLOR;
+            }
+
+            if (Object.keys(updates).length > 0) {
+              habitUpdates.set(habit.id, updates);
+            }
+            
+            return {
+              ...normalizedHabit,
+              completed: shouldBeCompleted,
+              currentStreak,
+              longestStreak,
+            };
+          });
+
+          // 更新がある習慣のみFirestoreに保存
+          for (const [id, updates] of habitUpdates.entries()) {
+            await updateHabit(id, updates);
+          }
+
+          set({ habits: syncedHabits });
+        } catch (error) {
+          console.error("習慣の取得に失敗しました:", error);
+        }
+      },
+
+      addHabit: async (habit) => {
+        try {
+          const user = auth.currentUser;
+          if (user) {
+            // Firestoreに追加し、生成されたIDを取得
+            const firestoreId = await addHabitToFirestore(habit);
+            // FirestoreのIDを使って習慣を更新
+            const habitWithFirestoreId = { ...habit, id: firestoreId };
+            set({ habits: [...get().habits, habitWithFirestoreId] });
+          } else {
+            set({ localHabits: [...get().localHabits, habit] });
+          }
+        } catch (error) {
+          console.error("習慣の追加に失敗しました:", error);
+        }
+      },
+
+      toggleHabitStatus: async (id) => {
+        try {
+          const user = auth.currentUser;
+          if (user) {
+            const habit = get().habits.find((h) => h.id === id);
+            if (!habit) return;
+
+            const today = getTodayString();
+            const newCompleted = !habit.completed;
+            const completedDates =  habit.completedDates || [];
+
+            let updatedCompletedDates: string[];
+
+            if (newCompleted) {
+              // 完了にする: 今日の日付を追加（重複チェック）
+              if (!completedDates.includes(today)) {
+                updatedCompletedDates = [...completedDates, today];
+              } else {
+                updatedCompletedDates = completedDates; // 既に含まれている場合はそのまま
+              }
+            } else {
+              // 未完了にする: 今日の日付を削除
+              updatedCompletedDates = completedDates.filter((date) => date !== today);
+            }
+
+            const { longestStreak, currentStreak } = calculateStreaks(updatedCompletedDates);
+
+            const updated = { 
+              completed: newCompleted,
+              completedDates: updatedCompletedDates,
+              longestStreak,
+              currentStreak,
+            };
+
+            await updateHabit(id, updated);
+            set({
+              habits: get().habits.map((h) =>
+                h.id === id ? { ...h,
+                  completed: newCompleted,
+                  completedDates: updatedCompletedDates,
+                  longestStreak,
+                  currentStreak,
+                  } : h
+              ),
+            });
+          } else {
+            set({
+              localHabits: get().localHabits.map((h) => 
+                h.id === id ? { ...h, completed: !h.completed } : h
+              ),
+            });
+          }
+        } catch (error) {
+          console.error("習慣ステータス更新に失敗しました:", error);
+        }
+      },
+
+      deleteHabit: async (id) => {
+        try {
+          const user = auth.currentUser;
+          if (user) {
+            const confirmed = confirm("習慣を削除しますか？");
+            if (!confirmed) return;
+            // まずFirestoreから削除
+            await deleteHabitFromFirestore(id);
+            // 成功したら状態から削除
+            set((state) => ({
+              habits: state.habits.filter((h) => h.id !== id),
+            }));
+          } else {
+            set((state) => ({
+              localHabits: state.localHabits.filter((h) => h.id !== id),
+            }));
+          }
+        } catch (error) {
+          console.error("習慣の削除に失敗しました:", error);
+          alert("習慣の削除に失敗しました。もう一度お試しください。");
+        }
+      },
+
+      editHabit: async (id, newTitle) => {
+        try {
+          const user = auth.currentUser;
+          if (user) {
+            await updateHabit(id, { title: newTitle });
+            set({
+              habits: get().habits.map((h) =>
+                h.id === id ? { ...h, title: newTitle } : h
+              ),
+            });
+          } else {
+            set({
+              localHabits: get().localHabits.map((h) =>
+                h.id === id ? { ...h, title: newTitle } : h
+              ),
+            });
+          }
+        } catch (error) {
+          console.error("習慣編集に失敗しました:", error);
+        }
+      },
+
+      editCategory: async (id, newCategory) => {
+        try {
+          const user = auth.currentUser;
+          if (user) {
+            await updateHabit(id, { category: newCategory });
+            set({
+              habits: get().habits.map((h) =>
+                h.id === id ? { ...h, category: newCategory } : h
+              ),
+            });
+          } else {
+            set({
+              localHabits: get().localHabits.map((h) =>
+                h.id === id ? { ...h, category: newCategory } : h
+              ),
+            });
+          }
+        } catch (error) {
+          console.error("カテゴリ更新に失敗しました:", error);
+        }
+      },
+
+      editColor: async (id, newColor) => {
+        try {
+          const user = auth.currentUser;
+          if (user) {
+            await updateHabit(id, { color: newColor });
+            set({
+              habits: get().habits.map((h) =>
+                h.id === id ? { ...h, color: newColor } : h
+              ),
+            });
+          } else {
+            set({
+              localHabits: get().localHabits.map((h) =>
+                h.id === id ? { ...h, color: newColor } : h
+              ),
+            });
+          }
+        } catch (error) {
+          console.error("色の更新に失敗しました:", error);
+        }
+      },
+
+      fetchCategories: async () => {
+        try {
+          const defaultCategories = ["生活習慣", "運動", "健康", "学習", "仕事", "趣味", "お金"];
+          const user = auth.currentUser;
+          
+          if (user) {
+            // Firestoreからカスタムカテゴリを取得
+            const customCategories = await getCustomCategoriesFromFirestore();
+            // デフォルトカテゴリとカスタムカテゴリを統合
+            const allCategories = [...defaultCategories, ...customCategories];
+            set({ categories: allCategories });
+          } else {
+            // localStorageから取得
+            const saved = localStorage.getItem("categories");
+            if (saved) {
+              try {
+                const categories = JSON.parse(saved);
+                set({ categories: categories });
+              } catch {
+                console.error("カテゴリの復元に失敗しました");
+                // 復元に失敗した場合はデフォルトカテゴリを設定
+                set({ categories: defaultCategories });
+              }
+            } else {
+              // localStorageに何もない場合はデフォルトカテゴリを設定
+              set({ categories: defaultCategories });
+            }
+          }
+        } catch (error) {
+          console.error("カテゴリの取得に失敗しました:", error);
+        }
+      },
+
+      addCategory: async (category: string) => {
+        try {
+          const user = auth.currentUser;
+          
+          if (!user) {
+            throw new Error("カテゴリの追加はログインが必要です");
+          }
+
+          const trimmedCategory = category.trim();
+          
+          if (!trimmedCategory) {
+            throw new Error("カテゴリ名を入力してください");
+          }
+
+          // 重複チェック
+          const { categories } = get();
+          if (categories.includes(trimmedCategory)) {
+            throw new Error("このカテゴリは既に存在します");
+          }
+
+          // Firestoreに追加
+          await addCustomCategoryToFirestore(trimmedCategory);
+          // categoriesに追加
+          set({ categories: [...categories, trimmedCategory] });
+        } catch (error) {
+          console.error("カテゴリの追加に失敗しました:", error);
+          throw error;
+        }
+      },
+
+      deleteCategory: async (category: string) => {
+        try {
+          const { habits, localHabits, categories } = get();
+          const user = auth.currentUser;
+          const allHabits = user ? habits : localHabits;
+
+          // 使用中チェック
+          const habitsUsingCategory = allHabits.filter((h) => h.category === category);
+          if (habitsUsingCategory.length > 0) {
+            throw new Error(
+              `このカテゴリは${habitsUsingCategory.length}個の習慣で使用されています。先にカテゴリを変更してください。`
+            );
+          }
+
+          // デフォルトカテゴリかどうかを判定
+          const defaultCategories = ["生活習慣", "運動", "健康", "学習", "仕事", "趣味", "お金"];
+          const isDefaultCategory = defaultCategories.includes(category);
+
+          if (user) {
+            // カスタムカテゴリの場合のみFirestoreから削除
+            if (!isDefaultCategory) {
+              await deleteCustomCategoryFromFirestore(category);
+            }
+            // categoriesから削除
+            set({ categories: categories.filter((c) => c !== category) });
+          } else {
+            // localStorageから削除
+            const updated = categories.filter((c) => c !== category);
+            localStorage.setItem("categories", JSON.stringify(updated));
+            set({ categories: updated });
+          }
+        } catch (error) {
+          console.error("カテゴリの削除に失敗しました:", error);
+          throw error;
+        }
+      },
+
+      setFilter: (filter) => set({ filter }),
+      resetFilters: () => set({ filter: "all" }),
+
+      addLocalHabit: (habit) =>
+        set((state) => ({ localHabits: [...state.localHabits, habit] })),
+      clearLocalHabits: () => set({ localHabits: [] }),
+    }),
+    { name: "habit-storage" }
+  )
+);
