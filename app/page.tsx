@@ -3,7 +3,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useStore } from "@/lib/store";
 import HabitCard from "@/components/HabitCard";
-import AuthButton from "@/components/AuthButton";
 import { auth, onAuthStateChanged } from "@/lib/firebase";
 import { getTodayString } from "@/lib/utils";
 import AddHabitModal from "@/components/AddHabitModal";
@@ -105,7 +104,7 @@ export default function HomePage() {
   return (
     <>
       <Header
-        title="グッドサイクル♾️"
+        title="GoodCycle♾️"
         navLinks={[
           { label: "ホーム", href: "/" },
           { label: "ダッシュボード", href: "/dashboard" },

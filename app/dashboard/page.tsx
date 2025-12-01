@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useStore } from "@/lib/store";
-import AuthButton from "@/components/AuthButton";
 import { auth, onAuthStateChanged } from "@/lib/firebase";
 import DashboardSummary from "@/components/dashboard/DashboardSummary";
 import HabitTabs from "@/components/dashboard/HabitTabs";
@@ -60,7 +59,7 @@ export default function DashboardPage() {
   return (
     <>
       <Header
-        title="グッドサイクル♾️"
+        title="GoodCycle♾️"
         navLinks={[
           { label: "ホーム", href: "/" },
           { label: "ダッシュボード", href: "/dashboard" },

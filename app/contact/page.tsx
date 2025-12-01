@@ -221,7 +221,7 @@ export default function ContactPage() {
   return (
     <>
       <Header
-        title="グッドサイクル♾️"
+        title="GoodCycle♾️"
         navLinks={[
           { label: "ホーム", href: "/" },
           { label: "ダッシュボード", href: "/dashboard" },
