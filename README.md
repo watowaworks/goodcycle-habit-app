@@ -7,7 +7,7 @@ Next.js (App Router) と Firebase を使って作成した、**習慣の継続�
 
 ## デモ
 
-- **本番URL**: ※ここに Vercel の URL を記載してください（例：`https://goodcycle-habit-app.vercel.app`）
+- **本番URL**: https://goodcycle-habit-app.vercel.app
 
 ---
 
@@ -58,9 +58,7 @@ Next.js (App Router) と Firebase を使って作成した、**習慣の継続�
 
 ---
 
-## 画面イメージ（例）
-
-※ スクリーンショットを撮影して、`/public` 配下に保存し、ここに貼る想定です。
+## 画面イメージ
 
 - トップページ（アプリ概要・ログイン導線）
 - ダッシュボード（習慣一覧＋達成状況）
@@ -68,8 +66,10 @@ Next.js (App Router) と Firebase を使って作成した、**習慣の継続�
 - お問い合わせページ
 
 ```md
+![Home](public/screenshots/home.png)
 ![Dashboard](public/screenshots/dashboard.png)
-![Calendar](public/screenshots/calendar.png)
+![Graph](public/screenshots/graph.png)
+![Contact](public/screenshots/contact.png)
 ```
 
 ---
