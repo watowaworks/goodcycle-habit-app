@@ -383,6 +383,89 @@ export default function ContactPage() {
             </button>
           </div>
         </form>
+
+        <div className="mt-10 rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-sm backdrop-blur">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                className="h-4 w-4"
+                aria-hidden="true"
+              >
+                <path
+                  fill="currentColor"
+                  d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm0 2v.17l8 4.8 8-4.8V6H4Zm16 2.83-7.53 4.52a2 2 0 0 1-1.94 0L3 8.83V18h17Z"
+                />
+              </svg>
+            </span>
+            <span>その他の連絡方法</span>
+          </h3>
+
+          <p className="text-sm text-gray-600 mb-4">
+            フォーム以外からのご連絡は、以下のアカウントからも受け付けています。
+          </p>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            {/* Gmail */}
+            <a
+              href="mailto:watosonworks@gmail.com"
+              className="group flex items-center gap-3 rounded-xl border border-gray-100 bg-linear-to-r from-emerald-50 to-white px-4 py-3 transition hover:-translate-y-0.5 hover:border-emerald-200 hover:shadow-sm"
+            >
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-emerald-600 shadow-sm">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  className="h-5 w-5"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M20 4H4a2 2 0 0 0-2 2v12.01A2 2 0 0 0 4 20h16a2 2 0 0 0 2-2.01V6a2 2 0 0 0-2-2Zm0 4.03-7.11 4.45a1.25 1.25 0 0 1-1.28 0L4 8.03V6.25L12 11l8-4.75Z"
+                  />
+                </svg>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xs font-medium uppercase tracking-wide text-emerald-700">
+                  Gmail
+                </span>
+                <span className="text-sm text-gray-800 group-hover:text-emerald-700 break-all">
+                  watosonworks@gmail.com
+                </span>
+              </div>
+            </a>
+
+            {/* GitHub */}
+            <a
+              href="https://github.com/watowaworks"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center gap-3 rounded-xl border border-gray-100 bg-linear-to-r from-slate-50 to-white px-4 py-3 transition hover:-translate-y-0.5 hover:border-slate-200 hover:shadow-sm"
+            >
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 text-white shadow-sm">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  className="h-5 w-5"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34a2.65 2.65 0 0 0-1.1-1.46c-.9-.62.07-.6.07-.6a2.1 2.1 0 0 1 1.54 1.04 2.14 2.14 0 0 0 2.92.84 2.15 2.15 0 0 1 .64-1.35c-2.22-.25-4.55-1.11-4.55-4.94A3.87 3.87 0 0 1 6.3 7.5a3.6 3.6 0 0 1 .1-2.64s.84-.27 2.75 1.02a9.4 9.4 0 0 1 5 0c1.9-1.29 2.74-1.02 2.74-1.02.37.84.41 1.8.12 2.67a3.87 3.87 0 0 1 1.03 2.68c0 3.84-2.34 4.68-4.57 4.93a2.4 2.4 0 0 1 .69 1.86v2.76c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"
+                  />
+                </svg>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xs font-medium uppercase tracking-wide text-slate-700">
+                  GitHub
+                </span>
+                <span className="text-sm text-gray-800 group-hover:text-slate-900 break-all">
+                  github.com/watowaworks
+                </span>
+              </div>
+            </a>
+          </div>
+        </div>
       </div>
     </>
   );
