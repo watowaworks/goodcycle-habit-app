@@ -9,7 +9,7 @@ import HabitDashboardContent from "@/components/dashboard/HabitDashboardContent"
 import Header from "@/components/Header";
 
 export default function DashboardPage() {
-  const { habits, localHabits, fetchHabits } = useStore();
+  const { habits, fetchHabits } = useStore();
   const [loading, setLoading] = useState(true);
   const [loggedIn, setLoggedIn] = useState<boolean>(!!auth.currentUser);
   const [selectedHabitId, setSelectedHabitId] = useState<string | null>(null);
@@ -37,8 +37,8 @@ export default function DashboardPage() {
     };
   }, [fetchHabits]);
 
-  // ログイン時は Firestore のみ、非ログイン時は localHabits のみ
-  const allHabits = loggedIn ? habits : localHabits;
+  // ログイン時は Firestore の習慣を使用
+  const allHabits = habits;
 
   // 習慣が読み込まれたら、最初の習慣を選択
   useEffect(() => {
@@ -46,10 +46,6 @@ export default function DashboardPage() {
       setSelectedHabitId(allHabits[0].id);
     }
   }, [allHabits, selectedHabitId]);
-
-  if (loading) {
-    return <p className="text-center mt-10">読み込み中...</p>;
-  }
 
   const selectedHabit =
     allHabits.length > 0
@@ -68,7 +64,24 @@ export default function DashboardPage() {
       />
 
       <div className="mx-auto max-w-3xl px-4 py-8">
-        {allHabits.length === 0 ? (
+        {loading ? (
+          <p className="pt-10 text-center text-gray-500">読み込み中...</p>
+        ) : !loggedIn ? (
+          <div className="mt-8 rounded-2xl border border-dashed border-emerald-200 bg-emerald-50/60 p-6 text-center">
+            <p className="text-md font-medium text-emerald-800 mb-2">
+              このダッシュボード機能は、ログインするとご利用いただけます。
+            </p>
+            <p className="text-sm text-emerald-900/80 mb-4">
+              アカウントを作成して習慣を登録すると、達成状況のグラフやカレンダー表示など、より詳しい可視化が利用できます。
+            </p>
+            <a
+              href="/"
+              className="inline-flex items-center justify-center rounded-full bg-emerald-500 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-600"
+            >
+              ホームに戻る
+            </a>
+          </div>
+        ) : allHabits.length === 0 ? (
           <p className="pt-10 text-center text-gray-500">
             習慣が登録されていません。ホームページで習慣を追加してください。
           </p>
