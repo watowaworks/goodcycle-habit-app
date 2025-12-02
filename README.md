@@ -65,12 +65,10 @@ Next.js (App Router) と Firebase を使って作成した、**習慣の継続�
 - 月間カレンダー / グラフ表示
 - お問い合わせページ
 
-```md
 ![Home](public/screenshots/home.png)
 ![Dashboard](public/screenshots/dashboard.png)
 ![Graph](public/screenshots/graph.png)
 ![Contact](public/screenshots/contact.png)
-```
 
 ---
 
