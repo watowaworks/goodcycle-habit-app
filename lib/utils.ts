@@ -271,3 +271,25 @@ export function findMostConsistentHabit(habits: Habit[]): Habit[] {
   // 最大ストリークを持つすべての習慣を返す
   return habits.filter((habit) => (habit.currentStreak ?? 0) === maxStreak);
 }
+
+export function isHabitDueOnDate(habit: Habit, date: string): boolean {
+  const targetDate = parseDateString(date);
+
+  switch (habit.frequencyType) {
+    case "daily":
+      return true;
+    case "weekly":
+      return habit.daysOfWeek?.includes(targetDate.getDay()) ?? false;
+    case "interval":
+      if (!habit.startDate || !habit.intervalDays) {
+        return false;
+      }
+      const startDate = parseDateString(habit.startDate!);
+      const diffMs = targetDate.getTime() - startDate.getTime();
+      if (diffMs < 0) return false;
+      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      return diffDays % habit.intervalDays === 0;
+    default:
+      return false;
+  }
+}

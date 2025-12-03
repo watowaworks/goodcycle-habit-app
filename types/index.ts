@@ -4,8 +4,12 @@ export type Habit = {
   category: string;
   color: string;
   completed: boolean;
-  createdAt: Date;
+  createdAt: string;
   completedDates?: string[];
   longestStreak?: number;
   currentStreak?: number;
+  frequencyType: "daily" | "weekly" | "interval";
+  daysOfWeek?: number[];
+  intervalDays?: number;
+  startDate?: string;
 };
