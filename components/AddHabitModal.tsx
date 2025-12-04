@@ -119,6 +119,7 @@ export default function AddHabitModal({ isOpen, onClose }: Props) {
       color,
       completed: false,
       createdAt: new Date(),
+      frequencyType: "daily",
     };
 
     try {

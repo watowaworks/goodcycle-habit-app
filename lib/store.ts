@@ -11,7 +11,7 @@ import {
   deleteCustomCategory as deleteCustomCategoryFromFirestore,
 } from "@/lib/firestore";
 import { auth } from "@/lib/firebase";
-import { calculateStreaks, getTodayString } from "./utils";
+import { calculateStreaks, getTodayString, isHabitDueOnDate } from "./utils";
 import { DEFAULT_HABIT_COLOR } from "./habitColors";
 
 type Filter = "all" | "completed" | "incomplete";
@@ -128,6 +128,11 @@ export const useStore = create<Store>()(
             if (!habit) return;
 
             const today = getTodayString();
+            if (!isHabitDueOnDate(habit, today)) {
+              alert("この習慣は今日の実施日ではありません。");
+              return;
+            }
+
             const newCompleted = !habit.completed;
             const completedDates =  habit.completedDates || [];
 
@@ -166,6 +171,15 @@ export const useStore = create<Store>()(
               ),
             });
           } else {
+            const habit = get().localHabits.find((h) => h.id === id);
+            if (!habit) return;
+
+            const today = getTodayString();
+            if (!isHabitDueOnDate(habit, today)) {
+              alert("この習慣は今日の実施日ではありません。");
+              return;
+            }
+            
             set({
               localHabits: get().localHabits.map((h) => 
                 h.id === id ? { ...h, completed: !h.completed } : h

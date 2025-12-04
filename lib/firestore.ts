@@ -12,7 +12,7 @@ import {
   Timestamp,
   orderBy,
 } from "firebase/firestore";
-import { Habit } from "@/types";
+import { FrequencyType, Habit } from "@/types";
 import { DEFAULT_HABIT_COLOR } from "./habitColors";
 
 // 習慣を追加（Firestoreが生成したIDを返す）
@@ -60,6 +60,10 @@ export async function getUserHabits() {
       completedDates: (data.completedDates as string[]) || [],
       longestStreak: (data.longestStreak as number) || 0,
       currentStreak: (data.currentStreak as number) || 0,
+      frequencyType: (data.frequencyType as FrequencyType) || "daily",
+      daysOfWeek: (data.daysOfWeek as number[]) || [],
+      intervalDays: (data.intervalDays as number) || 0,
+      startDate: (data.startDate as string) || "",
     };
   });
 }

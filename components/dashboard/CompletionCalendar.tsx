@@ -111,7 +111,7 @@ export default function CompletionCalendar({ habit }: Props) {
           <div key={`empty-${i}`} className="aspect-square" />
         ))}
 
-        {completionStatus.map(({ date, completed }) => {
+        {completionStatus.map(({ date, completed, isDue }) => {
           const dayOfWeek = getDayOfWeek(date);
           const isToday = date === getTodayString();
 
@@ -120,9 +120,10 @@ export default function CompletionCalendar({ habit }: Props) {
               key={date}
               className={`
                 aspect-square rounded-lg flex flex-col items-center justify-center text-xs
-                ${
-                  completed
-                    ? "bg-emerald-500 text-white"
+                ${completed
+                  ? "bg-emerald-500 text-white"
+                  : !isDue
+                    ? "bg-gray-50 text-gray-300"
                     : "bg-gray-100 text-gray-600"
                 }
                 ${isToday ? "ring-2 ring-blue-500" : ""}
@@ -148,6 +149,10 @@ export default function CompletionCalendar({ habit }: Props) {
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 bg-gray-100 rounded"></div>
           <span>未完了</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 bg-gray-50 rounded"></div>
+          <span>対象外</span>
         </div>
       </div>
     </div>

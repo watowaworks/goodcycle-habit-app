@@ -180,20 +180,21 @@ export function generateDateRange(startDate: string, endDate: string): string[] 
 export function calculateCompletionRate(habit: Habit, startDate: string, endDate: string): number {
   // 期間内のすべての日付を生成
   const dateRange = generateDateRange(startDate, endDate);
-  const totalDays = dateRange.length;
+  const scheduledDates = dateRange.filter(date => isHabitDueOnDate(habit, date));
+  const targetDays = scheduledDates.length;
   
   // 期間内に日付がない場合、またはcompletedDatesが存在しない場合は0%を返す
-  if (totalDays === 0 || !habit.completedDates || habit.completedDates.length === 0) {
+  if (targetDays === 0 || !habit.completedDates || habit.completedDates.length === 0) {
     return 0;
   }
   
   // 期間内の完了日数をカウント
-  const completedDays = dateRange.filter(date => 
+  const completedDays = scheduledDates.filter(date => 
     habit.completedDates!.includes(date)
   ).length;
   
   // 完了率を計算（小数点以下1桁に丸める）
-  const completionRate = (completedDays / totalDays) * 100;
+  const completionRate = (completedDays / targetDays) * 100;
   return Math.round(completionRate * 10) / 10;
 }
 
@@ -202,13 +203,19 @@ export function getCompletionStatusForPeriod(
   habit: Habit,
   startDate: string,
   endDate: string
-): { date: string; completed: boolean }[] {
+): { 
+  date: string; 
+  completed: boolean;
+  isDue: boolean;
+}[] {
   const dateRange = generateDateRange(startDate, endDate);
   const result = dateRange.map((date) => {
+    const isDue = isHabitDueOnDate(habit, date);
     const completed = habit.completedDates?.includes(date) || false;
     return {
       date,
       completed,
+      isDue,
     }
   })
   
