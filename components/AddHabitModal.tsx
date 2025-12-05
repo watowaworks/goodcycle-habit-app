@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useStore } from "@/lib/store";
-import { Habit } from "@/types";
+import { FrequencyType, Habit } from "@/types";
 import { v4 as uuidv4 } from "uuid";
 import { auth } from "@/lib/firebase";
 import { HABIT_COLOR_OPTIONS, DEFAULT_HABIT_COLOR } from "@/lib/habitColors";
@@ -25,6 +25,10 @@ export default function AddHabitModal({ isOpen, onClose }: Props) {
   const [newCategoryName, setNewCategoryName] = useState("");
   const [addingCategory, setAddingCategory] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [frequencyType, setFrequencyType] = useState<FrequencyType>("daily");
+  const [daysOfWeek, setDaysOfWeek] = useState<number[]>([]);
+  const [intervalDays, setIntervalDays] = useState<number>(1);
+  const [startDate, setStartDate] = useState<string>("");
   const categoryDropdownRef = useRef<HTMLDivElement>(null);
 
   // ドロップダウン外をクリックしたら閉じる
@@ -46,6 +50,10 @@ export default function AddHabitModal({ isOpen, onClose }: Props) {
       setNewCategoryName("");
       setAddingCategory(false);
       setIsDropdownOpen(false);
+      setFrequencyType("daily");
+      setDaysOfWeek([]);
+      setIntervalDays(1);
+      setStartDate("");
     }
   }, [isOpen]);
 
@@ -109,6 +117,9 @@ export default function AddHabitModal({ isOpen, onClose }: Props) {
 
     if (!title.trim()) return alert("習慣のタイトルを入力してください");
     if (!category) return alert("カテゴリを選択してください");
+    if (frequencyType === "weekly" && daysOfWeek.length === 0) return alert("曜日を選択してください");
+    if (frequencyType === "interval" && intervalDays <= 0) return alert("周期を1以上にしてください");
+    if (frequencyType === "interval" && !startDate) return alert("開始日を入力してください");
 
     // ログイン時はIDを後で設定、非ログイン時はuuidv4()を使用
     const tempId = uuidv4();
@@ -119,7 +130,9 @@ export default function AddHabitModal({ isOpen, onClose }: Props) {
       color,
       completed: false,
       createdAt: new Date(),
-      frequencyType: "daily",
+      frequencyType,
+      ...(frequencyType === "weekly" ? { daysOfWeek } : {}),
+      ...(frequencyType === "interval" ? { intervalDays, startDate} : {}),
     };
 
     try {
@@ -138,6 +151,14 @@ export default function AddHabitModal({ isOpen, onClose }: Props) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const toggleDayOfWeek = (dayIndex: number) => {
+    setDaysOfWeek((prev) =>
+      prev.includes(dayIndex)
+      ? prev.filter((day) => day !== dayIndex)
+      : [...prev, dayIndex]
+    );
   };
 
   return (
@@ -310,6 +331,100 @@ export default function AddHabitModal({ isOpen, onClose }: Props) {
               </div>
             )}
           </div>
+
+          {/* 頻度タイプ選択 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              頻度タイプ
+            </label>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setFrequencyType("daily")}
+                className={`px-4 py-2 rounded-lg font-semibold transition ${
+                  frequencyType === "daily"
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-300 text-gray-500"
+                }`}
+              >
+                毎日
+              </button>
+              <button
+                type="button"
+                onClick={() => setFrequencyType("weekly")}
+                className={`px-4 py-2 rounded-lg font-semibold transition ${
+                  frequencyType === "weekly"
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-300 text-gray-500"
+                }`}
+              >
+                毎週
+              </button>
+              <button
+                type="button"
+                onClick={() => setFrequencyType("interval")}
+                className={`px-4 py-2 rounded-lg font-semibold transition ${
+                  frequencyType === "interval"
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-300 text-gray-500"
+                }`}
+              >
+                間隔
+              </button>
+            </div>
+          </div>
+
+          {/* 頻度タイプがweeklyの場合のみ表示 */}
+          {frequencyType === "weekly" && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                曜日
+              </label>
+              <div className="flex gap-2">
+                {["月", "火", "水", "木", "金", "土", "日"].map((label, index) => {
+                  const dayIndex = index === 6 ? 0 : index + 1;
+                  return (
+                    <button
+                      key={label}
+                      type="button"
+                      onClick={() => toggleDayOfWeek(dayIndex)}
+                      className={`px-4 py-2 rounded-lg font-semibold transition ${
+                        daysOfWeek.includes(dayIndex)
+                          ? "bg-blue-500 text-white"
+                          : "bg-gray-300 text-gray-500"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* 頻度タイプがintervalの場合のみ表示 */}
+          {frequencyType === "interval" && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                周期(日)
+              </label>
+              <input 
+                type="number"
+                value={intervalDays}
+                onChange={(e) => setIntervalDays(Number(e.target.value))}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                開始日
+              </label>
+              <input 
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          )}
 
           {/* カラー選択 */}
           <div>
