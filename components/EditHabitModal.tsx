@@ -3,18 +3,19 @@
 import { useState, useEffect, useRef } from "react";
 import { useStore } from "@/lib/store";
 import { FrequencyType, Habit } from "@/types";
-import { v4 as uuidv4 } from "uuid";
 import { auth } from "@/lib/firebase";
-import { HABIT_COLOR_OPTIONS, DEFAULT_HABIT_COLOR } from "@/lib/habitColors";
+import { DEFAULT_HABIT_COLOR, HABIT_COLOR_OPTIONS } from "@/lib/habitColors";
 import { useClickOutside } from "@/hooks/useClickOutside";
+
 type Props = {
+  habit: Habit;
   isOpen: boolean;
   onClose: () => void;
 };
 
-export default function AddHabitModal({ isOpen, onClose }: Props) {
+export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
   // 関数は個別に取得
-  const addHabit = useStore((state) => state.addHabit);
+  const updateHabitFields = useStore((state) => state.updateHabitFields);
   const addCategory = useStore((state) => state.addCategory);
   const deleteCategory = useStore((state) => state.deleteCategory);
 
@@ -23,17 +24,25 @@ export default function AddHabitModal({ isOpen, onClose }: Props) {
   const habits = useStore((state) => state.habits);
   const localHabits = useStore((state) => state.localHabits);
 
-  const [title, setTitle] = useState("");
-  const [category, setCategory] = useState<string>("");
-  const [color, setColor] = useState<string>(DEFAULT_HABIT_COLOR);
+  const [title, setTitle] = useState(habit.title);
+  const [category, setCategory] = useState<string>(habit.category);
+  const [color, setColor] = useState<string>(
+    habit.color || DEFAULT_HABIT_COLOR
+  );
   const [loading, setLoading] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [addingCategory, setAddingCategory] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [frequencyType, setFrequencyType] = useState<FrequencyType>("daily");
-  const [daysOfWeek, setDaysOfWeek] = useState<number[]>([]);
-  const [intervalDays, setIntervalDays] = useState<number>(1);
-  const [startDate, setStartDate] = useState<string>("");
+  const [frequencyType, setFrequencyType] = useState<FrequencyType>(
+    habit.frequencyType
+  );
+  const [daysOfWeek, setDaysOfWeek] = useState<number[]>(
+    habit.daysOfWeek || []
+  );
+  const [intervalDays, setIntervalDays] = useState<number>(
+    habit.intervalDays || 1
+  );
+  const [startDate, setStartDate] = useState<string>(habit.startDate || "");
   const categoryDropdownRef = useRef<HTMLDivElement>(null);
 
   // ドロップダウン外をクリックしたら閉じる
@@ -47,20 +56,20 @@ export default function AddHabitModal({ isOpen, onClose }: Props) {
 
   // モーダルを閉じたときにフォームをリセット
   useEffect(() => {
-    if (!isOpen) {
-      setTitle("");
-      setCategory("");
-      setColor(DEFAULT_HABIT_COLOR);
+    if (isOpen && habit) {
+      setTitle(habit.title);
+      setCategory(habit.category);
+      setColor(habit.color);
       setLoading(false);
       setNewCategoryName("");
       setAddingCategory(false);
       setIsDropdownOpen(false);
-      setFrequencyType("daily");
-      setDaysOfWeek([]);
-      setIntervalDays(1);
-      setStartDate("");
+      setFrequencyType(habit.frequencyType);
+      setDaysOfWeek(habit.daysOfWeek || []);
+      setIntervalDays(habit.intervalDays || 1);
+      setStartDate(habit.startDate || "");
     }
-  }, [isOpen]);
+  }, [isOpen, habit]);
 
   const isLoggedIn = !!auth.currentUser;
 
@@ -129,33 +138,20 @@ export default function AddHabitModal({ isOpen, onClose }: Props) {
     if (frequencyType === "interval" && !startDate)
       return alert("開始日を入力してください");
 
-    // ログイン時はIDを後で設定、非ログイン時はuuidv4()を使用
-    const tempId = uuidv4();
-    const newHabit: Habit = {
-      id: tempId,
-      title,
-      category: category,
-      color,
-      completed: false,
-      createdAt: new Date(),
-      frequencyType,
-      ...(frequencyType === "weekly" ? { daysOfWeek } : {}),
-      ...(frequencyType === "interval" ? { intervalDays, startDate } : {}),
-    };
-
     try {
       setLoading(true);
-      // Zustand + Firestore or ローカル
-      // ログイン時はFirestoreがIDを生成し、store.tsで更新される
-      await addHabit(newHabit);
-      // フォームをリセット
-      setTitle("");
-      setCategory("");
-      setColor(DEFAULT_HABIT_COLOR);
+      await updateHabitFields(habit.id, {
+        title,
+        category,
+        color,
+        frequencyType,
+        ...(frequencyType === "weekly" ? { daysOfWeek } : {}),
+        ...(frequencyType === "interval" ? { intervalDays, startDate } : {}),
+      });
       onClose();
     } catch (error) {
-      console.error("習慣の保存に失敗しました:", error);
-      alert("習慣の保存に失敗しました。再試行してください。");
+      console.error("習慣の更新に失敗しました:", error);
+      alert("習慣の更新に失敗しました。再試行してください。");
     } finally {
       setLoading(false);
     }
@@ -178,9 +174,7 @@ export default function AddHabitModal({ isOpen, onClose }: Props) {
         className="max-w-md mx-auto mt-10 p-6 bg-white rounded-2xl shadow"
         onClick={(e) => e.stopPropagation()}
       >
-        <h1 className="text-2xl font-bold mb-6 text-center">
-          新しい習慣を追加
-        </h1>
+        <h1 className="text-2xl font-bold mb-6 text-center">習慣を編集</h1>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* タイトル入力欄 */}
@@ -487,7 +481,7 @@ export default function AddHabitModal({ isOpen, onClose }: Props) {
                   : "bg-blue-500 text-white hover:bg-blue-600"
               }`}
             >
-              {loading ? "追加中..." : "追加する"}
+              {loading ? "変更中..." : "変更する"}
             </button>
           </div>
         </form>

@@ -20,15 +20,15 @@ export default function Header({ title, navLinks = [] }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <header className="flex w-full flex-col gap-3 bg-linear-to-r from-blue-100 to-cyan-100 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+    <header className="flex w-full flex-col gap-3 bg-linear-to-r from-blue-100 to-cyan-100 px-6 py-6 sm:flex-row sm:items-center sm:justify-between">
       {/* タイトルとハンバーガーボタンの行 */}
       <div className="flex items-center justify-between w-full lg:w-auto">
-        <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
+        <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
 
         {/* ハンバーガーボタン（lg未満のみ表示） */}
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="lg:hidden p-2 rounded-lg hover:bg-white/50 transition"
+          className="lg:hidden rounded-lg hover:bg-white/50 transition"
           aria-label="メニューを開く"
         >
           {!isMenuOpen && (

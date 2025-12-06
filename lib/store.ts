@@ -26,9 +26,7 @@ type Store = {
   addHabit: (habit: Habit) => Promise<void>;
   toggleHabitStatus: (id: string) => Promise<void>;
   deleteHabit: (id: string) => Promise<void>;
-  editHabit: (id: string, newTitle: string) => Promise<void>;
-  editCategory: (id: string, newCategory: string) => Promise<void>;
-  editColor: (id: string, newColor: string) => Promise<void>;
+  updateHabitFields: (id: string, fields: Partial<Habit>) => Promise<void>;
   addCategory: (category: string) => Promise<void>;
   deleteCategory: (category: string) => Promise<void>;
   setFilter: (filter: Filter) => void;
@@ -214,69 +212,25 @@ export const useStore = create<Store>()(
         }
       },
 
-      editHabit: async (id, newTitle) => {
+      updateHabitFields: async (id, fields) => {
         try {
           const user = auth.currentUser;
           if (user) {
-            await updateHabit(id, { title: newTitle });
+            await updateHabit(id, fields);
             set({
               habits: get().habits.map((h) =>
-                h.id === id ? { ...h, title: newTitle } : h
+                h.id === id ? {...h, ...fields} : h
               ),
             });
           } else {
             set({
               localHabits: get().localHabits.map((h) =>
-                h.id === id ? { ...h, title: newTitle } : h
+                h.id === id ? {...h, ...fields} : h
               ),
-            });
+            })
           }
         } catch (error) {
-          console.error("習慣編集に失敗しました:", error);
-        }
-      },
-
-      editCategory: async (id, newCategory) => {
-        try {
-          const user = auth.currentUser;
-          if (user) {
-            await updateHabit(id, { category: newCategory });
-            set({
-              habits: get().habits.map((h) =>
-                h.id === id ? { ...h, category: newCategory } : h
-              ),
-            });
-          } else {
-            set({
-              localHabits: get().localHabits.map((h) =>
-                h.id === id ? { ...h, category: newCategory } : h
-              ),
-            });
-          }
-        } catch (error) {
-          console.error("カテゴリ更新に失敗しました:", error);
-        }
-      },
-
-      editColor: async (id, newColor) => {
-        try {
-          const user = auth.currentUser;
-          if (user) {
-            await updateHabit(id, { color: newColor });
-            set({
-              habits: get().habits.map((h) =>
-                h.id === id ? { ...h, color: newColor } : h
-              ),
-            });
-          } else {
-            set({
-              localHabits: get().localHabits.map((h) =>
-                h.id === id ? { ...h, color: newColor } : h
-              ),
-            });
-          }
-        } catch (error) {
-          console.error("色の更新に失敗しました:", error);
+          console.error("習慣の更新に失敗しました:", error);
         }
       },
 
