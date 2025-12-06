@@ -120,10 +120,11 @@ export default function CompletionCalendar({ habit }: Props) {
               key={date}
               className={`
                 aspect-square rounded-lg flex flex-col items-center justify-center text-xs
-                ${completed
-                  ? "bg-emerald-500 text-white"
-                  : !isDue
-                    ? "bg-gray-50 text-gray-300"
+                ${
+                  completed
+                    ? "bg-emerald-500 text-white"
+                    : !isDue
+                    ? "bg-gray-50 text-gray-300 border-2 border-dashed border-gray-300"
                     : "bg-gray-100 text-gray-600"
                 }
                 ${isToday ? "ring-2 ring-blue-500" : ""}
@@ -151,7 +152,7 @@ export default function CompletionCalendar({ habit }: Props) {
           <span>未完了</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-gray-50 rounded"></div>
+          <div className="w-4 h-4 bg-gray-50 rounded border-2 border-dashed border-gray-300"></div>
           <span>対象外</span>
         </div>
       </div>
