@@ -126,10 +126,6 @@ export const useStore = create<Store>()(
             if (!habit) return;
 
             const today = getTodayString();
-            if (!isHabitDueOnDate(habit, today)) {
-              alert("この習慣は今日の実施日ではありません。");
-              return;
-            }
 
             const newCompleted = !habit.completed;
             const completedDates =  habit.completedDates || [];

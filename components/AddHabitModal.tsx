@@ -414,7 +414,7 @@ export default function AddHabitModal({ isOpen, onClose }: Props) {
 
           {/* 頻度タイプがintervalの場合のみ表示 */}
           {frequencyType === "interval" && (
-            <div>
+            <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 周期(日)
               </label>

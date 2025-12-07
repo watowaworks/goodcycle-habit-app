@@ -1,5 +1,5 @@
 export const HABIT_COLOR_OPTIONS = [
-  "#ffffff",   // 白
+  "#f3f4f6",   // グレー100
   "#fef3c7",   // アンバー100
   "#fde68a",   // アンバー200
   "#fed7aa",   // オレンジ200
