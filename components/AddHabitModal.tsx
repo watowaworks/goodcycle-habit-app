@@ -171,11 +171,11 @@ export default function AddHabitModal({ isOpen, onClose }: Props) {
 
   return (
     <div
-      className="fixed inset-0 bg-black/20 flex items-center justify-center z-50"
+    className="fixed inset-0 bg-black/20 flex items-center justify-center z-50 p-4"
       onClick={onClose}
     >
       <div
-        className="max-w-md mx-auto mt-10 p-6 bg-white rounded-2xl shadow"
+        className="w-[calc(100%-2rem)] sm:w-full max-w-md max-h-[90vh] overflow-y-auto m-0 p-4 sm:p-6 bg-white rounded-2xl shadow"
         onClick={(e) => e.stopPropagation()}
       >
         <h1 className="text-2xl font-bold mb-6 text-center">
