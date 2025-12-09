@@ -175,7 +175,7 @@ export default function AddHabitModal({ isOpen, onClose }: Props) {
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md mx-auto my-4 max-h-[calc(100vh-2rem)] overflow-hidden bg-white rounded-2xl shadow flex flex-col"
+        className="w-full max-w-md mx-auto my-4 max-h-[calc(100vh-4rem)] overflow-hidden bg-white rounded-2xl shadow flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="overflow-y-auto flex-1 p-4 sm:p-6">
@@ -472,7 +472,7 @@ export default function AddHabitModal({ isOpen, onClose }: Props) {
                 type="button"
                 disabled={loading}
                 onClick={onClose}
-                className={`flex-[2] py-2 rounded-lg font-semibold transition ${
+                className={`w-1/5 py-2 rounded-lg font-semibold transition ${
                   loading
                     ? "bg-gray-400 text-white cursor-not-allowed"
                     : "bg-red-500 text-white hover:bg-red-600"
@@ -484,7 +484,7 @@ export default function AddHabitModal({ isOpen, onClose }: Props) {
               <button
                 type="submit"
                 disabled={loading}
-                className={`flex-[8] py-2 rounded-lg font-semibold transition ${
+                className={`flex-1 py-2 rounded-lg font-semibold transition ${
                   loading
                     ? "bg-gray-400 text-white cursor-not-allowed"
                     : "bg-blue-500 text-white hover:bg-blue-600"
