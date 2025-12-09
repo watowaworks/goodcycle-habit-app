@@ -167,11 +167,11 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
 
   return (
     <div
-      className="fixed inset-0 bg-black/20 flex items-center justify-center z-50"
+      className="fixed inset-0 bg-black/20 flex items-center justify-center z-50 p-4 sm:p-0"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md mx-auto my-4 h-[calc(100vh-6rem)] overflow-hidden bg-white rounded-2xl shadow flex flex-col"
+        className="w-full max-w-sm sm:max-w-md mx-auto my-4 h-[calc(100vh-6rem)] overflow-hidden bg-white rounded-xl shadow flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="overflow-y-auto flex-1 p-4 m-4">
