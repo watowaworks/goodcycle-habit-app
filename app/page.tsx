@@ -47,23 +47,20 @@ export default function HomePage() {
 
   // 初回ロード: Firestoreデータ取得
   useEffect(() => {
-    const fetchData = async () => {
-      if (auth.currentUser) {
-        await fetchHabits();
-      }
-      await fetchCategories();
-      setLoading(false);
-    };
-    fetchData();
-
     // ログイン/ログアウトの変化を監視
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setLoggedIn(!!user);
+
       if (user) {
-        // ログインした瞬間に Firestore データ取得
+        // ログイン時: Firestoreからデータ取得
         await fetchHabits();
         await fetchCategories();
+      } else {
+        // ログアウト時: ローカルカテゴリのみ取得
+        await fetchCategories();
       }
+
+      setLoading(false);
     });
 
     // 日付が変わったかどうかを定期的にチェック
@@ -83,7 +80,8 @@ export default function HomePage() {
       unsubscribe();
       clearInterval(checkDateChange);
     };
-  }, [fetchHabits, loggedIn]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loggedIn]);
 
   // ログイン時は Firestore のみ、非ログイン時は localHabits のみ
   const allHabits = loggedIn ? habits : localHabits;
