@@ -175,10 +175,10 @@ export default function AddHabitModal({ isOpen, onClose }: Props) {
       onClick={onClose}
     >
       <div
-        className="w-full max-w-xs sm:max-w-md mx-auto my-4 h-[calc(100vh-8rem)] sm:h-[calc(100vh-6rem)] overflow-hidden bg-white rounded-xl shadow flex flex-col"
+        className="w-full max-w-sm sm:max-w-md mx-auto my-4 h-[calc(100vh-8rem)] sm:h-[calc(100vh-6rem)] overflow-hidden bg-white rounded-xl shadow flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="overflow-y-auto flex-1 p-4 m-4">
+        <div className="overflow-y-auto flex-1 p-4">
           <h1 className="text-2xl font-bold mb-6 text-center">
             新しい習慣を追加
           </h1>

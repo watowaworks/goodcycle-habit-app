@@ -80,7 +80,7 @@ export default function FilterModal({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-xs sm:max-w-md mx-auto my-4 h-[calc(100vh-8rem)] sm:h-auto overflow-hidden bg-white rounded-xl shadow flex flex-col"
+        className="w-full max-w-sm sm:max-w-md mx-auto my-4 h-auto overflow-hidden bg-white rounded-xl shadow flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="overflow-y-auto flex-1 p-4 m-4">
