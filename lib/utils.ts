@@ -18,6 +18,42 @@ export function parseDateString(dateString: string): Date {
   return new Date(dateString + "T00:00:00");
 }
 
+export function getPreviousDayString(habit: Habit, currentDate: string): string | null{
+  const current = parseDateString(currentDate);
+
+  switch (habit.frequencyType) {
+    case "daily": {
+      const previousDay = new Date(current);
+      previousDay.setDate(previousDay.getDate() - 1);
+      return formatDateToString(previousDay);
+    }
+    case "weekly": {
+      if (!habit.daysOfWeek || habit.daysOfWeek.length === 0) {
+        return null;
+      }
+
+      const currentDayOfWeek = current.getDay();
+      const sortedDays = [...(habit.daysOfWeek || [])].sort((a, b) => a - b);
+      const previousDayOfWeek = sortedDays.filter(day => day < currentDayOfWeek).sort((a, b) => b - a)[0];
+
+      let daysToSubtract: number;
+      
+      if (previousDayOfWeek !== undefined) {
+        daysToSubtract = currentDayOfWeek - previousDayOfWeek;
+      } else {
+        const targetDayOfWeek = sortedDays[sortedDays.length - 1];
+        daysToSubtract = currentDayOfWeek - targetDayOfWeek + 7;
+      }
+      const previousDay = new Date(current);
+      previousDay.setDate(previousDay.getDate() - daysToSubtract);
+      return formatDateToString(previousDay);
+    }
+    case "interval": {
+    }
+  return null;
+  }
+}
+
 export function calculateStreaks(completedDates: string[]): {
   longestStreak: number;
   currentStreak: number;
