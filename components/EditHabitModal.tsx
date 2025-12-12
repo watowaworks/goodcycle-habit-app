@@ -171,13 +171,13 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
       onClick={onClose}
     >
       <div
-        className="w-full max-w-sm sm:max-w-md mx-auto my-4 max-h-[calc(100vh-11rem)] bg-white rounded-xl shadow overflow-hidden flex flex-col"
+        className="w-full max-w-sm sm:max-w-md mx-auto my-4 max-h-[calc(100vh-12rem)] bg-white rounded-xl shadow overflow-hidden flex flex-col min-w-0"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="overflow-y-auto p-4">
+        <div className="overflow-y-auto p-4 min-w-0">
           <h1 className="text-2xl font-bold mb-6 text-center">習慣を編集</h1>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6 min-w-0">
             {/* タイトル入力欄 */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -188,7 +188,7 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="例: 朝のジョギング"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 box-border min-w-0"
               />
             </div>
 
@@ -318,7 +318,7 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
                       }
                     }}
                     placeholder="新しいカテゴリ名を入力"
-                    className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 box-border min-w-0"
                     disabled={addingCategory}
                   />
                   <button
@@ -419,7 +419,7 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
                   type="number"
                   value={intervalDays}
                   onChange={(e) => setIntervalDays(Number(e.target.value))}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 box-border min-w-0"
                 />
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   開始日
@@ -428,7 +428,7 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 box-border min-w-0"
                 />
               </div>
             )}
