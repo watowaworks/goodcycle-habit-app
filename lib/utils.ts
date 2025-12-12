@@ -44,13 +44,33 @@ export function getPreviousDayString(habit: Habit, currentDate: string): string 
         const targetDayOfWeek = sortedDays[sortedDays.length - 1];
         daysToSubtract = currentDayOfWeek - targetDayOfWeek + 7;
       }
+
       const previousDay = new Date(current);
       previousDay.setDate(previousDay.getDate() - daysToSubtract);
       return formatDateToString(previousDay);
     }
     case "interval": {
+      if (!habit.startDate || !habit.intervalDays) {
+        return null;
+      }
+      const startDate = parseDateString(habit.startDate);
+      if (current < startDate) return null;
+
+      const diffMs = current.getTime() - startDate.getTime();
+      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      if (diffDays === 0) return null;
+
+      const quotient = Math.floor(diffDays / habit.intervalDays);
+      const daysFromStart = isHabitDueOnDate(habit, currentDate)
+        ? (quotient - 1) * habit.intervalDays
+        : quotient * habit.intervalDays;
+
+      const previousDay = new Date(startDate);
+      previousDay.setDate(previousDay.getDate() + daysFromStart);
+      return formatDateToString(previousDay);
     }
-  return null;
+    default:
+      return null;
   }
 }
 
@@ -315,6 +335,7 @@ export function findMostConsistentHabit(habits: Habit[]): Habit[] {
   return habits.filter((habit) => (habit.currentStreak ?? 0) === maxStreak);
 }
 
+// 指定日が習慣の実施日かどうかを判定
 export function isHabitDueOnDate(habit: Habit, date: string): boolean {
   const targetDate = parseDateString(date);
 
