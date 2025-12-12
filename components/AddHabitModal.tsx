@@ -175,7 +175,7 @@ export default function AddHabitModal({ isOpen, onClose }: Props) {
       onClick={onClose}
     >
       <div
-        className="w-full max-w-sm sm:max-w-md mx-auto my-4 max-h-[calc(100vh-12rem)] bg-white rounded-xl shadow overflow-hidden flex flex-col min-w-0"
+        className="w-full max-w-sm sm:max-w-md mx-auto my-4 max-h-[calc(100vh-14rem)] sm:max-h-[calc(100vh-12rem)] bg-white rounded-xl shadow overflow-hidden flex flex-col min-w-0"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="overflow-y-auto p-4 min-w-0">
