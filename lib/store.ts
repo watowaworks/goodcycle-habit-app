@@ -59,7 +59,7 @@ export const useStore = create<Store>()(
               color: habit.color || DEFAULT_HABIT_COLOR,
             };
             const shouldBeCompleted = habit.completedDates?.includes(today) || false;
-            const { longestStreak, currentStreak } = calculateStreaks(habit.completedDates || []);
+            const { longestStreak, currentStreak } = calculateStreaks(normalizedHabit);
             
             // 更新が必要なフィールドを記録
             const updates: Partial<Habit> = {};
@@ -144,7 +144,12 @@ export const useStore = create<Store>()(
               updatedCompletedDates = completedDates.filter((date) => date !== today);
             }
 
-            const { longestStreak, currentStreak } = calculateStreaks(updatedCompletedDates);
+            // 更新後の完了状態でストリークの計算
+            const updatedHabit = {
+              ...habit,
+              completedDates: updatedCompletedDates,
+            }
+            const { longestStreak, currentStreak } = calculateStreaks(updatedHabit);
 
             const updated = { 
               completed: newCompleted,

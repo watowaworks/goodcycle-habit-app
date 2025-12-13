@@ -18,7 +18,8 @@ export function parseDateString(dateString: string): Date {
   return new Date(dateString + "T00:00:00");
 }
 
-export function getPreviousDayString(habit: Habit, currentDate: string): string | null{
+// 前回の実施予定日を取得
+export function getPreviousDueDate(habit: Habit, currentDate: string): string | null{
   const current = parseDateString(currentDate);
 
   switch (habit.frequencyType) {
@@ -74,24 +75,25 @@ export function getPreviousDayString(habit: Habit, currentDate: string): string 
   }
 }
 
-export function calculateStreaks(completedDates: string[]): {
+export function calculateStreaks(habit: Habit): {
   longestStreak: number;
   currentStreak: number;
 } {
   // 最長ストリークの計算
   // 1. 日付を昇順にソート
-  const sortedDates = [...new Set(completedDates)].sort();
+  const sortedDates = [...new Set(habit.completedDates || [])].sort();
   // 2. 連続している期間を確認
   let longestStreak = sortedDates.length > 0 ? 1 : 0;
   let tempStreak = 1;
 
   for (let i = 1; i < sortedDates.length; i++) {
-    const prevDate = parseDateString(sortedDates[i - 1]);
-    const currDate = parseDateString(sortedDates[i]);
-    const diffMs = currDate.getTime() - prevDate.getTime();
-    const oneDayMs = 1000 * 60 * 60 * 24; // 86400000ミリ秒
+    const prevDate = sortedDates[i - 1];
+    const currDate = sortedDates[i];
     
-    if (diffMs === oneDayMs) {
+    // 前回の実施予定日を取得
+    const previousDueDate = getPreviousDueDate(habit, currDate);
+    
+    if (prevDate === previousDueDate) {
       // 連続している
       tempStreak++;
       longestStreak = Math.max(longestStreak, tempStreak);
@@ -102,45 +104,48 @@ export function calculateStreaks(completedDates: string[]): {
   }
 
   // 現在ストリークの計算
-  // 1. 今日と昨日の日付を取得
   const today = getTodayString();
-  const todayDate = parseDateString(today);
-  const yesterdayDate = new Date(todayDate);
-  yesterdayDate.setDate(yesterdayDate.getDate() - 1);
-  const yesterday = formatDateToString(yesterdayDate);
   let currentStreak = 0;
 
-  if (completedDates.includes(today)) {
-    currentStreak = 1;
-    let checkDate = new Date(yesterdayDate);
-    
-    // 昨日から遡って連続日数をカウント
-    while (true) {
-      const checkDateString = formatDateToString(checkDate);
-      if (completedDates.includes(checkDateString)) {
-        currentStreak++;
-        checkDate.setDate(checkDate.getDate() - 1); // さらに1日前に
-      } else {
-        break; // 連続が途切れたら終了
-      }
-    }
-  } else if (completedDates.includes(yesterday)) {
-    currentStreak = 1;
-    let checkDate = new Date(yesterdayDate);
-    checkDate.setDate(checkDate.getDate() - 1); // 一昨日から
-    
-    // 一昨日から遡って連続日数をカウント
-    while (true) {
-      const checkDateString = formatDateToString(checkDate);
-      if (completedDates.includes(checkDateString)) {
-        currentStreak++;
-        checkDate.setDate(checkDate.getDate() - 1);
-      } else {
-        break;
+  // 今日が実施日かどうかを確認
+  if (isHabitDueOnDate(habit, today)) {
+    if (habit.completedDates?.includes(today)) {
+      // 今日が完了している
+      currentStreak = 1;
+      let checkDate = today;
+
+      // 前の実施日を遡って連続日数をカウント
+      while (true) {
+        const previousDueDate = getPreviousDueDate(habit, checkDate);
+        if (!previousDueDate) break;
+
+        if (habit.completedDates?.includes(previousDueDate)) {
+          currentStreak++;
+          checkDate = previousDueDate;
+        } else {
+          break;
+        }
       }
     }
   } else {
-    currentStreak = 0;
+    const previousDueDate = getPreviousDueDate(habit, today);
+    if (previousDueDate && habit.completedDates?.includes(previousDueDate)) {
+      currentStreak = 1;
+      let checkDate = previousDueDate;
+
+      // さらに前の実施日を遡って連続日数をカウント
+      while (true) {
+        const prev = getPreviousDueDate(habit, checkDate);
+        if (!prev) break;
+
+        if (habit.completedDates?.includes(prev)) {
+          currentStreak++;
+          checkDate = prev;
+        } else {
+          break;
+        }
+      }
+    }
   }
 
   return {
