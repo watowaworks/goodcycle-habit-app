@@ -192,10 +192,11 @@ export const useStore = create<Store>()(
 
       deleteHabit: async (id) => {
         try {
+          const confirmed = confirm("習慣を削除しますか？");
+          if (!confirmed) return;
+          
           const user = auth.currentUser;
           if (user) {
-            const confirmed = confirm("習慣を削除しますか？");
-            if (!confirmed) return;
             // まずFirestoreから削除
             await deleteHabitFromFirestore(id);
             // 成功したら状態から削除

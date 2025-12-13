@@ -5,6 +5,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 import Image from "next/image";
 import { useState } from "react";
+import LoadingSpinner from "./LoadingSpinner";
 
 export default function AuthButton() {
   const [user, loading] = useAuthState(auth);
@@ -34,7 +35,12 @@ export default function AuthButton() {
   };
 
   if (loading) {
-    return <p>読み込み中...</p>;
+    return (
+      <div className="flex items-center gap-2">
+        <LoadingSpinner size="sm" />
+        <span className="text-sm text-gray-500">読み込み中...</span>
+      </div>
+    );
   }
 
   return (

@@ -8,6 +8,7 @@ import { getTodayString } from "@/lib/utils";
 import AddHabitModal from "@/components/AddHabitModal";
 import FilterModal from "@/components/FilterModal";
 import Header from "@/components/Header";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function HomePage() {
   const {
@@ -97,8 +98,6 @@ export default function HomePage() {
     return true;
   });
 
-  if (loading) return <p className="text-center mt-10">読み込み中...</p>;
-
   return (
     <>
       <Header
@@ -111,45 +110,53 @@ export default function HomePage() {
       />
 
       <div className="mx-auto max-w-3xl px-4 py-8">
-        <div className="mb-4 flex flex-wrap items-center gap-2">
-          <button
-            onClick={() => setShowAddHabitModal(true)}
-            className="bg-emerald-500 text-white px-4 py-2  rounded-lg hover:bg-emerald-600"
-          >
-            + 新しい習慣
-          </button>
-          <button
-            onClick={() => setShowFilterModal(true)}
-            className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400"
-          >
-            フィルター
-          </button>
-        </div>
-
-        {/* 絞り込み結果 */}
-        {filteredHabits.length === 0 ? (
-          <p className="text-gray-500 text-center pt-10">
-            条件に合う習慣がありません。
-          </p>
-        ) : (
-          <div className="grid gap-3">
-            {filteredHabits.map((habit) => (
-              <HabitCard key={habit.id} habit={habit} />
-            ))}
+        {loading ?(
+          <div className="flex items-center justify-center py-20">
+            <LoadingSpinner size="lg" text="読み込み中..." />
           </div>
+        ) : (
+          <>
+            <div className="mb-4 flex flex-wrap items-center gap-2">
+              <button
+                onClick={() => setShowAddHabitModal(true)}
+                className="bg-emerald-500 text-white px-4 py-2  rounded-lg hover:bg-emerald-600"
+              >
+                + 新しい習慣
+              </button>
+              <button
+                onClick={() => setShowFilterModal(true)}
+                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400"
+              >
+                フィルター
+              </button>
+            </div>
+
+            {/* 絞り込み結果 */}
+            {filteredHabits.length === 0 ? (
+              <p className="text-gray-500 text-center pt-10">
+                条件に合う習慣がありません。
+              </p>
+            ) : (
+              <div className="grid gap-3">
+                {filteredHabits.map((habit) => (
+                  <HabitCard key={habit.id} habit={habit} />
+                ))}
+              </div>
+            )}
+            <AddHabitModal
+              isOpen={showAddHabitModal}
+              onClose={() => setShowAddHabitModal(false)}
+            />
+            <FilterModal
+              isOpen={showFilterModal}
+              onClose={() => setShowFilterModal(false)}
+              selectedCategories={selectedCategories}
+              setSelectedCategories={setSelectedCategories}
+              filter={filter}
+              setFilter={setFilter}
+            />
+          </>
         )}
-        <AddHabitModal
-          isOpen={showAddHabitModal}
-          onClose={() => setShowAddHabitModal(false)}
-        />
-        <FilterModal
-          isOpen={showFilterModal}
-          onClose={() => setShowFilterModal(false)}
-          selectedCategories={selectedCategories}
-          setSelectedCategories={setSelectedCategories}
-          filter={filter}
-          setFilter={setFilter}
-        />
       </div>
     </>
   );

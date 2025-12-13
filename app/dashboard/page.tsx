@@ -7,6 +7,7 @@ import DashboardSummary from "@/components/dashboard/DashboardSummary";
 import HabitTabs from "@/components/dashboard/HabitTabs";
 import HabitDashboardContent from "@/components/dashboard/HabitDashboardContent";
 import Header from "@/components/Header";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function DashboardPage() {
   const { habits, fetchHabits } = useStore();
@@ -65,7 +66,9 @@ export default function DashboardPage() {
 
       <div className="mx-auto max-w-3xl px-4 py-8">
         {loading ? (
-          <p className="pt-10 text-center text-gray-500">読み込み中...</p>
+          <div className="flex items-center justify-center py-20">
+            <LoadingSpinner size="lg" text="データを読み込んでいます..." />
+          </div>
         ) : !loggedIn ? (
           <div className="mt-8 rounded-2xl border border-dashed border-emerald-200 bg-emerald-50/60 p-6 text-center">
             <p className="text-md font-medium text-emerald-800 mb-2">
