@@ -126,6 +126,26 @@ export function calculateStreaks(habit: Habit): {
           break;
         }
       }
+    } else {
+      // 今日が未完了でも、前の実施日が完了していればストリークは続いている
+      const previousDueDate = getPreviousDueDate(habit, today);
+      if (previousDueDate && habit.completedDates?.includes(previousDueDate)) {
+        currentStreak = 1;
+        let checkDate = previousDueDate;
+
+        // さらに前の実施日を遡って連続日数をカウント
+        while (true) {
+          const prev = getPreviousDueDate(habit, checkDate);
+          if (!prev) break;
+
+          if (habit.completedDates?.includes(prev)) {
+            currentStreak++;
+            checkDate = prev;
+          } else {
+            break;
+          }
+        }
+      }
     }
   } else {
     const previousDueDate = getPreviousDueDate(habit, today);
