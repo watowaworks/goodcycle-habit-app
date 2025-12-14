@@ -410,7 +410,7 @@ export default function ContactPage() {
             {/* Gmail */}
             <a
               href="mailto:watosonworks@gmail.com"
-              className="group flex items-center gap-3 rounded-xl border border-gray-100 dark:border-gray-700 bg-gradient-to-r from-emerald-50 to-white dark:from-emerald-900/20 dark:to-gray-800 px-4 py-3 transition hover:-translate-y-0.5 hover:border-emerald-200 dark:hover:border-emerald-700 hover:shadow-sm dark:hover:shadow-gray-900/50"
+              className="group flex items-center gap-3 rounded-xl border border-gray-100 dark:border-gray-700 bg-linear-to-r from-emerald-50 to-white dark:from-emerald-900/20 dark:to-gray-800 px-4 py-3 transition hover:-translate-y-0.5 hover:border-emerald-200 dark:hover:border-emerald-700 hover:shadow-sm dark:hover:shadow-gray-900/50"
             >
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white dark:bg-gray-700 text-emerald-600 dark:text-emerald-400 shadow-sm">
                 <svg
@@ -440,7 +440,7 @@ export default function ContactPage() {
               href="https://github.com/watowaworks"
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center gap-3 rounded-xl border border-gray-100 dark:border-gray-700 bg-gradient-to-r from-slate-50 to-white dark:from-slate-900/20 dark:to-gray-800 px-4 py-3 transition hover:-translate-y-0.5 hover:border-slate-200 dark:hover:border-slate-600 hover:shadow-sm dark:hover:shadow-gray-900/50"
+              className="group flex items-center gap-3 rounded-xl border border-gray-100 dark:border-gray-700 bg-linear-to-r from-slate-50 to-white dark:from-slate-900/20 dark:to-gray-800 px-4 py-3 transition hover:-translate-y-0.5 hover:border-slate-200 dark:hover:border-slate-600 hover:shadow-sm dark:hover:shadow-gray-900/50"
             >
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 dark:bg-slate-800 text-white shadow-sm">
                 <svg

@@ -21,7 +21,7 @@ export default function Header({ title, navLinks = [] }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <header className="flex w-full flex-col gap-3 bg-gradient-to-r from-blue-100 to-cyan-100 px-6 py-6 sm:flex-row sm:items-center sm:justify-between">
+    <header className="flex w-full flex-col gap-3 bg-linear-to-r from-blue-100 to-cyan-100 px-6 py-6 sm:flex-row sm:items-center sm:justify-between">
       {/* タイトルとハンバーガーボタンの行 */}
       <div className="flex items-center justify-between w-full lg:w-auto">
         <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
@@ -89,7 +89,7 @@ export default function Header({ title, navLinks = [] }: HeaderProps) {
 
         {/* メニューパネル（右からスライド） */}
         <div
-          className={`fixed top-0 right-0 h-full w-80 bg-gradient-to-r from-lime-100 to-emerald-100 shadow-xl z-50 lg:hidden transform transition-transform duration-300 ease-out ${
+          className={`fixed top-0 right-0 h-full w-80 bg-linear-to-r from-lime-100 to-emerald-100 shadow-xl z-50 lg:hidden transform transition-transform duration-300 ease-out ${
             isMenuOpen ? "translate-x-0" : "translate-x-full"
           }`}
         >
