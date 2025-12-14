@@ -119,13 +119,13 @@ export default function HomePage() {
             <div className="mb-4 flex flex-wrap items-center gap-2">
               <button
                 onClick={() => setShowAddHabitModal(true)}
-                className="bg-emerald-500 text-white px-4 py-2  rounded-lg hover:bg-emerald-600"
+                className="bg-emerald-500 dark:bg-emerald-600 text-gray-700 dark:text-gray-100 px-4 py-2 rounded-lg hover:bg-emerald-600 dark:hover:bg-emerald-700 transition"
               >
                 + 新しい習慣
               </button>
               <button
                 onClick={() => setShowFilterModal(true)}
-                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400"
+                className="bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-100 px-4 py-2 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600 transition"
               >
                 フィルター
               </button>
@@ -133,7 +133,7 @@ export default function HomePage() {
 
             {/* 絞り込み結果 */}
             {filteredHabits.length === 0 ? (
-              <p className="text-gray-500 text-center pt-10">
+              <p className="text-gray-500 dark:text-gray-400 text-center pt-10">
                 条件に合う習慣がありません。
               </p>
             ) : (

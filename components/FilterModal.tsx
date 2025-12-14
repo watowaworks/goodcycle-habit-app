@@ -76,21 +76,21 @@ export default function FilterModal({
 
   return (
     <div
-      className="fixed inset-0 bg-black/20 flex items-center justify-center z-50 p-4 sm:p-0"
+      className="fixed inset-0 bg-black/20 dark:bg-black/40 flex items-center justify-center z-50 p-4 sm:p-0"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-sm sm:max-w-md mx-auto my-4 h-auto overflow-hidden bg-white rounded-xl shadow flex flex-col"
+        className="w-full max-w-sm sm:max-w-md mx-auto my-4 h-auto overflow-hidden bg-white dark:bg-gray-800 rounded-xl shadow dark:shadow-gray-900/50 flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="overflow-y-auto flex-1 p-4 m-4">
-          <h1 className="text-2xl font-bold mb-6 text-center">
+          <h1 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-gray-100">
             フィルター設定
           </h1>
 
           {/* 完了状態フィルター */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               完了状態
             </label>
             <div className="flex flex-wrap gap-2">
@@ -102,8 +102,8 @@ export default function FilterModal({
                   }
                   className={`px-3 py-1 rounded transition ${
                     tempFilter === type
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200 hover:bg-gray-300"
+                      ? "bg-blue-500 dark:bg-blue-600 text-white"
+                      : "bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300"
                   }`}
                 >
                   {type === "all"
@@ -118,7 +118,7 @@ export default function FilterModal({
 
           {/* カテゴリーフィルター */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               カテゴリー
             </label>
             <div className="flex gap-2 flex-wrap">
@@ -131,8 +131,8 @@ export default function FilterModal({
                     onClick={() => toggleCategory(cat)}
                     className={`px-3 py-1 rounded transition ${
                       isActive
-                        ? "bg-emerald-500 text-white"
-                        : "bg-gray-200 hover:bg-gray-300"
+                        ? "bg-emerald-500 dark:bg-emerald-600 text-white"
+                        : "bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300"
                     }`}
                   >
                     {cat}
@@ -146,7 +146,7 @@ export default function FilterModal({
           <div className="mb-6">
             <button
               onClick={handleClearFilters}
-              className="w-full px-3 py-2 rounded bg-gray-300 text-gray-700 hover:bg-gray-400 transition"
+              className="w-full px-3 py-2 rounded bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-400 dark:hover:bg-gray-600 transition"
             >
               フィルター解除
             </button>
@@ -157,16 +157,14 @@ export default function FilterModal({
             <button
               type="button"
               onClick={onClose}
-              className="w-full py-2 rounded-lg font-semibold transition 
-            bg-gray-300 text-gray-700 hover:bg-gray-400"
+              className="w-full py-2 rounded-lg font-semibold transition bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-400 dark:hover:bg-gray-600"
             >
               キャンセル
             </button>
             <button
               type="button"
               onClick={handleApply}
-              className="w-full py-2 rounded-lg font-semibold transition 
-            bg-blue-500 text-white hover:bg-blue-600"
+              className="w-full py-2 rounded-lg font-semibold transition bg-blue-500 dark:bg-blue-600 text-white hover:bg-blue-600 dark:hover:bg-blue-700"
             >
               決定
             </button>

@@ -2,6 +2,7 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import ThemeProvider from "@/components/ThemeProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,11 +17,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ja" className="bg-gray-50 text-gray-900">
-      <body className={`${inter.className} min-h-screen bg-gray-50`}>
-        <main className="min-h-screen">{children}</main>
-        <Analytics />
-        <SpeedInsights />
+    <html
+      lang="ja"
+      suppressHydrationWarning
+      className="bg-white dark:bg-gray-900"
+    >
+      <body
+        className={`${inter.className} min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors`}
+      >
+        <ThemeProvider>
+          <main className="min-h-screen bg-white dark:bg-gray-900">
+            {children}
+          </main>
+          <Analytics />
+          <SpeedInsights />
+        </ThemeProvider>
       </body>
     </html>
   );

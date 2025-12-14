@@ -55,25 +55,23 @@ export default function HabitCard({ habit }: Props) {
   return (
     <div
       className={`relative rounded-xl overflow-hidden ${
-        !isDue ? "border-2 border-dashed border-gray-300" : ""
+        !isDue ? "border-2 border-dashed border-gray-300 dark:border-gray-100" : ""
       }`}
     >
       {/* 背景用のdiv（opacityを適用） */}
       <div
-        className={`absolute inset-0 transition-opacity ${
-          !isDue ? "opacity-50" : "opacity-100"
-        }`}
+        className="absolute inset-0"
         style={{ backgroundColor: currentColor }}
       />
       {/* コンテンツ用のdiv（opacityの影響を受けない） */}
-      <div className="relative flex items-center justify-between p-4 shadow hover:shadow-md transition">
+      <div className="relative flex items-center justify-between p-4 shadow hover:shadow-md dark:shadow-gray-800/50 transition">
         <>
           <div className="flex items-center gap-3">
             <input
               type="checkbox"
               checked={habit.completed}
               onChange={() => toggleHabitStatus(habit.id)}
-              className="w-5 h-5 accent-blue-500 cursor-pointer"
+              className="w-5 h-5 accent-blue-500 dark:accent-blue-400 cursor-pointer"
               disabled={!isDue}
             />
             <div className="flex flex-col">
@@ -82,7 +80,7 @@ export default function HabitCard({ habit }: Props) {
                   habit.completed
                     ? "line-through text-gray-500"
                     : !isDue
-                    ? "text-gray-300"
+                    ? "text-gray-400"
                     : "text-gray-800"
                 }`}
               >
@@ -91,14 +89,14 @@ export default function HabitCard({ habit }: Props) {
               <div className="flex items-center gap-2 mt-1 flex-wrap">
                 <p className="text-sm text-gray-500">{habit.category}</p>
                 {/* 頻度タイプの表示 */}
-                <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-medium">
+                <span className="text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-2 py-0.5 rounded-full font-medium">
                   {getFrequencyText()}
                 </span>
                 {/* ストリークの表示 */}
                 {isLoggedIn &&
                   habit.currentStreak !== undefined &&
                   habit.currentStreak > 0 && (
-                    <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">
+                    <span className="text-xs bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-500 px-2 py-0.5 rounded-full">
                       🔥 {habit.currentStreak}日連続
                     </span>
                   )}

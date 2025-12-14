@@ -70,22 +70,22 @@ export default function DashboardPage() {
             <LoadingSpinner size="lg" text="データを読み込んでいます..." />
           </div>
         ) : !loggedIn ? (
-          <div className="mt-8 rounded-2xl border border-dashed border-emerald-200 bg-emerald-50/60 p-6 text-center">
-            <p className="text-md font-medium text-emerald-800 mb-2">
+          <div className="mt-8 rounded-2xl border border-dashed border-emerald-200 dark:border-emerald-800 bg-emerald-50/60 dark:bg-emerald-900/20 p-6 text-center">
+            <p className="text-md font-medium text-emerald-800 dark:text-emerald-300 mb-2">
               このダッシュボード機能は、ログインするとご利用いただけます。
             </p>
-            <p className="text-sm text-emerald-900/80 mb-4">
+            <p className="text-sm text-emerald-900/80 dark:text-emerald-400 mb-4">
               アカウントを作成して習慣を登録すると、達成状況のグラフやカレンダー表示など、より詳しい可視化が利用できます。
             </p>
             <a
               href="/"
-              className="inline-flex items-center justify-center rounded-full bg-emerald-500 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-600"
+              className="inline-flex items-center justify-center rounded-full bg-emerald-500 dark:bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-600 dark:hover:bg-emerald-700"
             >
               ホームに戻る
             </a>
           </div>
         ) : allHabits.length === 0 ? (
-          <p className="pt-10 text-center text-gray-500">
+          <p className="pt-10 text-center text-gray-500 dark:text-gray-400">
             習慣が登録されていません。ホームページで習慣を追加してください。
           </p>
         ) : (

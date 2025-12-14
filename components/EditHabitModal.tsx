@@ -167,20 +167,20 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
 
   return (
     <div
-      className="fixed inset-0 bg-black/20 flex items-center justify-center z-50 p-4 sm:p-0"
+      className="fixed inset-0 bg-black/20 dark:bg-black/40 flex items-center justify-center z-50 p-4 sm:p-0"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-sm sm:max-w-md mx-auto my-4 max-h-[calc(100dvh-12rem)] bg-white rounded-xl shadow overflow-hidden flex flex-col min-w-0"
+        className="w-full max-w-sm sm:max-w-md mx-auto my-4 max-h-[calc(100dvh-12rem)] bg-white dark:bg-gray-800 rounded-xl shadow dark:shadow-gray-900/50 overflow-hidden flex flex-col min-w-0"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="overflow-y-auto p-4 min-w-0">
-          <h1 className="text-2xl font-bold mb-6 text-center">習慣を編集</h1>
+          <h1 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-gray-100">習慣を編集</h1>
 
           <form onSubmit={handleSubmit} className="space-y-6 min-w-0">
             {/* タイトル入力欄 */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 習慣名
               </label>
               <input
@@ -188,13 +188,13 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="例: 朝のジョギング"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 box-border min-w-0"
+                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 box-border min-w-0"
               />
             </div>
 
             {/* カテゴリ選択欄 */}
             <div className="relative overflow-visible">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 カテゴリ
               </label>
 
@@ -203,15 +203,15 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
                 <button
                   type="button"
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="w-full flex items-center justify-between px-3 py-2 border border-gray-300 rounded-lg bg-white text-left focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full flex items-center justify-between px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-left focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                 >
                   <span
-                    className={category ? "text-gray-700" : "text-gray-400"}
+                    className={category ? "text-gray-700 dark:text-gray-200" : "text-gray-400 dark:text-gray-500"}
                   >
                     {category || "カテゴリを選択してください"}
                   </span>
                   <svg
-                    className={`h-5 w-5 text-gray-400 transition-transform ${
+                    className={`h-5 w-5 text-gray-400 dark:text-gray-500 transition-transform ${
                       isDropdownOpen ? "rotate-180" : ""
                     }`}
                     fill="none"
@@ -229,9 +229,9 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
 
                 {/* ドロップダウンリスト */}
                 {isDropdownOpen && (
-                  <div className="absolute z-50 w-full mt-2 max-h-64 overflow-y-auto rounded-xl border border-gray-200 bg-white py-2 shadow-lg">
+                  <div className="absolute z-50 w-full mt-2 max-h-64 overflow-y-auto rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 py-2 shadow-lg dark:shadow-gray-900/50">
                     {categories.length === 0 ? (
-                      <div className="px-4 py-3 text-sm text-gray-500 text-center">
+                      <div className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400 text-center">
                         カテゴリがありません
                       </div>
                     ) : (
@@ -240,7 +240,7 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
                         return (
                           <div
                             key={cat}
-                            className="flex items-center group hover:bg-gray-50"
+                            className="flex items-center group hover:bg-gray-50 dark:hover:bg-gray-700"
                           >
                             <button
                               type="button"
@@ -250,14 +250,14 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
                               }}
                               className={`flex-1 flex items-center gap-3 px-4 py-3 text-left transition ${
                                 isSelected
-                                  ? "bg-emerald-50 text-emerald-700"
-                                  : "text-gray-700"
+                                  ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400"
+                                  : "text-gray-700 dark:text-gray-300"
                               }`}
                             >
                               <span className="font-medium">{cat}</span>
                               {isSelected && (
                                 <svg
-                                  className="ml-auto h-5 w-5 text-emerald-500"
+                                  className="ml-auto h-5 w-5 text-emerald-500 dark:text-emerald-400"
                                   fill="none"
                                   stroke="currentColor"
                                   viewBox="0 0 24 24"
@@ -278,7 +278,7 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
                                   e.stopPropagation();
                                   handleDeleteCategory(cat);
                                 }}
-                                className="mr-2 px-2 py-1 text-sm text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition"
+                                className="mr-2 px-2 py-1 text-sm text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded transition"
                                 title="カテゴリを削除"
                               >
                                 <svg
@@ -318,7 +318,7 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
                       }
                     }}
                     placeholder="新しいカテゴリ名を入力"
-                    className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 box-border min-w-0"
+                    className="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 box-border min-w-0"
                     disabled={addingCategory}
                   />
                   <button
@@ -327,8 +327,8 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
                     disabled={addingCategory || !newCategoryName.trim()}
                     className={`px-4 py-2 rounded-lg font-semibold transition ${
                       addingCategory || !newCategoryName.trim()
-                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                        : "bg-green-500 text-white hover:bg-green-600"
+                        ? "bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+                        : "bg-green-500 dark:bg-green-600 text-white hover:bg-green-600 dark:hover:bg-green-700"
                     }`}
                   >
                     {addingCategory ? "追加中..." : "追加"}
@@ -339,7 +339,7 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
 
             {/* 頻度タイプ選択 */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 頻度タイプ
               </label>
               <div className="flex flex-wrap gap-2">
@@ -348,8 +348,8 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
                   onClick={() => setFrequencyType("daily")}
                   className={`px-4 py-2 rounded-lg font-semibold transition ${
                     frequencyType === "daily"
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-300 text-gray-500"
+                      ? "bg-blue-500 dark:bg-blue-600 text-white"
+                      : "bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400"
                   }`}
                 >
                   毎日
@@ -359,8 +359,8 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
                   onClick={() => setFrequencyType("weekly")}
                   className={`px-4 py-2 rounded-lg font-semibold transition ${
                     frequencyType === "weekly"
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-300 text-gray-500"
+                      ? "bg-blue-500 dark:bg-blue-600 text-white"
+                      : "bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400"
                   }`}
                 >
                   毎週
@@ -370,8 +370,8 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
                   onClick={() => setFrequencyType("interval")}
                   className={`px-4 py-2 rounded-lg font-semibold transition ${
                     frequencyType === "interval"
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-300 text-gray-500"
+                      ? "bg-blue-500 dark:bg-blue-600 text-white"
+                      : "bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400"
                   }`}
                 >
                   間隔
@@ -382,7 +382,7 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
             {/* 頻度タイプがweeklyの場合のみ表示 */}
             {frequencyType === "weekly" && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   実施する曜日
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -396,8 +396,8 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
                           onClick={() => toggleDayOfWeek(dayIndex)}
                           className={`px-3 py-2 sm:px-4 text-sm sm:text-base rounded-lg font-semibold transition flex-1 min-w-[calc(14%-0.5rem)] ${
                             daysOfWeek.includes(dayIndex)
-                              ? "bg-blue-500 text-white"
-                              : "bg-gray-300 text-gray-500"
+                              ? "bg-blue-500 dark:bg-blue-600 text-white"
+                              : "bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400"
                           }`}
                         >
                           {label}
@@ -413,25 +413,25 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
             {frequencyType === "interval" && (
               <div className="space-y-2 min-w-0">
                 <div className="min-w-0">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     周期(日)
                   </label>
                   <input
                     type="number"
                     value={intervalDays}
                     onChange={(e) => setIntervalDays(Number(e.target.value))}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 box-border min-w-0"
+                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 box-border min-w-0"
                   />
                 </div>
                 <div className="min-w-0">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     開始日
                   </label>
                   <input
                     type="date"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 box-border min-w-0 appearance-none"
+                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 box-border min-w-0 appearance-none"
                   />
                 </div>
               </div>
@@ -439,7 +439,7 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
 
             {/* カラー選択 */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 カードカラー
               </label>
               <div className="flex flex-wrap gap-2">
@@ -450,14 +450,14 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
                     onClick={() => setColor(option)}
                     className={`flex h-10 w-10 items-center justify-center rounded-full border-2 transition ${
                       color === option
-                        ? "border-blue-500 scale-105"
+                        ? "border-blue-500 dark:border-blue-400 scale-105"
                         : "border-transparent hover:scale-105"
                     }`}
                     style={{ backgroundColor: option }}
                     aria-label={`色 ${option}`}
                   >
                     {color === option && (
-                      <span className="inline-block h-2 w-2 rounded-full bg-white" />
+                      <span className="inline-block h-2 w-2 rounded-full bg-white dark:bg-gray-100" />
                     )}
                   </button>
                 ))}
@@ -472,8 +472,8 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
                 onClick={onClose}
                 className={`w-1/5 py-2 rounded-lg font-semibold transition ${
                   loading
-                    ? "bg-gray-400 text-white cursor-not-allowed"
-                    : "bg-red-500 text-white hover:bg-red-600"
+                    ? "bg-gray-400 dark:bg-gray-600 text-white cursor-not-allowed"
+                    : "bg-red-500 dark:bg-red-600 text-white hover:bg-red-600 dark:hover:bg-red-700"
                 }`}
               >
                 {loading ? "戻り中" : "戻る"}
@@ -484,8 +484,8 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
                 disabled={loading}
                 className={`flex-1 py-2 rounded-lg font-semibold transition ${
                   loading
-                    ? "bg-gray-400 text-white cursor-not-allowed"
-                    : "bg-blue-500 text-white hover:bg-blue-600"
+                    ? "bg-gray-400 dark:bg-gray-600 text-white cursor-not-allowed"
+                    : "bg-blue-500 dark:bg-blue-600 text-white hover:bg-blue-600 dark:hover:bg-blue-700"
                 }`}
               >
                 {loading ? "変更中..." : "変更する"}

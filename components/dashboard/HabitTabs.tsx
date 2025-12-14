@@ -28,23 +28,23 @@ export default function HabitTabs({
       {/* ドロップダウンボタン */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm transition hover:border-gray-300 hover:shadow"
+        className="flex w-full items-center justify-between rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 shadow-sm dark:shadow-gray-900/50 transition hover:border-gray-300 dark:hover:border-gray-600 hover:shadow"
       >
         <div className="flex items-center gap-3">
           {selectedHabit && (
             <div
-              className="h-4 w-4 rounded-full border border-gray-200"
+              className="h-4 w-4 rounded-full border border-gray-200 dark:border-gray-600"
               style={{
                 backgroundColor: selectedHabit.color || DEFAULT_HABIT_COLOR,
               }}
             />
           )}
-          <span className="font-medium text-gray-800">
+          <span className="font-medium text-gray-800 dark:text-gray-200">
             {selectedHabit?.title || "習慣を選択"}
           </span>
         </div>
         <svg
-          className={`h-5 w-5 text-gray-500 transition-transform duration-200 ${
+          className={`h-5 w-5 text-gray-500 dark:text-gray-400 transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""
           }`}
           fill="none"
@@ -62,7 +62,7 @@ export default function HabitTabs({
 
       {/* ドロップダウンメニュー */}
       {isOpen && (
-        <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-64 overflow-y-auto rounded-xl border border-gray-200 bg-white py-2 shadow-lg">
+        <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-64 overflow-y-auto rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 py-2 shadow-lg dark:shadow-gray-900/50">
           {habits.map((habit) => {
             const isSelected = habit.id === selectedHabitId;
             return (
@@ -74,12 +74,12 @@ export default function HabitTabs({
                 }}
                 className={`flex w-full items-center gap-3 px-4 py-3 text-left transition ${
                   isSelected
-                    ? "bg-emerald-50 text-emerald-700"
-                    : "text-gray-700 hover:bg-gray-50"
+                    ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                 }`}
               >
                 <div
-                  className="h-4 w-4 rounded-full border border-gray-200"
+                  className="h-4 w-4 rounded-full border border-gray-200 dark:border-gray-600"
                   style={{
                     backgroundColor: habit.color || DEFAULT_HABIT_COLOR,
                   }}
@@ -87,7 +87,7 @@ export default function HabitTabs({
                 <span className="font-medium">{habit.title}</span>
                 {isSelected && (
                   <svg
-                    className="ml-auto h-5 w-5 text-emerald-500"
+                    className="ml-auto h-5 w-5 text-emerald-500 dark:text-emerald-400"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"

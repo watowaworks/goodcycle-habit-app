@@ -12,8 +12,8 @@ export default function DashboardSummary({ habits }: Props) {
 
   if (mostConsistentHabits.length === 0) {
     return (
-      <div className="bg-gray-100 rounded-lg p-4 mb-6 text-center">
-        <p className="text-gray-600">
+      <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 mb-6 text-center">
+        <p className="text-gray-600 dark:text-gray-400">
           まだ継続中の習慣がありません。習慣を続けてみましょう！
         </p>
       </div>
@@ -23,11 +23,11 @@ export default function DashboardSummary({ habits }: Props) {
   const streak = mostConsistentHabits[0].currentStreak ?? 0;
 
   return (
-    <div className="bg-linear-to-r from-orange-100 to-yellow-100 rounded-lg p-4 mb-6">
+    <div className="bg-linear-to-r from-orange-100 to-yellow-100 dark:from-orange-300/60 dark:to-yellow-300/60 rounded-lg p-4 mb-6">
       <div className="flex items-center gap-3">
         <span className="text-3xl">🏆</span>
         <div className="flex-1">
-          <p className="text-sm text-gray-600 mb-1">
+          <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">
             {mostConsistentHabits.length === 1
               ? "最も継続できている習慣"
               : `最も継続できている習慣（${mostConsistentHabits.length}件）`}
@@ -35,8 +35,12 @@ export default function DashboardSummary({ habits }: Props) {
           <div className="space-y-2">
             {mostConsistentHabits.map((habit) => (
               <div key={habit.id} className="flex items-center gap-2">
-                <p className="text-lg font-bold text-gray-800">{habit.title}</p>
-                <p className="text-sm text-gray-600">{streak}日連続</p>
+                <p className="text-lg font-bold text-gray-800 dark:text-gray-100">
+                  {habit.title}
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  {streak}日連続
+                </p>
               </div>
             ))}
           </div>

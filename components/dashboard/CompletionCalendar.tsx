@@ -65,26 +65,26 @@ export default function CompletionCalendar({ habit }: Props) {
   const emptyCells = getEmptyCellsCount();
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900/50 p-6">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-bold">📅 完了状況</h2>
+        <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">📅 完了状況</h2>
         <div className="flex gap-2">
           <button
             onClick={() => setRange("week")}
-            className={`px-3 py-1 rounded text-sm ${
+            className={`px-3 py-1 rounded text-sm transition ${
               range === "week"
-                ? "bg-emerald-500 text-white"
-                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                ? "bg-emerald-500 dark:bg-emerald-600 text-white"
+                : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
             }`}
           >
             週間
           </button>
           <button
             onClick={() => setRange("month")}
-            className={`px-3 py-1 rounded text-sm ${
+            className={`px-3 py-1 rounded text-sm transition ${
               range === "month"
-                ? "bg-emerald-500 text-white"
-                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                ? "bg-emerald-500 dark:bg-emerald-600 text-white"
+                : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
             }`}
           >
             月間
@@ -97,7 +97,7 @@ export default function CompletionCalendar({ habit }: Props) {
         {dayLabels.map((label) => (
           <div
             key={label}
-            className="text-center text-xs font-semibold text-gray-500"
+            className="text-center text-xs font-semibold text-gray-500 dark:text-gray-400"
           >
             {label}
           </div>
@@ -122,12 +122,12 @@ export default function CompletionCalendar({ habit }: Props) {
                 aspect-square rounded-lg flex flex-col items-center justify-center text-xs
                 ${
                   completed
-                    ? "bg-emerald-500 text-white"
+                    ? "bg-emerald-500 dark:bg-emerald-600 text-white"
                     : !isDue
-                    ? "bg-gray-50 text-gray-300 border-2 border-dashed border-gray-300"
-                    : "bg-gray-100 text-gray-600"
+                    ? "bg-gray-50 dark:bg-gray-900/50 text-gray-300 dark:text-gray-600 border-2 border-dashed border-gray-300 dark:border-gray-700"
+                    : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300"
                 }
-                ${isToday ? "ring-2 ring-blue-500" : ""}
+                ${isToday ? "ring-2 ring-blue-500 dark:ring-blue-400" : ""}
               `}
               title={`${formatDate(date)} (${
                 dayLabels[dayOfWeek === 0 ? 6 : dayOfWeek - 1]
@@ -142,17 +142,17 @@ export default function CompletionCalendar({ habit }: Props) {
         })}
       </div>
 
-      <div className="mt-4 flex items-center gap-4 text-sm text-gray-600">
+      <div className="mt-4 flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-emerald-500 rounded"></div>
+          <div className="w-4 h-4 bg-emerald-500 dark:bg-emerald-600 rounded"></div>
           <span>完了</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-gray-100 rounded"></div>
+          <div className="w-4 h-4 bg-gray-100 dark:bg-gray-700 rounded"></div>
           <span>未完了</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-gray-50 rounded border-2 border-dashed border-gray-300"></div>
+          <div className="w-4 h-4 bg-gray-50 dark:bg-gray-900/50 rounded border-2 border-dashed border-gray-300 dark:border-gray-700"></div>
           <span>対象外</span>
         </div>
       </div>

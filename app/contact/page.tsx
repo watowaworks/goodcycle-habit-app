@@ -231,10 +231,10 @@ export default function ContactPage() {
 
       <div className="mx-auto max-w-2xl px-4 py-8">
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
             お問い合わせ
           </h2>
-          <p className="text-gray-600">
+          <p className="text-gray-600 dark:text-gray-400">
             ご質問やご意見がございましたら、お気軽にお問い合わせください。
           </p>
         </div>
@@ -244,9 +244,9 @@ export default function ContactPage() {
           <div>
             <label
               htmlFor="name"
-              className="block text-sm font-medium text-gray-700 mb-2"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
             >
-              お名前 <span className="text-red-500">*</span>
+              お名前 <span className="text-red-500 dark:text-red-400">*</span>
             </label>
             <input
               type="text"
@@ -255,15 +255,15 @@ export default function ContactPage() {
               value={formData.name}
               onChange={handleChange}
               onBlur={handleBlur}
-              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none ${
+              className={`w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 outline-none ${
                 errors.name
-                  ? "border-red-500 focus:border-red-500 focus:ring-red-500"
-                  : "border-gray-300"
+                  ? "border-red-500 dark:border-red-400 focus:border-red-500 dark:focus:border-red-400 focus:ring-red-500 dark:focus:ring-red-400"
+                  : "border-gray-300 dark:border-gray-600"
               }`}
               placeholder="山田 太郎"
             />
             {errors.name && (
-              <p className="mt-1 text-sm text-red-500">{errors.name}</p>
+              <p className="mt-1 text-sm text-red-500 dark:text-red-400">{errors.name}</p>
             )}
           </div>
 
@@ -271,9 +271,9 @@ export default function ContactPage() {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700 mb-2"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
             >
-              メールアドレス <span className="text-red-500">*</span>
+              メールアドレス <span className="text-red-500 dark:text-red-400">*</span>
             </label>
             <input
               type="email"
@@ -282,15 +282,15 @@ export default function ContactPage() {
               value={formData.email}
               onChange={handleChange}
               onBlur={handleBlur}
-              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none ${
+              className={`w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 outline-none ${
                 errors.email
-                  ? "border-red-500 focus:border-red-500 focus:ring-red-500"
-                  : "border-gray-300"
+                  ? "border-red-500 dark:border-red-400 focus:border-red-500 dark:focus:border-red-400 focus:ring-red-500 dark:focus:ring-red-400"
+                  : "border-gray-300 dark:border-gray-600"
               }`}
               placeholder="example@email.com"
             />
             {errors.email && (
-              <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+              <p className="mt-1 text-sm text-red-500 dark:text-red-400">{errors.email}</p>
             )}
           </div>
 
@@ -298,9 +298,9 @@ export default function ContactPage() {
           <div>
             <label
               htmlFor="subject"
-              className="block text-sm font-medium text-gray-700 mb-2"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
             >
-              件名 <span className="text-red-500">*</span>
+              件名 <span className="text-red-500 dark:text-red-400">*</span>
             </label>
             <input
               type="text"
@@ -309,15 +309,15 @@ export default function ContactPage() {
               value={formData.subject}
               onChange={handleChange}
               onBlur={handleBlur}
-              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none ${
+              className={`w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 outline-none ${
                 errors.subject
-                  ? "border-red-500 focus:border-red-500 focus:ring-red-500"
-                  : "border-gray-300"
+                  ? "border-red-500 dark:border-red-400 focus:border-red-500 dark:focus:border-red-400 focus:ring-red-500 dark:focus:ring-red-400"
+                  : "border-gray-300 dark:border-gray-600"
               }`}
               placeholder="お問い合わせの件名"
             />
             {errors.subject && (
-              <p className="mt-1 text-sm text-red-500">{errors.subject}</p>
+              <p className="mt-1 text-sm text-red-500 dark:text-red-400">{errors.subject}</p>
             )}
           </div>
 
@@ -325,9 +325,9 @@ export default function ContactPage() {
           <div>
             <label
               htmlFor="message"
-              className="block text-sm font-medium text-gray-700 mb-2"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
             >
-              メッセージ <span className="text-red-500">*</span>
+              メッセージ <span className="text-red-500 dark:text-red-400">*</span>
             </label>
             <textarea
               id="message"
@@ -336,20 +336,20 @@ export default function ContactPage() {
               onChange={handleChange}
               onBlur={handleBlur}
               rows={6}
-              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none resize-none ${
+              className={`w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 outline-none resize-none ${
                 errors.message
-                  ? "border-red-500 focus:border-red-500 focus:ring-red-500"
-                  : "border-gray-300"
+                  ? "border-red-500 dark:border-red-400 focus:border-red-500 dark:focus:border-red-400 focus:ring-red-500 dark:focus:ring-red-400"
+                  : "border-gray-300 dark:border-gray-600"
               }`}
               placeholder="お問い合わせ内容をご記入ください"
             />
             <div className="mt-1 flex justify-between items-start">
               {errors.message ? (
-                <p className="text-sm text-red-500">{errors.message}</p>
+                <p className="text-sm text-red-500 dark:text-red-400">{errors.message}</p>
               ) : (
                 <div></div>
               )}
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-500 dark:text-gray-400">
                 {formData.message.length} / 1000文字
               </p>
             </div>
@@ -360,8 +360,8 @@ export default function ContactPage() {
             <div
               className={`p-4 rounded-lg ${
                 submitStatus.type === "success"
-                  ? "bg-green-50 text-green-800 border border-green-200"
-                  : "bg-red-50 text-red-800 border border-red-200"
+                  ? "bg-green-50 dark:bg-green-900/30 text-green-800 dark:text-green-300 border border-green-200 dark:border-green-800"
+                  : "bg-red-50 dark:bg-red-900/30 text-red-800 dark:text-red-300 border border-red-200 dark:border-red-800"
               }`}
             >
               <p className="text-sm font-medium">{submitStatus.message}</p>
@@ -375,8 +375,8 @@ export default function ContactPage() {
               disabled={isSubmitting}
               className={`px-6 py-2 rounded-lg font-medium transition-colors ${
                 isSubmitting
-                  ? "bg-gray-400 text-gray-200 cursor-not-allowed"
-                  : "bg-emerald-500 text-white hover:bg-emerald-600"
+                  ? "bg-gray-400 dark:bg-gray-600 text-gray-800 dark:text-gray-100 cursor-not-allowed"
+                  : "bg-emerald-500 dark:bg-emerald-600 text-gray-800 dark:text-gray-100 hover:bg-emerald-600 dark:hover:bg-emerald-700"
               }`}
             >
               {isSubmitting ? "送信中..." : "送信する"}
@@ -384,9 +384,9 @@ export default function ContactPage() {
           </div>
         </form>
 
-        <div className="mt-10 rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-sm backdrop-blur">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+        <div className="mt-10 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 p-6 shadow-sm dark:shadow-gray-900/50 backdrop-blur">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -402,7 +402,7 @@ export default function ContactPage() {
             <span>その他の連絡方法</span>
           </h3>
 
-          <p className="text-sm text-gray-600 mb-4">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
             フォーム以外からのご連絡は、以下のアカウントからも受け付けています。
           </p>
 
@@ -410,9 +410,9 @@ export default function ContactPage() {
             {/* Gmail */}
             <a
               href="mailto:watosonworks@gmail.com"
-              className="group flex items-center gap-3 rounded-xl border border-gray-100 bg-linear-to-r from-emerald-50 to-white px-4 py-3 transition hover:-translate-y-0.5 hover:border-emerald-200 hover:shadow-sm"
+              className="group flex items-center gap-3 rounded-xl border border-gray-100 dark:border-gray-700 bg-gradient-to-r from-emerald-50 to-white dark:from-emerald-900/20 dark:to-gray-800 px-4 py-3 transition hover:-translate-y-0.5 hover:border-emerald-200 dark:hover:border-emerald-700 hover:shadow-sm dark:hover:shadow-gray-900/50"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-emerald-600 shadow-sm">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white dark:bg-gray-700 text-emerald-600 dark:text-emerald-400 shadow-sm">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
@@ -426,10 +426,10 @@ export default function ContactPage() {
                 </svg>
               </div>
               <div className="flex flex-col">
-                <span className="text-xs font-medium uppercase tracking-wide text-emerald-700">
+                <span className="text-xs font-medium uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
                   Gmail
                 </span>
-                <span className="text-sm text-gray-800 group-hover:text-emerald-700 break-all">
+                <span className="text-sm text-gray-800 dark:text-gray-300 group-hover:text-emerald-700 dark:group-hover:text-emerald-400 break-all">
                   watosonworks@gmail.com
                 </span>
               </div>
@@ -440,9 +440,9 @@ export default function ContactPage() {
               href="https://github.com/watowaworks"
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center gap-3 rounded-xl border border-gray-100 bg-linear-to-r from-slate-50 to-white px-4 py-3 transition hover:-translate-y-0.5 hover:border-slate-200 hover:shadow-sm"
+              className="group flex items-center gap-3 rounded-xl border border-gray-100 dark:border-gray-700 bg-gradient-to-r from-slate-50 to-white dark:from-slate-900/20 dark:to-gray-800 px-4 py-3 transition hover:-translate-y-0.5 hover:border-slate-200 dark:hover:border-slate-600 hover:shadow-sm dark:hover:shadow-gray-900/50"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 text-white shadow-sm">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 dark:bg-slate-800 text-white shadow-sm">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
@@ -456,10 +456,10 @@ export default function ContactPage() {
                 </svg>
               </div>
               <div className="flex flex-col">
-                <span className="text-xs font-medium uppercase tracking-wide text-slate-700">
+                <span className="text-xs font-medium uppercase tracking-wide text-slate-700 dark:text-slate-400">
                   GitHub
                 </span>
-                <span className="text-sm text-gray-800 group-hover:text-slate-900 break-all">
+                <span className="text-sm text-gray-800 dark:text-gray-300 group-hover:text-slate-900 dark:group-hover:text-slate-200 break-all">
                   github.com/watowaworks
                 </span>
               </div>

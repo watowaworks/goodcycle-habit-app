@@ -58,10 +58,10 @@ export default function AuthButton() {
                 className="rounded-full"
               />
             )}
-            <span className="text-sm">{user.displayName}</span>
+            <span className="text-sm text-gray-900">{user.displayName}</span>
             <button
               onClick={handleLogout}
-              className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+              className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
             >
               ログアウト
             </button>
@@ -69,7 +69,7 @@ export default function AuthButton() {
         ) : (
           <button
             onClick={handleLogin}
-            className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+            className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition"
           >
             Googleでログイン
           </button>
