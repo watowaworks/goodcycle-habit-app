@@ -26,23 +26,18 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
 
   const [title, setTitle] = useState(habit.title);
   const [category, setCategory] = useState<string>(habit.category);
-  const [color, setColor] = useState<string>(
-    habit.color || DEFAULT_HABIT_COLOR
-  );
+  const [color, setColor] = useState<string>(habit.color || DEFAULT_HABIT_COLOR);
   const [loading, setLoading] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [addingCategory, setAddingCategory] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [frequencyType, setFrequencyType] = useState<FrequencyType>(
-    habit.frequencyType
-  );
-  const [daysOfWeek, setDaysOfWeek] = useState<number[]>(
-    habit.daysOfWeek || []
-  );
-  const [intervalDays, setIntervalDays] = useState<number>(
-    habit.intervalDays || 1
-  );
+  const [frequencyType, setFrequencyType] = useState<FrequencyType>(habit.frequencyType);
+  const [daysOfWeek, setDaysOfWeek] = useState<number[]>(habit.daysOfWeek || []);
+  const [intervalDays, setIntervalDays] = useState<number>(habit.intervalDays || 1);
   const [startDate, setStartDate] = useState<string>(habit.startDate || "");
+  const [notificationEnabled, setNotificationEnabled] = useState(habit.notification?.enabled || false);
+  const [notificationTime, setNotificationTime] = useState<string>(habit.notification?.reminderTime || "");
+
   const categoryDropdownRef = useRef<HTMLDivElement>(null);
 
   // ドロップダウン外をクリックしたら閉じる
@@ -68,6 +63,8 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
       setDaysOfWeek(habit.daysOfWeek || []);
       setIntervalDays(habit.intervalDays || 1);
       setStartDate(habit.startDate || "");
+      setNotificationEnabled(habit.notification?.enabled || false);
+      setNotificationTime(habit.notification?.reminderTime || "");
     }
   }, [isOpen, habit]);
 
@@ -137,6 +134,8 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
       return alert("周期を1以上にしてください");
     if (frequencyType === "interval" && !startDate)
       return alert("開始日を入力してください");
+    if (notificationEnabled && !notificationTime)
+      return alert("通知時刻を入力してください");
 
     try {
       setLoading(true);
@@ -147,6 +146,10 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
         frequencyType,
         ...(frequencyType === "weekly" ? { daysOfWeek } : {}),
         ...(frequencyType === "interval" ? { intervalDays, startDate } : {}),
+        notification: { 
+          enabled: notificationEnabled,
+          reminderTime: notificationEnabled ? notificationTime : undefined,
+        },
       });
       onClose();
     } catch (error) {
@@ -461,6 +464,43 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
                     )}
                   </button>
                 ))}
+              </div>
+            </div>
+
+            {/* 通知設定 */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                通知設定
+              </label>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                指定した時刻に、この習慣のリマインダー通知を送信します。
+              </p>
+
+              <div className="flex items-center gap-3">
+                <label className="inline-flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={notificationEnabled}
+                    onChange={(e) => setNotificationEnabled(e.target.checked)}
+                    className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-400"
+                  />
+                  <span className="text-sm text-gray-700 dark:text-gray-300">
+                    通知を有効にする
+                  </span>
+                </label>
+
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-600 dark:text-gray-300">
+                    通知時刻:
+                  </span>
+                  <input
+                    type="time"
+                    value={notificationTime}
+                    onChange={(e) => setNotificationTime(e.target.value)}
+                    disabled={!notificationEnabled}
+                    className="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-2 py-1 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                  />
+                </div>
               </div>
             </div>
 

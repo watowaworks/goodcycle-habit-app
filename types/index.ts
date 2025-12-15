@@ -1,4 +1,8 @@
 export type FrequencyType = "daily" | "weekly" | "interval";
+export type NotificationSettings = {
+  enabled: boolean;
+  reminderTime?: string;
+};
 
 export type Habit = {
   id: string;
@@ -14,4 +18,5 @@ export type Habit = {
   daysOfWeek?: number[];
   intervalDays?: number;
   startDate?: string;
+  notification?: NotificationSettings;
 };

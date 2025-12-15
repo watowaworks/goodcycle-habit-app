@@ -9,23 +9,25 @@ import AddHabitModal from "@/components/AddHabitModal";
 import FilterModal from "@/components/FilterModal";
 import Header from "@/components/Header";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { useNotifications } from "@/hooks/useNotifications";
 
 export default function HomePage() {
-  const {
-    habits,
-    localHabits,
-    filter,
-    setFilter,
-    fetchHabits,
-    fetchCategories,
-  } = useStore();
+  const habits = useStore((state) => state.habits);
+  const localHabits = useStore((state) => state.localHabits);
+  const filter = useStore((state) => state.filter);
+  const setFilter = useStore((state) => state.setFilter);
+  const fetchHabits = useStore((state) => state.fetchHabits);
+  const fetchCategories = useStore((state) => state.fetchCategories);
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [loggedIn, setLoggedIn] = useState<boolean>(!!auth.currentUser);
   const [showAddHabitModal, setShowAddHabitModal] = useState(false);
   const [showFilterModal, setShowFilterModal] = useState(false);
+
   const lastCheckedDateRef = useRef(getTodayString());
+
+  const { isSupported, permission, requestNotificationPermission, notify, sendHabitReminder } = useNotifications();
 
   // カテゴリーデータ復元
   useEffect(() => {
