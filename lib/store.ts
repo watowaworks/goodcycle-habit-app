@@ -217,17 +217,43 @@ export const useStore = create<Store>()(
       updateHabitFields: async (id, fields) => {
         try {
           const user = auth.currentUser;
+          const allHabits = user ? get().habits : get().localHabits;
+          const existingHabit = allHabits.find((h) => h.id === id);
+          
+          if (!existingHabit) {
+            console.error("習慣が見つかりません");
+            return;
+          }
+
+          // 更新後の習慣データを作成
+          const updatedHabit = {
+            ...existingHabit,
+            ...fields,
+          };
+
+          // 頻度タイプが変更された場合、ストリークを再計算
+          const shouldRecalculateStreaks = fields.frequencyType !== undefined && 
+                                           fields.frequencyType !== existingHabit.frequencyType;
+
+          let finalFields = { ...fields };
+
+          if (shouldRecalculateStreaks) {
+            const { longestStreak, currentStreak } = calculateStreaks(updatedHabit);
+            finalFields.longestStreak = longestStreak;
+            finalFields.currentStreak = currentStreak;
+          }
+
           if (user) {
-            await updateHabit(id, fields);
+            await updateHabit(id, finalFields);
             set({
               habits: get().habits.map((h) =>
-                h.id === id ? {...h, ...fields} : h
+                h.id === id ? {...h, ...finalFields} : h
               ),
             });
           } else {
             set({
               localHabits: get().localHabits.map((h) =>
-                h.id === id ? {...h, ...fields} : h
+                h.id === id ? {...h, ...finalFields} : h
               ),
             })
           }

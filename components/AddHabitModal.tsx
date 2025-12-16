@@ -493,7 +493,7 @@ export default function AddHabitModal({ isOpen, onClose }: Props) {
                 通知設定
               </label>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                指定した時刻に、この習慣のリマインダー通知を送信します。
+                実施予定日の指定した時刻に、この習慣のリマインダー通知を送信します。
               </p>
 
               <div className="flex items-center gap-3">

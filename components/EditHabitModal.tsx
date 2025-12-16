@@ -26,17 +26,29 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
 
   const [title, setTitle] = useState(habit.title);
   const [category, setCategory] = useState<string>(habit.category);
-  const [color, setColor] = useState<string>(habit.color || DEFAULT_HABIT_COLOR);
+  const [color, setColor] = useState<string>(
+    habit.color || DEFAULT_HABIT_COLOR
+  );
   const [loading, setLoading] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [addingCategory, setAddingCategory] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [frequencyType, setFrequencyType] = useState<FrequencyType>(habit.frequencyType);
-  const [daysOfWeek, setDaysOfWeek] = useState<number[]>(habit.daysOfWeek || []);
-  const [intervalDays, setIntervalDays] = useState<number>(habit.intervalDays || 1);
+  const [frequencyType, setFrequencyType] = useState<FrequencyType>(
+    habit.frequencyType
+  );
+  const [daysOfWeek, setDaysOfWeek] = useState<number[]>(
+    habit.daysOfWeek || []
+  );
+  const [intervalDays, setIntervalDays] = useState<number>(
+    habit.intervalDays || 1
+  );
   const [startDate, setStartDate] = useState<string>(habit.startDate || "");
-  const [notificationEnabled, setNotificationEnabled] = useState(habit.notification?.enabled || false);
-  const [notificationTime, setNotificationTime] = useState<string>(habit.notification?.reminderTime || "");
+  const [notificationEnabled, setNotificationEnabled] = useState(
+    habit.notification?.enabled || false
+  );
+  const [notificationTime, setNotificationTime] = useState<string>(
+    habit.notification?.reminderTime || ""
+  );
 
   const categoryDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -146,10 +158,14 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
         frequencyType,
         ...(frequencyType === "weekly" ? { daysOfWeek } : {}),
         ...(frequencyType === "interval" ? { intervalDays, startDate } : {}),
-        notification: { 
-          enabled: notificationEnabled,
-          reminderTime: notificationEnabled ? notificationTime : undefined,
-        },
+        notification: notificationEnabled
+          ? {
+              enabled: true,
+              reminderTime: notificationTime,
+            }
+          : {
+              enabled: false,
+            },
       });
       onClose();
     } catch (error) {
@@ -178,7 +194,9 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="overflow-y-auto p-4 min-w-0">
-          <h1 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-gray-100">習慣を編集</h1>
+          <h1 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-gray-100">
+            習慣を編集
+          </h1>
 
           <form onSubmit={handleSubmit} className="space-y-6 min-w-0">
             {/* タイトル入力欄 */}
@@ -209,7 +227,11 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
                   className="w-full flex items-center justify-between px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-left focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                 >
                   <span
-                    className={category ? "text-gray-700 dark:text-gray-200" : "text-gray-400 dark:text-gray-500"}
+                    className={
+                      category
+                        ? "text-gray-700 dark:text-gray-200"
+                        : "text-gray-400 dark:text-gray-500"
+                    }
                   >
                     {category || "カテゴリを選択してください"}
                   </span>
@@ -473,7 +495,7 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
                 通知設定
               </label>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                指定した時刻に、この習慣のリマインダー通知を送信します。
+                実施予定日の指定した時刻に、この習慣のリマインダー通知を送信します。
               </p>
 
               <div className="flex items-center gap-3">

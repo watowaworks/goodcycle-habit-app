@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { useStore } from "@/lib/store";
 import HabitCard from "@/components/HabitCard";
 import { auth, onAuthStateChanged } from "@/lib/firebase";
-import { getTodayString } from "@/lib/utils";
+import { getTodayString, isHabitDueOnDate } from "@/lib/utils";
 import AddHabitModal from "@/components/AddHabitModal";
 import FilterModal from "@/components/FilterModal";
 import Header from "@/components/Header";
@@ -26,6 +26,7 @@ export default function HomePage() {
   const [showFilterModal, setShowFilterModal] = useState(false);
 
   const lastCheckedDateRef = useRef(getTodayString());
+  const lastNotifiedTimeRef = useRef<string>("");
 
   const { isSupported, permission, requestNotificationPermission, notify, sendHabitReminder } = useNotifications();
 
@@ -88,6 +89,48 @@ export default function HomePage() {
 
   // ログイン時は Firestore のみ、非ログイン時は localHabits のみ
   const allHabits = loggedIn ? habits : localHabits;
+
+  // 通知スケジューリング用の useEffect
+  useEffect(() => {
+    if (!isSupported || permission !== "granted") return;
+
+    const getCurrentTime = () => {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, "0");
+      const minutes = String(now.getMinutes()).padStart(2, "0");
+      return `${hours}:${minutes}`;
+    };
+
+    // 60秒ごとに通知をチェック
+    const checkNotifications = setInterval(() => {
+      const currentTime = getCurrentTime();
+      const today = getTodayString();
+
+      if (lastNotifiedTimeRef.current === currentTime) return;
+
+      // 通知対象の習慣をフィルタリング
+      const habitsToNotify = allHabits.filter((habit) => {
+        return (
+          habit.notification?.enabled === true &&
+          habit.notification.reminderTime === currentTime &&
+          isHabitDueOnDate(habit, today)
+        );
+      });
+
+      // 通知を送信
+      habitsToNotify.forEach((habit) => {
+        sendHabitReminder(habit);
+      });
+
+      if (habitsToNotify.length > 0) {
+        lastNotifiedTimeRef.current = currentTime;
+      }
+    }, 60000);
+
+    return () => {
+      clearInterval(checkNotifications);
+    };
+  }, [allHabits, isSupported, permission, sendHabitReminder]);
 
   const filteredHabits = allHabits.filter((habit) => {
     if (filter === "completed" && !habit.completed) return false;

@@ -57,7 +57,7 @@ export function useNotifications() {
 
   const sendHabitReminder = useCallback((habit: Habit) => {
     notify("習慣のリマインド", {
-      body: `「${habit.title}」を実施する時間です！`,
+      body: `本日も忘れずに「${habit.title}」を継続しましょう！`,
       tag: `habit-reminder-${habit.id}`,
     });
   }, [notify]);
