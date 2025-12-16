@@ -3,7 +3,7 @@
 import { Habit } from "@/types";
 import { useCallback, useEffect, useState } from "react";
 
-type NotificationPermissionState = "default" | "granted" | "denied";
+export type NotificationPermissionState = "default" | "granted" | "denied";
 type NotifyOptions = Omit<NotificationOptions, "body"> & {
   body: string;
 };

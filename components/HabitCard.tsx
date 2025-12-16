@@ -7,6 +7,7 @@ import { auth } from "@/lib/firebase";
 import { DEFAULT_HABIT_COLOR } from "@/lib/habitColors";
 import EditHabitModal from "./EditHabitModal";
 import { getTodayString, isHabitDueOnDate } from "@/lib/utils";
+import { useNotifications } from "@/hooks/useNotifications";
 
 type Props = { habit: Habit };
 
@@ -21,6 +22,8 @@ export default function HabitCard({ habit }: Props) {
   const currentColor = habit.color || DEFAULT_HABIT_COLOR;
   const today = getTodayString();
   const isDue = isHabitDueOnDate(habit, today);
+
+  const { permission, requestNotificationPermission } = useNotifications();
 
   // 頻度タイプの表示テキストを生成
   const getFrequencyText = () => {
@@ -124,6 +127,8 @@ export default function HabitCard({ habit }: Props) {
             habit={habit}
             isOpen={isEditModalOpen}
             onClose={() => setIsEditModalOpen(false)}
+            notificationPermission={permission}
+            requestNotificationPermission={requestNotificationPermission}
           />
         </>
       </div>

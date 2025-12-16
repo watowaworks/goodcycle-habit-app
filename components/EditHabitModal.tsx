@@ -6,14 +6,17 @@ import { FrequencyType, Habit } from "@/types";
 import { auth } from "@/lib/firebase";
 import { DEFAULT_HABIT_COLOR, HABIT_COLOR_OPTIONS } from "@/lib/habitColors";
 import { useClickOutside } from "@/hooks/useClickOutside";
+import { NotificationPermissionState } from "@/hooks/useNotifications";
 
 type Props = {
   habit: Habit;
   isOpen: boolean;
   onClose: () => void;
+  notificationPermission: NotificationPermissionState;
+  requestNotificationPermission: () => Promise<NotificationPermissionState>;
 };
 
-export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
+export default function EditHabitModal({ habit, isOpen, onClose, notificationPermission, requestNotificationPermission }: Props) {
   // 関数は個別に取得
   const updateHabitFields = useStore((state) => state.updateHabitFields);
   const addCategory = useStore((state) => state.addCategory);
@@ -182,6 +185,27 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
         ? prev.filter((day) => day !== dayIndex)
         : [...prev, dayIndex]
     );
+  };
+
+  const handleToggleNotification = async (checked: boolean) => {
+    setNotificationEnabled(checked);
+
+    if (!checked || notificationPermission === "granted") return;
+    
+    if (notificationPermission === "denied") {
+      alert("ブラウザまたはOSで通知がブロックされています。設定から通知を許可してください。");
+      setNotificationEnabled(false);
+      return;
+    }
+
+    if (notificationPermission === "default") {
+      const result = await requestNotificationPermission();
+
+      if (result !== "granted") {
+        setNotificationEnabled(false);
+        alert("通知が許可されませんでした。ブラウザの設定を確認してください。");
+      }
+    }
   };
 
   return (
@@ -503,7 +527,7 @@ export default function EditHabitModal({ habit, isOpen, onClose }: Props) {
                   <input
                     type="checkbox"
                     checked={notificationEnabled}
-                    onChange={(e) => setNotificationEnabled(e.target.checked)}
+                    onChange={(e) => handleToggleNotification(e.target.checked)}
                     className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-400"
                   />
                   <span className="text-sm text-gray-700 dark:text-gray-300">

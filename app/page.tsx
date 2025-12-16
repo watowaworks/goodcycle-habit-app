@@ -28,7 +28,7 @@ export default function HomePage() {
   const lastCheckedDateRef = useRef(getTodayString());
   const lastNotifiedTimeRef = useRef<string>("");
 
-  const { isSupported, permission, requestNotificationPermission, notify, sendHabitReminder } = useNotifications();
+  const { isSupported, permission, requestNotificationPermission, sendHabitReminder } = useNotifications();
 
   // カテゴリーデータ復元
   useEffect(() => {
@@ -191,6 +191,8 @@ export default function HomePage() {
             <AddHabitModal
               isOpen={showAddHabitModal}
               onClose={() => setShowAddHabitModal(false)}
+              notificationPermission={permission}
+              requestNotificationPermission={requestNotificationPermission}
             />
             <FilterModal
               isOpen={showFilterModal}
