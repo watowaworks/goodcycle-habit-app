@@ -10,6 +10,7 @@ import FilterModal from "@/components/FilterModal";
 import Header from "@/components/Header";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { useNotifications } from "@/hooks/useNotifications";
+import { useFirebaseMessaging } from "@/hooks/useFirebaseMessaging";
 
 export default function HomePage() {
   const habits = useStore((state) => state.habits);
@@ -29,6 +30,11 @@ export default function HomePage() {
   const lastNotifiedTimeRef = useRef<string>("");
 
   const { isSupported, permission, requestNotificationPermission, sendHabitReminder } = useNotifications();
+
+  const { fcmToken } = useFirebaseMessaging();
+  if (fcmToken) {
+    console.log("[HomePage] FCMトークン:", fcmToken);
+  }
 
   // カテゴリーデータ復元
   useEffect(() => {

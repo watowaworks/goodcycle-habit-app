@@ -193,7 +193,8 @@ export default function AddHabitModal({ isOpen, onClose, notificationPermission,
     
     if (notificationPermission === "denied") {
       alert("ブラウザまたはOSで通知がブロックされています。設定から通知を許可してください。");
-      setNotificationEnabled(false);  return;
+      setNotificationEnabled(false);
+      return;
     }
 
     if (notificationPermission === "default") {
