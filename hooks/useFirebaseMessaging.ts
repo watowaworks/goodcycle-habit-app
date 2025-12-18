@@ -4,7 +4,9 @@
 
 import { useEffect, useState } from "react";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
-import app from "@/lib/firebase";
+import app, { auth } from "@/lib/firebase";
+import { saveFCMToken } from "@/lib/firestore";
+import { onAuthStateChanged } from "firebase/auth";
 
 export function useFirebaseMessaging() {
   const [fcmToken, setFcmToken] = useState<string | null>(null);
@@ -47,8 +49,17 @@ export function useFirebaseMessaging() {
 
         if (currentToken) {
           console.log("[FCM] 取得したトークン:", currentToken);
-          setFcmToken(currentToken);
-          // TODO: ここで Firestore にトークンを保存する
+          setFcmToken(currentToken);   
+          // ログインしている場合のみFirestoreに保存
+          if (auth.currentUser) {
+            try {
+              await saveFCMToken(currentToken);
+            } catch (error) {
+              console.error("[FCM] トークンの保存に失敗:", error);
+            }
+          } else {
+            console.log("[FCM] ログインしていないため、トークンを保存しません");
+          }
         } else {
           console.log("[FCM] トークンを取得できませんでした（通知が許可されていない可能性）");
         }
@@ -65,6 +76,27 @@ export function useFirebaseMessaging() {
 
     setup();
   }, []);
+
+  // ログイン状態が変わったときにトークンを保存する
+  useEffect(() => {
+    // fcmToken がまだ取得できていない場合は何もしない
+    if (!fcmToken) return;
+
+    // ログイン状態の変化を監視
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // ログインしたら、トークンを保存
+        try {
+          await saveFCMToken(fcmToken);
+        } catch (error) {
+          console.error("[FCM] トークンの保存に失敗:", error);
+        }
+      }
+    });
+
+    // クリーンアップ
+    return () => unsubscribe();
+  }, [fcmToken]);  // fcmToken が変わったときに再実行
 
   return { fcmToken, isSupported };
 }

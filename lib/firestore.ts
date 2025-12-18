@@ -11,6 +11,9 @@ import {
   updateDoc,
   Timestamp,
   orderBy,
+  getDoc,
+  arrayUnion,
+  setDoc,
 } from "firebase/firestore";
 import { FrequencyType, Habit } from "@/types";
 import { DEFAULT_HABIT_COLOR } from "./habitColors";
@@ -133,4 +136,47 @@ export async function deleteCustomCategory(categoryName: string): Promise<void> 
   // 同じ名前のカテゴリが複数ある場合も全て削除
   const deletePromises = snapshot.docs.map((doc) => deleteDoc(doc.ref));
   await Promise.all(deletePromises);
+}
+
+export async function saveFCMToken(token: string): Promise<void> {
+  const user = auth.currentUser;
+  if (!user) {
+    console.warn("[FCM] ログインしていないため、トークンを保存しません");
+    return;
+  }
+
+  const userRef = doc(db, "users", user.uid);
+  
+  try {
+    // 既存のドキュメントを取得
+    const userDoc = await getDoc(userRef);
+    
+    if (userDoc.exists()) {
+      // 既存のトークン配列を取得
+      const existingTokens = userDoc.data().fcmTokens || [];
+      
+      // 重複チェック
+      if (existingTokens.includes(token)) {
+        console.log("[FCM] トークンは既に保存されています");
+        return;
+      }
+      
+      // 新しいトークンを配列に追加
+      await updateDoc(userRef, {
+        fcmTokens: arrayUnion(token),
+        updatedAt: Timestamp.now(),
+      });
+    } else {
+      // ユーザードキュメントが存在しない場合は新規作成
+      await setDoc(userRef, {
+        fcmTokens: [token],
+        updatedAt: Timestamp.now(),
+      });
+    }
+    
+    console.log("[FCM] トークンをFirestoreに保存しました");
+  } catch (error) {
+    console.error("[FCM] トークンの保存に失敗:", error);
+    throw error;
+  }
 }
