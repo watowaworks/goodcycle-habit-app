@@ -218,14 +218,27 @@ export default function EditHabitModal({
 
     // 未決定の場合: 許可をリクエスト
     if (notificationPermission === "default") {
-      const result = await requestNotificationPermission();
+      try {
+        console.log("[EditHabitModal] 通知許可をリクエストします");
+        const result = await requestNotificationPermission();
+        console.log("[EditHabitModal] 通知許可の結果:", result);
 
-      if (result === "granted") {
-        // 許可された場合のみONにする
-        setNotificationEnabled(true);
-      } else {
-        // 拒否された場合はOFFのまま
-        alert("通知が許可されませんでした。ブラウザの設定を確認してください。");
+        if (result === "granted") {
+          // 許可された場合のみONにする
+          setNotificationEnabled(true);
+          console.log("[EditHabitModal] 通知が許可されました");
+        } else {
+          // 拒否された場合はOFFのまま
+          console.log("[EditHabitModal] 通知が拒否されました:", result);
+          alert(
+            "通知が許可されませんでした。ブラウザの設定を確認してください。"
+          );
+        }
+      } catch (error) {
+        console.error("[EditHabitModal] 通知許可リクエスト中にエラー:", error);
+        alert(
+          "通知許可のリクエスト中にエラーが発生しました。ブラウザの設定を確認してください。"
+        );
       }
     }
   };

@@ -20,15 +20,39 @@ export function useNotifications() {
 
   const requestNotificationPermission  = useCallback(async () => {
     if (!isSupported) {
-      console.warn("通知APIがサポートされていません");
+      console.warn("[useNotifications] 通知APIがサポートされていません");
       return "denied" as NotificationPermissionState;
     }
+    
+    // 現在の許可状態を確認
+    const currentPermission = Notification.permission;
+    console.log("[useNotifications] 現在の通知許可状態:", currentPermission);
+    
     try {
-      const result = await Notification.requestPermission();
+      console.log("[useNotifications] Notification.requestPermission()を呼び出します");
+      
+      // Edgeブラウザでの互換性のため、Promiseとコールバックの両方に対応
+      let result: NotificationPermission;
+      
+      if (typeof Notification.requestPermission === "function") {
+        const permissionResult = Notification.requestPermission();
+        
+        // Promiseを返す場合（新しいAPI）
+        if (permissionResult instanceof Promise) {
+          result = await permissionResult;
+        } else {
+          // コールバック形式の場合（古いAPI、通常は発生しない）
+          result = permissionResult as NotificationPermission;
+        }
+      } else {
+        throw new Error("Notification.requestPermissionが利用できません");
+      }
+      
+      console.log("[useNotifications] 通知許可の結果:", result);
       setPermission(result);
       return result as NotificationPermissionState;
     } catch (error) {
-      console.error("通知許可リクエストに失敗:", error);
+      console.error("[useNotifications] 通知許可リクエストに失敗:", error);
       return "denied";
     }
   }, [isSupported]);
