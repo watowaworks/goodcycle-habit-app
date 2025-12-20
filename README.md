@@ -15,7 +15,7 @@ Next.js (App Router) と Firebase を使って作成した、**習慣の継続�
 
 ### ユーザー認証
 
-- Firebase Authentication によるメールアドレス＆パスワード認証
+- Firebase Authentication による Google アカウントでの認証
 - ログイン状態に応じたナビゲーション制御
 - ログイン時は Firestore にデータを保存、非ログイン時はローカルストレージに保存
 
@@ -64,6 +64,15 @@ Next.js (App Router) と Firebase を使って作成した、**習慣の継続�
 - システムテーマ変更の自動検知
 - すべてのページ・コンポーネントでダークモード対応
 
+### プッシュ通知機能
+
+- **ブラウザを閉じても通知が届く**: Service Worker + Firebase Cloud Messaging (FCM) によるバックグラウンド通知
+- **通知時刻の設定**: 各習慣に通知時刻（HH:MM 形式）を設定可能
+- **自動通知送信**: Cloud Functions のスケジュール実行により、設定した時刻に自動で通知を送信
+- **実施日の判定**: 習慣の頻度設定（毎日/毎週/間隔）に基づいて、実施日のみ通知を送信
+- **複数デバイス対応**: 複数のブラウザ/デバイスで同じアカウントにログインしている場合、すべてのデバイスに通知を送信
+- **通知設定の永続化**: 通知設定は Firestore に保存され、ページをリロードしても保持される
+
 ---
 
 ## 技術スタック
@@ -78,6 +87,8 @@ Next.js (App Router) と Firebase を使って作成した、**習慣の継続�
 
 - **Firebase Authentication**: ユーザー認証
 - **Cloud Firestore**: 習慣データ・カテゴリデータの永続化
+- **Firebase Cloud Messaging (FCM)**: プッシュ通知の送信
+- **Firebase Cloud Functions**: スケジュール実行による通知送信の自動化
 
 ### 状態管理・ロジック
 
@@ -99,6 +110,7 @@ Next.js (App Router) と Firebase を使って作成した、**習慣の継続�
 - **頻度ベースのストリーク数・完了率計算**: 各習慣の頻度設定に基づいて、実施日のみを対象にストリーク数・完了率を算出
 - **型安全性**: TypeScript による型定義（`Habit` 型、`FrequencyType` など）
 - **レスポンシブデザイン**: モバイル・デスクトップ対応
+- **バックグラウンド通知**: Service Worker と Cloud Functions を組み合わせた、ブラウザを閉じても動作する通知システム
 
 ---
 
@@ -140,6 +152,7 @@ NEXT_PUBLIC_FIREBASE_PROJECT_ID=...
 NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=...
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=...
 NEXT_PUBLIC_FIREBASE_APP_ID=...
+NEXT_PUBLIC_FIREBASE_VAPID_KEY=...
 
 NEXT_PUBLIC_EMAILJS_SERVICE_ID=...
 NEXT_PUBLIC_EMAILJS_TEMPLATE_ID=...
@@ -150,10 +163,13 @@ NEXT_PUBLIC_EMAILJS_PUBLIC_KEY=...
 
 ## デプロイ
 
-- **ホスティング**: Vercel
+- **ホスティング**: Vercel（フロントエンド）
+- **Cloud Functions**: Firebase（バックエンド）
 - GitHub への push をトリガーに、自動でビルド & デプロイされます。
 - 本番環境では、Firebase Authentication の「承認済みドメイン」に  
   `*.vercel.app`（実際の URL）を追加する必要があります。
+- **Cloud Functions のデプロイ**: `functions` フォルダで `npm run deploy` を実行してデプロイします。
+- **注意**: Cloud Functions を使用するには、Firebase プロジェクトを Blaze（従量課金）プランにアップグレードする必要があります。
 
 ---
 
