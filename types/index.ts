@@ -3,6 +3,10 @@ export type NotificationSettings = {
   enabled: boolean;
   reminderTime?: string;
 };
+export interface FCMTokenWithOrigin {
+  token: string;
+  origin: string; // 例: "https://goodcycle-habit-app.vercel.app" または "http://localhost:3000"
+}
 
 export type Habit = {
   id: string;

@@ -49,16 +49,11 @@ export function useFirebaseMessaging() {
 
         if (currentToken) {
           console.log("[FCM] 取得したトークン:", currentToken);
-          setFcmToken(currentToken);
-          
-          // 現在のオリジンを取得
-          const origin = window.location.origin;
-          console.log("[FCM] 現在のオリジン:", origin);
-          
+          setFcmToken(currentToken);   
           // ログインしている場合のみFirestoreに保存
           if (auth.currentUser) {
             try {
-              await saveFCMToken(currentToken, origin);
+              await saveFCMToken(currentToken);
             } catch (error) {
               console.error("[FCM] トークンの保存に失敗:", error);
             }
@@ -114,8 +109,7 @@ export function useFirebaseMessaging() {
       if (user) {
         // ログインしたら、トークンを保存
         try {
-          const origin = typeof window !== "undefined" ? window.location.origin : "";
-          await saveFCMToken(fcmToken, origin);
+          await saveFCMToken(fcmToken);
         } catch (error) {
           console.error("[FCM] トークンの保存に失敗:", error);
         }

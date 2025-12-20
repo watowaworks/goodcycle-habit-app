@@ -15,7 +15,7 @@ import {
   arrayUnion,
   setDoc,
 } from "firebase/firestore";
-import { FrequencyType, Habit, FCMTokenWithOrigin } from "@/types";
+import { FrequencyType, Habit } from "@/types";
 import { DEFAULT_HABIT_COLOR } from "./habitColors";
 
 // 習慣を追加（Firestoreが生成したIDを返す）
@@ -152,62 +152,30 @@ export async function saveFCMToken(token: string, origin: string): Promise<void>
     // 既存のドキュメントを取得
     const userDoc = await getDoc(userRef);
     
-    // 新しいトークンオブジェクト
-    const newToken: FCMTokenWithOrigin = { token, origin };
-    
     if (userDoc.exists()) {
       // 既存のトークン配列を取得
-      const existingTokensData = userDoc.data().fcmTokens || [];
+      const existingTokens = userDoc.data().fcmTokens || [];
       
-      // 既存データが文字列配列（旧形式）の場合、新しい形式に変換
-      let existingTokens: FCMTokenWithOrigin[];
-      if (existingTokensData.length > 0 && typeof existingTokensData[0] === "string") {
-        // 旧形式（文字列配列）を新形式（オブジェクト配列）に変換
-        // オリジン情報がないため、既存のトークンは保持しつつ、新しいトークンを追加
-        existingTokens = existingTokensData.map((t: string) => ({
-          token: t,
-          origin: "unknown", // 既存データにはオリジン情報がないため
-        }));
-        console.log("[FCM] 既存データを新形式に変換しました");
-      } else {
-        // 既に新形式（オブジェクト配列）
-        existingTokens = existingTokensData as FCMTokenWithOrigin[];
+      // 重複チェック
+      if (existingTokens.includes(token)) {
+        console.log("[FCM] トークンは既に保存されています");
+        return;
       }
       
-      // 同じオリジンのトークンが既に存在するかチェック
-      const sameOriginIndex = existingTokens.findIndex((t) => t.origin === origin);
-      
-      if (sameOriginIndex !== -1) {
-        // 同じオリジンのトークンが存在する場合、置き換え
-        const existingToken = existingTokens[sameOriginIndex];
-        if (existingToken.token === token) {
-          console.log("[FCM] 同じトークンが既に保存されています");
-          return;
-        }
-        // 古いトークンを削除して新しいトークンに置き換え
-        existingTokens[sameOriginIndex] = newToken;
-        console.log(`[FCM] 同じオリジン(${origin})のトークンを更新しました`);
-      } else {
-        // 同じオリジンのトークンが存在しない場合、追加
-        existingTokens.push(newToken);
-        console.log(`[FCM] 新しいオリジン(${origin})のトークンを追加しました`);
-      }
-      
-      // Firestoreに保存
+      // 新しいトークンを配列に追加
       await updateDoc(userRef, {
-        fcmTokens: existingTokens,
+        fcmTokens: arrayUnion(token),
         updatedAt: Timestamp.now(),
       });
     } else {
       // ユーザードキュメントが存在しない場合は新規作成
       await setDoc(userRef, {
-        fcmTokens: [newToken],
+        fcmTokens: [token],
         updatedAt: Timestamp.now(),
       });
-      console.log(`[FCM] 新しいユーザードキュメントを作成し、トークンを保存しました`);
     }
     
-    console.log(`[FCM] トークンをFirestoreに保存しました (origin: ${origin})`);
+    console.log("[FCM] トークンをFirestoreに保存しました");
   } catch (error) {
     console.error("[FCM] トークンの保存に失敗:", error);
     throw error;
