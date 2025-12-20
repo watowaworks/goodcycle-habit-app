@@ -28,6 +28,16 @@ export function useNotifications() {
     const currentPermission = Notification.permission;
     console.log("[useNotifications] 現在の通知許可状態:", currentPermission);
     
+    // 既に許可されている場合はそのまま返す
+    if (currentPermission === "granted") {
+      return "granted" as NotificationPermissionState;
+    }
+    
+    // 既に拒否されている場合はそのまま返す
+    if (currentPermission === "denied") {
+      return "denied" as NotificationPermissionState;
+    }
+    
     try {
       console.log("[useNotifications] Notification.requestPermission()を呼び出します");
       
@@ -39,7 +49,20 @@ export function useNotifications() {
         
         // Promiseを返す場合（新しいAPI）
         if (permissionResult instanceof Promise) {
-          result = await permissionResult;
+          // タイムアウトを設定（EdgeブラウザでPromiseが解決されない場合に備える）
+          const timeoutPromise = new Promise<NotificationPermission>((_, reject) => {
+            setTimeout(() => {
+              reject(new Error("通知許可リクエストがタイムアウトしました"));
+            }, 5000); // 5秒でタイムアウト
+          });
+          
+          try {
+            result = await Promise.race([permissionResult, timeoutPromise]);
+          } catch (timeoutError) {
+            console.warn("[useNotifications] タイムアウト、直接確認します");
+            // タイムアウトした場合、直接Notification.permissionを確認
+            result = Notification.permission;
+          }
         } else {
           // コールバック形式の場合（古いAPI、通常は発生しない）
           result = permissionResult as NotificationPermission;
@@ -48,12 +71,29 @@ export function useNotifications() {
         throw new Error("Notification.requestPermissionが利用できません");
       }
       
+      // 結果がまだ"default"の場合は、ポーリングで確認（Edgeブラウザの対策）
+      if (result === "default") {
+        console.log("[useNotifications] 結果がdefaultのため、ポーリングで確認します");
+        let attempts = 0;
+        const maxAttempts = 20; // 最大2秒間（100ms × 20）
+        
+        while (result === "default" && attempts < maxAttempts) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+          result = Notification.permission;
+          attempts++;
+        }
+      }
+      
       console.log("[useNotifications] 通知許可の結果:", result);
       setPermission(result);
       return result as NotificationPermissionState;
     } catch (error) {
       console.error("[useNotifications] 通知許可リクエストに失敗:", error);
-      return "denied";
+      // エラーが発生した場合でも、現在の許可状態を確認
+      const fallbackPermission = Notification.permission;
+      console.log("[useNotifications] フォールバック: 現在の許可状態:", fallbackPermission);
+      setPermission(fallbackPermission);
+      return fallbackPermission as NotificationPermissionState;
     }
   }, [isSupported]);
 
