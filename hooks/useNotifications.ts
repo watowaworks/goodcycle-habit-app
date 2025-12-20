@@ -75,12 +75,23 @@ export function useNotifications() {
       if (result === "default") {
         console.log("[useNotifications] 結果がdefaultのため、ポーリングで確認します");
         let attempts = 0;
-        const maxAttempts = 20; // 最大2秒間（100ms × 20）
+        const maxAttempts = 50; // 最大5秒間（100ms × 50）
         
         while (result === "default" && attempts < maxAttempts) {
           await new Promise(resolve => setTimeout(resolve, 100));
           result = Notification.permission;
           attempts++;
+          
+          // 許可状態が変わった場合はログを出力
+          if (result !== "default") {
+            console.log(`[useNotifications] ポーリング中に許可状態が変更されました: ${result} (${attempts}回目)`);
+            break;
+          }
+        }
+        
+        // ポーリング後も"default"の場合は、ユーザーがダイアログで操作していない可能性
+        if (result === "default") {
+          console.warn("[useNotifications] ポーリング後もdefaultのままです。ユーザーがダイアログで操作していない可能性があります。");
         }
       }
       

@@ -227,12 +227,17 @@ export default function EditHabitModal({
           // 許可された場合のみONにする
           setNotificationEnabled(true);
           console.log("[EditHabitModal] 通知が許可されました");
-        } else {
+        } else if (result === "denied") {
           // 拒否された場合はOFFのまま
-          console.log("[EditHabitModal] 通知が拒否されました:", result);
+          console.log("[EditHabitModal] 通知が拒否されました");
           alert(
             "通知が許可されませんでした。ブラウザの設定を確認してください。"
           );
+        } else if (result === "default") {
+          // "default"の場合は、ユーザーがダイアログで操作していない可能性
+          console.log("[EditHabitModal] 通知許可の状態がdefaultのままです");
+          // チェックボックスはOFFのまま（エラーメッセージは表示しない）
+          // ユーザーがブラウザの通知許可ダイアログで操作する必要がある
         }
       } catch (error) {
         console.error("[EditHabitModal] 通知許可リクエスト中にエラー:", error);
