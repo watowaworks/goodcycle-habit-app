@@ -16,7 +16,13 @@ type Props = {
   requestNotificationPermission: () => Promise<NotificationPermissionState>;
 };
 
-export default function EditHabitModal({ habit, isOpen, onClose, notificationPermission, requestNotificationPermission }: Props) {
+export default function EditHabitModal({
+  habit,
+  isOpen,
+  onClose,
+  notificationPermission,
+  requestNotificationPermission,
+}: Props) {
   // 関数は個別に取得
   const updateHabitFields = useStore((state) => state.updateHabitFields);
   const addCategory = useStore((state) => state.addCategory);
@@ -188,21 +194,37 @@ export default function EditHabitModal({ habit, isOpen, onClose, notificationPer
   };
 
   const handleToggleNotification = async (checked: boolean) => {
-    setNotificationEnabled(checked);
-
-    if (!checked || notificationPermission === "granted") return;
-    
-    if (notificationPermission === "denied") {
-      alert("ブラウザまたはOSで通知がブロックされています。設定から通知を許可してください。");
+    // チェックをOFFにする場合
+    if (!checked) {
       setNotificationEnabled(false);
       return;
     }
 
+    // チェックをONにする場合
+    // 既に許可されている場合はそのままONにする
+    if (notificationPermission === "granted") {
+      setNotificationEnabled(true);
+      return;
+    }
+
+    // ブロックされている場合
+    if (notificationPermission === "denied") {
+      alert(
+        "ブラウザまたはOSで通知がブロックされています。設定から通知を許可してください。"
+      );
+      // チェックボックスはOFFのまま
+      return;
+    }
+
+    // 未決定の場合: 許可をリクエスト
     if (notificationPermission === "default") {
       const result = await requestNotificationPermission();
 
-      if (result !== "granted") {
-        setNotificationEnabled(false);
+      if (result === "granted") {
+        // 許可された場合のみONにする
+        setNotificationEnabled(true);
+      } else {
+        // 拒否された場合はOFFのまま
         alert("通知が許可されませんでした。ブラウザの設定を確認してください。");
       }
     }
