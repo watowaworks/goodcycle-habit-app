@@ -3,6 +3,7 @@ import { onRequest } from "firebase-functions/https";
 import { onSchedule } from "firebase-functions/scheduler";
 import * as logger from "firebase-functions/logger";
 import * as admin from "firebase-admin";
+import { FCMTokenWithOrigin } from "../../types/index";
 
 // Firebase Admin SDK の初期化
 admin.initializeApp();
@@ -22,6 +23,9 @@ interface Habit {
     reminderTime?: string;
   };
 }
+
+// 本番環境のオリジン
+const PRODUCTION_ORIGIN = "https://goodcycle-habit-app.vercel.app";
 
 // 指定日が習慣の実施日かどうかを判定（lib/utils.ts のロジックを参考に）
 function isHabitDueOnDate(habit: Habit, date: string): boolean {
@@ -125,9 +129,27 @@ export const checkAndSendNotifications = onSchedule({
     for (const userDoc of usersSnapshot.docs) {
       const userId = userDoc.id;
       const userData = userDoc.data();
-      const fcmTokens = userData.fcmTokens || [];
+      const fcmTokensData = userData.fcmTokens || [];
       
-      logger.info(`[スケジュール] ユーザー ${userId}: FCMトークン数 ${fcmTokens.length}`);
+      // トークンデータを処理（旧形式（文字列配列）と新形式（オブジェクト配列）の両方に対応）
+      let fcmTokens: string[] = [];
+      
+      if (fcmTokensData.length > 0) {
+        if (typeof fcmTokensData[0] === "string") {
+          // 旧形式（文字列配列）の場合、そのまま使用（互換性のため）
+          fcmTokens = fcmTokensData as string[];
+          logger.info(`[スケジュール] ユーザー ${userId}: 旧形式のトークンデータを検出`);
+        } else {
+          // 新形式（オブジェクト配列）の場合、本番環境のトークンのみをフィルタリング
+          const tokensWithOrigin = fcmTokensData as FCMTokenWithOrigin[];
+          fcmTokens = tokensWithOrigin
+            .filter((item) => item.origin === PRODUCTION_ORIGIN)
+            .map((item) => item.token);
+          logger.info(`[スケジュール] ユーザー ${userId}: 本番環境のトークン数 ${fcmTokens.length} (全トークン数: ${tokensWithOrigin.length})`);
+        }
+      }
+      
+      logger.info(`[スケジュール] ユーザー ${userId}: 送信対象FCMトークン数 ${fcmTokens.length}`);
       
       if (fcmTokens.length === 0) {
         continue; // FCMトークンがない場合はスキップ
