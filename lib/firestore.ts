@@ -67,6 +67,7 @@ export async function getUserHabits() {
       daysOfWeek: (data.daysOfWeek as number[]) || [],
       intervalDays: (data.intervalDays as number) || 0,
       startDate: (data.startDate as string) || "",
+      notification: data.notification || undefined, // 通知設定を取得
     };
   });
 }

@@ -21,6 +21,7 @@ const messaging = firebase.messaging();
 // バックグラウンドメッセージを受信したときのハンドラ
 messaging.setBackgroundMessageHandler(function (payload) {
   console.log("[SW] バックグラウンドメッセージ受信:", payload);
+  console.log("[SW] payload.notification:", payload.notification);
   
   const notificationTitle = payload.notification?.title || "習慣のリマインド";
   const notificationOptions = {
@@ -29,5 +30,12 @@ messaging.setBackgroundMessageHandler(function (payload) {
     badge: "/favicon.ico",
   };
 
-  return self.registration.showNotification(notificationTitle, notificationOptions);
+  console.log("[SW] 通知を表示します:", notificationTitle, notificationOptions);
+  return self.registration.showNotification(notificationTitle, notificationOptions)
+    .then(() => {
+      console.log("[SW] 通知表示成功");
+    })
+    .catch((error) => {
+      console.error("[SW] 通知表示エラー:", error);
+    });
 });

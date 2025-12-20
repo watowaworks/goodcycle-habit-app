@@ -64,11 +64,33 @@ export function useFirebaseMessaging() {
           console.log("[FCM] トークンを取得できませんでした（通知が許可されていない可能性）");
         }
 
-        // フォアグラウンドメッセージの受信ハンドラ（オプション）
+        // フォアグラウンドメッセージの受信ハンドラ
+        console.log("[FCM] onMessage ハンドラを登録します");
         onMessage(messaging, (payload) => {
           console.log("[FCM] フォアグラウンドメッセージ受信:", payload);
-          // フォアグラウンドでも通知を表示したい場合は、ここで処理
+          console.log("[FCM] Notification.permission:", Notification.permission);
+          
+          // フォアグラウンドでも通知を表示
+          if (Notification.permission === "granted") {
+            const notificationTitle = payload.notification?.title || "通知";
+            const notificationOptions = {
+              body: payload.notification?.body || "通知本文",
+              icon: "/favicon.ico",
+              badge: "/favicon.ico",
+            };
+            
+            console.log("[FCM] 通知を表示します:", notificationTitle, notificationOptions);
+            try {
+              const notification = new Notification(notificationTitle, notificationOptions);
+              console.log("[FCM] 通知オブジェクト作成成功:", notification);
+            } catch (error) {
+              console.error("[FCM] 通知の作成に失敗:", error);
+            }
+          } else {
+            console.warn("[FCM] 通知の許可が取得できていません。permission:", Notification.permission);
+          }
         });
+        console.log("[FCM] onMessage ハンドラ登録完了");
       } catch (error) {
         console.error("[FCM] セットアップ中にエラー:", error);
       }

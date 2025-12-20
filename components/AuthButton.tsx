@@ -16,6 +16,10 @@ export default function AuthButton() {
     try {
       setError(null);
       const provider = new GoogleAuthProvider();
+      // 毎回アカウント選択画面を表示するように設定
+      provider.setCustomParameters({
+        prompt: "select_account",
+      });
       await signInWithPopup(auth, provider);
     } catch (err: any) {
       console.error("ログインエラー:", err);
