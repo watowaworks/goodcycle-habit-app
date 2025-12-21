@@ -71,25 +71,30 @@ export function useFirebaseMessaging() {
 
         // フォアグラウンドメッセージの受信ハンドラ
         console.log("[FCM] onMessage ハンドラを登録します");
-        onMessage(messaging, (payload) => {
+        onMessage(messaging, async (payload) => {
           console.log("[FCM] フォアグラウンドメッセージ受信:", payload);
           console.log("[FCM] Notification.permission:", Notification.permission);
           
-          // フォアグラウンドでも通知を表示
+          // フォアグラウンドでも通知を表示（Service Worker経由）
           if (Notification.permission === "granted") {
-            const notificationTitle = payload.notification?.title || "通知";
-            const notificationOptions = {
-              body: payload.notification?.body || "通知本文",
-              icon: "/favicon.ico",
-              badge: "/favicon.ico",
-            };
-            
-            console.log("[FCM] 通知を表示します:", notificationTitle, notificationOptions);
             try {
-              const notification = new Notification(notificationTitle, notificationOptions);
-              console.log("[FCM] 通知オブジェクト作成成功:", notification);
+              const registration = await navigator.serviceWorker.ready;
+              const notificationTitle = payload.data?.title || "通知";
+              const notificationOptions = {
+                body: payload.data?.body || "通知本文",
+                icon: "/favicon.ico",
+                badge: "/favicon.ico",
+                data: {
+                  habitId: payload.data?.habitId,
+                  habitTitle: payload.data?.habitTitle,
+                },
+              };
+              
+              console.log("[FCM] 通知を表示します:", notificationTitle, notificationOptions);
+              await registration.showNotification(notificationTitle, notificationOptions);
+              console.log("[FCM] 通知表示成功");
             } catch (error) {
-              console.error("[FCM] 通知の作成に失敗:", error);
+              console.error("[FCM] 通知の表示に失敗:", error);
             }
           } else {
             console.warn("[FCM] 通知の許可が取得できていません。permission:", Notification.permission);

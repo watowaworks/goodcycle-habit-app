@@ -21,13 +21,17 @@ const messaging = firebase.messaging();
 // バックグラウンドメッセージを受信したときのハンドラ
 messaging.setBackgroundMessageHandler(function (payload) {
   console.log("[SW] バックグラウンドメッセージ受信:", payload);
-  console.log("[SW] payload.notification:", payload.notification);
+  console.log("[SW] payload.data:", payload.data);
   
-  const notificationTitle = payload.notification?.title || "習慣のリマインド";
+  const notificationTitle = payload.data?.title || "習慣のリマインド";
   const notificationOptions = {
-    body: payload.notification?.body || "通知本文",
+    body: payload.data?.body || "通知本文",
     icon: "/favicon.ico",
     badge: "/favicon.ico",
+    data: {
+      habitId: payload.data?.habitId,
+      habitTitle: payload.data?.habitTitle,
+    },
   };
 
   console.log("[SW] 通知を表示します:", notificationTitle, notificationOptions);

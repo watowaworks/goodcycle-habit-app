@@ -217,9 +217,11 @@ export const checkAndSendNotifications = onSchedule({
       if (habitsToNotify.length > 0) {
         for (const habit of habitsToNotify) {
           const message = {
-            notification: {
+            data: {
               title: "習慣のリマインド",
               body: `本日も忘れずに「${habit.title}」を継続しましょう！`,
+              habitId: habit.id,
+              habitTitle: habit.title,
             },
             tokens: fcmTokens, // 複数のトークンに対応
           };
