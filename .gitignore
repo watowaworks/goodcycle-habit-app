@@ -43,3 +43,6 @@ next-env.d.ts
 # types folder - only type definitions should be here
 types/*.js
 types/*.js.map
+
+# Generated Service Worker file (build script generates this from template)
+public/firebase-messaging-sw.js
