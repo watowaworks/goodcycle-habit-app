@@ -21,22 +21,16 @@ const messaging = firebase.messaging();
 // バックグラウンドメッセージを受信したときのハンドラ
 messaging.setBackgroundMessageHandler(function (payload) {
   console.log("[SW] バックグラウンドメッセージ受信:", payload);
-  console.log("[SW] payload.data:", payload.data);
   console.log("[SW] payload.notification:", payload.notification);
   
-  // payload.data と payload.notification の両方に対応
-  // Cloud Functionsが再デプロイされる前は notification フィールドが使われる可能性がある
-  const notificationTitle = payload.data?.title || payload.notification?.title || "習慣のリマインド";
-  const notificationBody = payload.data?.body || payload.notification?.body || "通知本文";
+  // notificationフィールドを使用
+  const notificationTitle = payload.notification?.title || "習慣のリマインド";
+  const notificationBody = payload.notification?.body || "通知本文";
   
   const notificationOptions = {
     body: notificationBody,
     icon: "/favicon.ico",
     badge: "/favicon.ico",
-    data: {
-      habitId: payload.data?.habitId,
-      habitTitle: payload.data?.habitTitle,
-    },
   };
 
   console.log("[SW] 通知を表示します:", notificationTitle, notificationOptions);

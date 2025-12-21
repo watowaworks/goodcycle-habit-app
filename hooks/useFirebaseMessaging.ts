@@ -80,23 +80,17 @@ export function useFirebaseMessaging() {
             try {
               const registration = await navigator.serviceWorker.ready;
               
-              // payload.data と payload.notification の両方に対応
-              // Cloud Functionsが再デプロイされる前は notification フィールドが使われる可能性がある
-              const notificationTitle = payload.data?.title || payload.notification?.title || "通知";
-              const notificationBody = payload.data?.body || payload.notification?.body || "通知本文";
+              // notificationフィールドを使用
+              const notificationTitle = payload.notification?.title || "通知";
+              const notificationBody = payload.notification?.body || "通知本文";
               
               const notificationOptions = {
                 body: notificationBody,
                 icon: "/favicon.ico",
                 badge: "/favicon.ico",
-                data: {
-                  habitId: payload.data?.habitId,
-                  habitTitle: payload.data?.habitTitle,
-                },
               };
               
               console.log("[FCM] 通知を表示します:", notificationTitle, notificationOptions);
-              console.log("[FCM] payload.data:", payload.data);
               console.log("[FCM] payload.notification:", payload.notification);
               await registration.showNotification(notificationTitle, notificationOptions);
               console.log("[FCM] 通知表示成功");

@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { useStore } from "@/lib/store";
 import HabitCard from "@/components/HabitCard";
 import { auth, onAuthStateChanged } from "@/lib/firebase";
-import { getTodayString, isHabitDueOnDate } from "@/lib/utils";
+import { getTodayString} from "@/lib/utils";
 import AddHabitModal from "@/components/AddHabitModal";
 import FilterModal from "@/components/FilterModal";
 import Header from "@/components/Header";
@@ -27,13 +27,10 @@ export default function HomePage() {
   const [showFilterModal, setShowFilterModal] = useState(false);
 
   const lastCheckedDateRef = useRef(getTodayString());
-  const lastNotifiedTimeRef = useRef<string>("");
 
   const {
-    isSupported,
     permission,
     requestNotificationPermission,
-    sendHabitReminder,
   } = useNotifications();
 
   const { fcmToken } = useFirebaseMessaging();

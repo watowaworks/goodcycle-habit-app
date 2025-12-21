@@ -66,9 +66,9 @@ export const sendTestNotification = onRequest(async (request, response) => {
   }
 
   try {
-    // FCM通知を送信（dataフィールドを使用）
+    // FCM通知を送信
     const message = {
-      data: {
+      notification: {
         title: "テスト通知",
         body: "Cloud Functions からの通知テストです",
       },
@@ -217,11 +217,9 @@ export const checkAndSendNotifications = onSchedule({
       if (habitsToNotify.length > 0) {
         for (const habit of habitsToNotify) {
           const message = {
-            data: {
+            notification: {
               title: "習慣のリマインド",
               body: `本日も忘れずに「${habit.title}」を継続しましょう！`,
-              habitId: habit.id,
-              habitTitle: habit.title,
             },
             tokens: fcmTokens, // 複数のトークンに対応
           };
