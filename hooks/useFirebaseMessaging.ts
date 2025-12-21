@@ -96,8 +96,6 @@ export function useFirebaseMessaging() {
         };
         
         onMessage(messaging, async (payload) => {
-          console.log("[FCM] フォアグラウンドメッセージ受信:", payload);
-          
           // フォアグラウンドでも通知を表示（Service Worker経由）
           if (Notification.permission === "granted") {
             try {
@@ -118,7 +116,6 @@ export function useFirebaseMessaging() {
               };
               
               await registration.showNotification(notificationTitle, notificationOptions);
-              console.log("[FCM] 通知表示成功");
             } catch (error) {
               console.error("[FCM] 通知の表示に失敗:", error);
             }
