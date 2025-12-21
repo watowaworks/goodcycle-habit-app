@@ -115,13 +115,16 @@ export const checkAndSendNotifications = onSchedule({
   logger.info(`[スケジュール] 通知チェック開始: ${currentTime} (${today}) [JST]`);
   
   try {
-    // すべてのユーザーを取得
-    const usersSnapshot = await admin.firestore().collection("users").get();
+    // 通知時刻に現在時刻が含まれるユーザーのみを取得（読み取り量を大幅削減）
+    const usersSnapshot = await admin.firestore()
+      .collection("users")
+      .where("notificationTimes", "array-contains", currentTime)
+      .get();
     
-    logger.info(`[スケジュール] ユーザー数: ${usersSnapshot.size}`);
+    logger.info(`[スケジュール] 通知時刻 ${currentTime} のユーザー数: ${usersSnapshot.size}`);
     
     if (usersSnapshot.empty) {
-      logger.info("[スケジュール] ユーザーが見つかりませんでした");
+      logger.info(`[スケジュール] 通知時刻 ${currentTime} のユーザーが見つかりませんでした`);
       return;
     }
     
@@ -149,26 +152,25 @@ export const checkAndSendNotifications = onSchedule({
         }
       }
       
-      logger.info(`[スケジュール] ユーザー ${userId}: 送信対象FCMトークン数 ${fcmTokens.length}`);
-      
       if (fcmTokens.length === 0) {
         continue; // FCMトークンがない場合はスキップ
       }
       
-      // ユーザーの習慣を取得
+      // 通知が有効で、通知時刻が現在時刻と一致する習慣のみを取得（読み取り量を大幅削減）
       const habitsSnapshot = await admin.firestore()
         .collection("users")
         .doc(userId)
         .collection("habits")
+        .where("notification.enabled", "==", true)
+        .where("notification.reminderTime", "==", currentTime)
         .get();
       
-      logger.info(`[スケジュール] ユーザー ${userId}: 習慣数 ${habitsSnapshot.size}`);
-      
+      // 通知時刻が現在時刻と一致する習慣がない場合はスキップ（クエリで既にフィルタリング済み）
       if (habitsSnapshot.empty) {
-        continue; // 習慣がない場合はスキップ
+        continue;
       }
       
-      // 通知対象の習慣をフィルタリング
+      // 通知対象の習慣をフィルタリング（実施日のチェックのみ）
       const habitsToNotify: Habit[] = [];
       
       for (const habitDoc of habitsSnapshot.docs) {
@@ -183,31 +185,13 @@ export const checkAndSendNotifications = onSchedule({
           notification: habitData.notification,
         };
         
-        logger.info(`[スケジュール] 習慣チェック: ${habit.title}`, {
-          enabled: habit.notification?.enabled,
-          reminderTime: habit.notification?.reminderTime,
-          currentTime,
-          isDue: isHabitDueOnDate(habit, today),
-        });
-        
-        // 通知が有効で、reminderTimeが現在時刻と一致
-        if (!habit.notification?.enabled) {
-          logger.info(`[スケジュール] 習慣 ${habit.title}: 通知が無効`);
-          continue;
-        }
-        
-        if (habit.notification.reminderTime !== currentTime) {
-          logger.info(`[スケジュール] 習慣 ${habit.title}: 時刻不一致 (${habit.notification.reminderTime} !== ${currentTime})`);
-          continue;
-        }
+        // 通知時刻のチェックはクエリで行われているため、ここでは実施日のチェックのみ
         
         // 今日が実施日かどうかを判定
         if (!isHabitDueOnDate(habit, today)) {
-          logger.info(`[スケジュール] 習慣 ${habit.title}: 今日は実施日ではない`);
-          continue;
+          continue; // 今日は実施日ではない
         }
         
-        logger.info(`[スケジュール] 習慣 ${habit.title}: 通知対象に追加`);
         habitsToNotify.push(habit);
       }
       

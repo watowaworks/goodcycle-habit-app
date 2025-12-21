@@ -13,6 +13,7 @@ import {
   orderBy,
   getDoc,
   arrayUnion,
+  arrayRemove,
   setDoc,
 } from "firebase/firestore";
 import { FrequencyType, Habit, FCMTokenWithOrigin } from "@/types";
@@ -31,6 +32,9 @@ export async function addHabit(habit: Habit): Promise<string> {
     longestStreak: habit.longestStreak || 0,
     currentStreak: habit.currentStreak || 0,
   });
+  
+  // 通知時刻リストを更新
+  await updateUserNotificationTimes();
   
   return docRef.id; // Firestoreが生成したIDを返す
 }
@@ -78,6 +82,9 @@ export async function deleteHabit(habitId: string) {
   if (!user) throw new Error("ログインが必要です");
 
   await deleteDoc(doc(db, "users", user.uid, "habits", habitId));
+  
+  // 通知時刻リストを更新
+  await updateUserNotificationTimes();
 }
 
 // 習慣を更新（タイトルや完了ステータスなど部分更新）
@@ -89,6 +96,11 @@ export async function updateHabit(
   if (!user) throw new Error("ログインが必要です");
 
   await updateDoc(doc(db, "users", user.uid, "habits", habitId), updatedFields);
+  
+  // 通知設定が変更された場合は通知時刻リストを更新
+  if (updatedFields.notification !== undefined) {
+    await updateUserNotificationTimes();
+  }
 }
 
 // カスタムカテゴリを取得
@@ -137,6 +149,50 @@ export async function deleteCustomCategory(categoryName: string): Promise<void> 
   // 同じ名前のカテゴリが複数ある場合も全て削除
   const deletePromises = snapshot.docs.map((doc) => deleteDoc(doc.ref));
   await Promise.all(deletePromises);
+}
+
+// ユーザーの通知時刻リストを更新する（習慣の追加・更新・削除時に呼び出す）
+export async function updateUserNotificationTimes(): Promise<void> {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  try {
+    // ユーザーの全習慣を取得
+    const habits = await getUserHabits();
+    
+    // 通知が有効な習慣の通知時刻を集約
+    const notificationTimesSet = new Set<string>();
+    
+    for (const habit of habits) {
+      if (habit.notification?.enabled && habit.notification?.reminderTime) {
+        notificationTimesSet.add(habit.notification.reminderTime);
+      }
+    }
+    
+    const notificationTimes = Array.from(notificationTimesSet).sort();
+    
+    // ユーザードキュメントを更新
+    const userRef = doc(db, "users", user.uid);
+    const userDoc = await getDoc(userRef);
+    
+    if (userDoc.exists()) {
+      await updateDoc(userRef, {
+        notificationTimes: notificationTimes,
+        updatedAt: Timestamp.now(),
+      });
+    } else {
+      // ユーザードキュメントが存在しない場合は新規作成
+      await setDoc(userRef, {
+        notificationTimes: notificationTimes,
+        updatedAt: Timestamp.now(),
+      });
+    }
+    
+    console.log(`[通知時刻更新] 通知時刻リストを更新しました: ${notificationTimes.join(", ")}`);
+  } catch (error) {
+    console.error("[通知時刻更新] 更新に失敗:", error);
+    // エラーが発生しても処理を続行（通知時刻の更新失敗で習慣の操作をブロックしない）
+  }
 }
 
 export async function saveFCMToken(token: string, origin: string): Promise<void> {

@@ -9,6 +9,7 @@ import {
   getCustomCategories as getCustomCategoriesFromFirestore,
   addCustomCategory as addCustomCategoryToFirestore,
   deleteCustomCategory as deleteCustomCategoryFromFirestore,
+  updateUserNotificationTimes,
 } from "@/lib/firestore";
 import { auth } from "@/lib/firebase";
 import { calculateStreaks, getTodayString, isHabitDueOnDate } from "./utils";
@@ -94,6 +95,9 @@ export const useStore = create<Store>()(
           for (const [id, updates] of habitUpdates.entries()) {
             await updateHabit(id, updates);
           }
+
+          // 通知時刻リストを更新（既存ユーザーのマイグレーションも含む）
+          await updateUserNotificationTimes();
 
           set({ habits: syncedHabits });
         } catch (error) {
