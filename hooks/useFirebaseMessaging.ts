@@ -189,16 +189,32 @@ export function useFirebaseMessaging() {
               const notificationTitle = payload.notification?.title || "通知";
               const notificationBody = payload.notification?.body || "通知本文";
               
+              // Chromeでは、tagプロパティがあると通知が表示されない場合があるため、
+              // 一時的にtagを削除して表示を優先する
+              // requireInteractionをtrueにすることで、通知が確実に表示される
               const notificationOptions: NotificationOptions & { vibrate?: number[] } = {
                 body: notificationBody,
                 icon: "/favicon.ico",
                 badge: "/favicon.ico",
-                tag: payload.messageId || `notification-${Date.now()}`, // Chromeで重複通知を防ぐ
-                requireInteraction: false,
+                // tagを削除: Chromeで通知が表示されない問題を回避
+                // tag: payload.messageId || `notification-${Date.now()}`,
+                requireInteraction: true, // ユーザーが操作するまで通知を表示し続ける
                 silent: false,
                 vibrate: [200, 100, 200], // 通知の振動パターン
                 data: payload.data || {}, // 追加データを保持
+                dir: "auto", // テキストの方向
+                lang: "ja", // 言語
               };
+              
+              // Chromeの通知設定を確認
+              console.log("[FCM] 通知表示前の診断情報:", {
+                permission: Notification.permission,
+                isChrome: isChromeBrowser,
+                serviceWorkerActive: registration.active?.state,
+                serviceWorkerScope: registration.scope,
+                windowFocused: document.hasFocus(),
+                visibilityState: document.visibilityState,
+              });
               
               console.log("[FCM] 通知を表示します:", notificationTitle, notificationOptions);
               console.log("[FCM] payload.notification:", payload.notification);
@@ -241,17 +257,48 @@ export function useFirebaseMessaging() {
               // これはChromeの既知の問題に対する回避策です
               if (!serviceWorkerNotificationSuccess || isChromeBrowser) {
                 console.log("[FCM] Chromeブラウザのため、直接Notification APIも試みます");
+                
+                // Chromeの通知設定を確認
+                console.log("[FCM] Chrome通知設定確認:", {
+                  permission: Notification.permission,
+                });
+                
                 try {
-                  const directNotification = new Notification(notificationTitle, {
+                  // tagを削除して、重複通知を防ぐのではなく表示を優先する
+                  // Chromeでは、同じtagの通知が表示されない場合がある
+                  // また、requireInteractionをtrueにすることで、通知が確実に表示される
+                  const directNotificationOptions: NotificationOptions = {
                     body: notificationBody,
                     icon: "/favicon.ico",
                     badge: "/favicon.ico",
-                    tag: payload.messageId || `notification-${Date.now()}`,
-                    requireInteraction: false,
+                    // tagを削除: Chromeで通知が表示されない問題を回避
+                    requireInteraction: true, // ユーザーが操作するまで通知を表示し続ける
                     silent: false,
+                    // Chromeで通知を確実に表示するために、追加のオプションを設定
+                    dir: "auto",
+                    lang: "ja",
+                  };
+                  
+                  console.log("[FCM] 直接Notification APIオプション:", directNotificationOptions);
+                  
+                  const directNotification = new Notification(notificationTitle, directNotificationOptions);
+                  
+                  // 通知オブジェクトの状態を確認
+                  console.log("[FCM] 通知オブジェクト作成成功:", {
+                    title: directNotification.title,
+                    body: directNotification.body,
+                    tag: directNotification.tag,
+                    icon: directNotification.icon,
+                    badge: directNotification.badge,
                   });
                   
-                  console.log("[FCM] 直接Notification APIによる通知表示成功");
+                  // 通知が実際に表示されたかを確認するため、短い遅延後に状態を確認
+                  setTimeout(() => {
+                    console.log("[FCM] 通知オブジェクト状態確認:", {
+                      title: directNotification.title,
+                      body: directNotification.body,
+                    });
+                  }, 500);
                   
                   // 通知がクリックされたときのイベント
                   directNotification.onclick = () => {
@@ -264,8 +311,26 @@ export function useFirebaseMessaging() {
                   directNotification.onclose = () => {
                     console.log("[FCM] 通知が閉じられました");
                   };
+                  
+                  // 通知が表示されたときのイベント（Chromeではサポートされていない場合がある）
+                  directNotification.onshow = () => {
+                    console.log("[FCM] 通知が表示されました");
+                  };
+                  
+                  // 通知でエラーが発生したときのイベント
+                  directNotification.onerror = (error) => {
+                    console.error("[FCM] 通知でエラーが発生しました:", error);
+                  };
+                  
+                  console.log("[FCM] 直接Notification APIによる通知表示成功");
                 } catch (directNotificationError) {
                   console.error("[FCM] 直接Notification APIによる通知表示も失敗:", directNotificationError);
+                  console.error("[FCM] エラー詳細:", {
+                    name: (directNotificationError as Error).name,
+                    message: (directNotificationError as Error).message,
+                    stack: (directNotificationError as Error).stack,
+                  });
+                  
                   // Service Worker経由が成功している場合は、このエラーは無視する
                   if (!serviceWorkerNotificationSuccess) {
                     throw directNotificationError; // 両方とも失敗した場合はエラーを再スロー
