@@ -116,15 +116,17 @@ export const checkAndSendNotifications = onSchedule({
   
   try {
     // 通知時刻に現在時刻が含まれるユーザーのみを取得（読み取り量を大幅削減）
+    // 注: notificationTimesフィールドが存在しないユーザーはこのクエリでは取得されない
+    // マイグレーションが必要な場合は、fetchHabits()が呼ばれた際にupdateUserNotificationTimes()が実行される
     const usersSnapshot = await admin.firestore()
       .collection("users")
       .where("notificationTimes", "array-contains", currentTime)
       .get();
     
-    logger.info(`[スケジュール] 通知時刻 ${currentTime} のユーザー数: ${usersSnapshot.size}`);
+    logger.info(`[スケジュール] 通知時刻 ${currentTime} を含むユーザー数: ${usersSnapshot.size}`);
     
     if (usersSnapshot.empty) {
-      logger.info(`[スケジュール] 通知時刻 ${currentTime} のユーザーが見つかりませんでした`);
+      logger.info(`[スケジュール] 通知時刻 ${currentTime} を含むユーザーが見つかりませんでした`);
       return;
     }
     
