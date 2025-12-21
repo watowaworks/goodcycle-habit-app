@@ -20,6 +20,7 @@ const messaging = firebase.messaging();
 messaging.setBackgroundMessageHandler(function (payload) {
   console.log("[SW] バックグラウンドメッセージ受信:", payload);
   console.log("[SW] payload.notification:", payload.notification);
+  console.log("[SW] ユーザーエージェント:", self.navigator.userAgent);
   
   // notificationフィールドを使用
   const notificationTitle = payload.notification?.title || "習慣のリマインド";
@@ -29,14 +30,29 @@ messaging.setBackgroundMessageHandler(function (payload) {
     body: notificationBody,
     icon: "/favicon.ico",
     badge: "/favicon.ico",
+    tag: payload.messageId || `notification-${Date.now()}`, // Chromeで重複通知を防ぐ
+    requireInteraction: false,
+    silent: false,
+    vibrate: [200, 100, 200], // 通知の振動パターン
+    data: payload.data || {}, // 追加データを保持
   };
 
   console.log("[SW] 通知を表示します:", notificationTitle, notificationOptions);
+  
+  // Chromeでは、showNotificationがPromiseを返すが、エラーが発生しても
+  // 例外を投げない場合があるため、明示的にチェック
   return self.registration.showNotification(notificationTitle, notificationOptions)
     .then(() => {
       console.log("[SW] 通知表示成功");
+      return null; // 成功時はnullを返す（Firebaseの要件）
     })
     .catch((error) => {
       console.error("[SW] 通知表示エラー:", error);
+      console.error("[SW] エラー詳細:", {
+        name: error.name,
+        message: error.message,
+        stack: error.stack,
+      });
+      throw error; // エラーを再スローしてFirebaseに伝える
     });
 });
