@@ -66,9 +66,9 @@ export const sendTestNotification = onRequest(async (request, response) => {
   }
 
   try {
-    // FCM通知を送信
+    // FCM通知を送信（dataフィールドを使用）
     const message = {
-      notification: {
+      data: {
         title: "テスト通知",
         body: "Cloud Functions からの通知テストです",
       },
