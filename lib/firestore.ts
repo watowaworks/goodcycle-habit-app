@@ -16,7 +16,7 @@ import {
   arrayRemove,
   setDoc,
 } from "firebase/firestore";
-import { FrequencyType, Habit, FCMTokenWithOrigin } from "@/types";
+import { FrequencyType, Habit, FCMTokenWithOrigin, NotificationSettings } from "@/types";
 import { DEFAULT_HABIT_COLOR } from "./habitColors";
 
 // 習慣を追加（Firestoreが生成したIDを返す）
@@ -24,13 +24,28 @@ export async function addHabit(habit: Habit): Promise<string> {
   const user = auth.currentUser;
   if (!user) throw new Error("ログインが必要です");
 
+  // notificationオブジェクトを構築（reminderTimeがundefinedの場合は除外）
+  let notificationData: NotificationSettings | undefined = undefined;
+  if (habit.notification) {
+    notificationData = {
+      enabled: habit.notification.enabled,
+      ...(habit.notification.reminderTime !== undefined && habit.notification.reminderTime !== null
+        ? { reminderTime: habit.notification.reminderTime }
+        : {}),
+    };
+  }
+
+  // notificationフィールドを除外してから、条件付きで追加
+  const { notification: _, ...habitWithoutNotification } = habit;
+  
   const docRef = await addDoc(collection(db, "users", user.uid, "habits"), {
-    ...habit,
+    ...habitWithoutNotification,
     color: habit.color || DEFAULT_HABIT_COLOR,
     createdAt: habit.createdAt, // Date をそのまま Firestore に保存
     completedDates: habit.completedDates || [],
     longestStreak: habit.longestStreak || 0,
     currentStreak: habit.currentStreak || 0,
+    ...(notificationData !== undefined ? { notification: notificationData } : {}),
   });
   
   // 通知時刻リストを更新
@@ -95,7 +110,26 @@ export async function updateHabit(
   const user = auth.currentUser;
   if (!user) throw new Error("ログインが必要です");
 
-  await updateDoc(doc(db, "users", user.uid, "habits", habitId), updatedFields);
+  // notificationオブジェクトを構築（reminderTimeがundefinedの場合は除外）
+  const processedFields: Record<string, any> = { ...updatedFields };
+  if (updatedFields.notification !== undefined) {
+    if (updatedFields.notification === null) {
+      // nullの場合は削除（Firestoreではnullでフィールドを削除できる）
+      processedFields.notification = null;
+    } else {
+      // notificationオブジェクトを構築（reminderTimeがundefinedの場合は除外）
+      const notification = updatedFields.notification;
+      const notificationData: NotificationSettings = {
+        enabled: notification.enabled,
+        ...(notification.reminderTime !== undefined && notification.reminderTime !== null
+          ? { reminderTime: notification.reminderTime }
+          : {}),
+      };
+      processedFields.notification = notificationData;
+    }
+  }
+
+  await updateDoc(doc(db, "users", user.uid, "habits", habitId), processedFields);
   
   // 通知設定が変更された場合は通知時刻リストを更新
   if (updatedFields.notification !== undefined) {
