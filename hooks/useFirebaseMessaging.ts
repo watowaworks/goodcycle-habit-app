@@ -22,16 +22,6 @@ export function useFirebaseMessaging() {
         return;
       }
       
-      // ブラウザ情報をログに記録
-      const userAgent = navigator.userAgent;
-      const isChrome = /Chrome/.test(userAgent) && /Google Inc/.test(navigator.vendor);
-      const isEdge = /Edg/.test(userAgent);
-      console.log("[FCM] ブラウザ情報:", {
-        userAgent,
-        isChrome,
-        isEdge,
-        notificationPermission: Notification.permission,
-      });
 
       try {
         // 既存のService Worker登録を確認
@@ -42,43 +32,17 @@ export function useFirebaseMessaging() {
         );
         
         if (existingRegistration) {
-          console.log("[FCM] 既存のService Worker登録を使用:", existingRegistration);
           registration = existingRegistration;
         } else {
-          // Service Workerを新規登録
           registration = await navigator.serviceWorker.register(
             "/firebase-messaging-sw.js",
             { scope: "/" }
           );
-          console.log("[FCM] Service Worker 新規登録完了:", registration);
-        }
-        
-        // Service Workerの状態を確認
-        console.log("[FCM] Service Worker状態:", {
-          scope: registration.scope,
-          active: registration.active?.state,
-          installing: registration.installing?.state,
-          waiting: registration.waiting?.state,
-        });
-        
-        // Chromeでは、Service Workerが完全にアクティブになるまで待機する必要がある場合がある
-        if (registration.installing) {
-          console.log("[FCM] Service Workerがインストール中です。待機します...");
-          await new Promise<void>((resolve) => {
-            registration.installing!.addEventListener("statechange", () => {
-              if (registration.installing?.state === "installed") {
-                console.log("[FCM] Service Workerのインストールが完了しました");
-                resolve();
-              }
-            });
-          });
         }
         
         // Service Workerがアクティブになるまで待機
         if (!registration.active) {
-          console.log("[FCM] Service Workerがアクティブになるまで待機します...");
           await navigator.serviceWorker.ready;
-          console.log("[FCM] Service Workerがアクティブになりました");
         }
 
         // Firebase Messagingの初期化を試みる
@@ -121,273 +85,47 @@ export function useFirebaseMessaging() {
         }
 
         // フォアグラウンドメッセージの受信ハンドラ
-        console.log("[FCM] onMessage ハンドラを登録します");
-        
         // Service Workerの登録を事前に取得（再利用）
         let swRegistration: ServiceWorkerRegistration | null = null;
         const getServiceWorkerRegistration = async (): Promise<ServiceWorkerRegistration> => {
           if (swRegistration) {
             return swRegistration;
           }
-          
-          try {
-            swRegistration = await navigator.serviceWorker.ready;
-            console.log("[FCM] Service Worker準備完了（キャッシュ）");
-            return swRegistration;
-          } catch (swError) {
-            console.error("[FCM] Service Worker準備エラー:", swError);
-            // Service Workerが準備できない場合、直接登録を取得
-            const registrations = await navigator.serviceWorker.getRegistrations();
-            if (registrations.length > 0) {
-              swRegistration = registrations[0];
-              console.log("[FCM] 既存のService Worker登録を使用（フォールバック）");
-              return swRegistration;
-            } else {
-              throw new Error("Service Worker登録が見つかりません");
-            }
-          }
+          swRegistration = await navigator.serviceWorker.ready;
+          return swRegistration;
         };
         
         onMessage(messaging, async (payload) => {
           console.log("[FCM] フォアグラウンドメッセージ受信:", payload);
-          console.log("[FCM] Notification.permission:", Notification.permission);
-          console.log("[FCM] ブラウザ:", navigator.userAgent);
-          
-          // ブラウザ判定（onMessageハンドラ内で使用）
-          const userAgent = navigator.userAgent;
-          const isChromeBrowser = /Chrome/.test(userAgent) && /Google Inc/.test(navigator.vendor);
           
           // フォアグラウンドでも通知を表示（Service Worker経由）
           if (Notification.permission === "granted") {
             try {
-              // Service Workerの準備を確実に待つ
               const registration = await getServiceWorkerRegistration();
               
-              // Chromeでの追加チェック: Service Workerがアクティブか確認
-              if (!registration.active) {
-                console.warn("[FCM] Service Workerがアクティブではありません。待機します...");
-                // Service Workerがアクティブになるまで待機（最大5秒）
-                await new Promise<void>((resolve, reject) => {
-                  const timeout = setTimeout(() => {
-                    reject(new Error("Service Workerがアクティブになるまでタイムアウト"));
-                  }, 5000);
-                  
-                  const checkActive = () => {
-                    if (registration.active) {
-                      clearTimeout(timeout);
-                      resolve();
-                    } else {
-                      setTimeout(checkActive, 100);
-                    }
-                  };
-                  checkActive();
-                });
-                console.log("[FCM] Service Workerがアクティブになりました");
-              }
-              
-              // notificationフィールドを使用
               const notificationTitle = payload.notification?.title || "通知";
               const notificationBody = payload.notification?.body || "通知本文";
               
-              // Chromeでは、tagプロパティがあると通知が表示されない場合があるため、
-              // 一時的にtagを削除して表示を優先する
-              // requireInteractionをtrueにすることで、通知が確実に表示される
               const notificationOptions: NotificationOptions & { vibrate?: number[] } = {
                 body: notificationBody,
                 icon: "/favicon.ico",
                 badge: "/favicon.ico",
-                // tagを削除: Chromeで通知が表示されない問題を回避
-                // tag: payload.messageId || `notification-${Date.now()}`,
-                requireInteraction: true, // ユーザーが操作するまで通知を表示し続ける
+                tag: payload.messageId || `notification-${Date.now()}`,
+                requireInteraction: false,
                 silent: false,
-                vibrate: [200, 100, 200], // 通知の振動パターン
-                data: payload.data || {}, // 追加データを保持
-                dir: "auto", // テキストの方向
-                lang: "ja", // 言語
+                vibrate: [200, 100, 200],
+                data: payload.data || {},
               };
               
-              // Chromeの通知設定を確認
-              console.log("[FCM] 通知表示前の診断情報:", {
-                permission: Notification.permission,
-                isChrome: isChromeBrowser,
-                serviceWorkerActive: registration.active?.state,
-                serviceWorkerScope: registration.scope,
-                windowFocused: document.hasFocus(),
-                visibilityState: document.visibilityState,
-              });
-              
-              console.log("[FCM] 通知を表示します:", notificationTitle, notificationOptions);
-              console.log("[FCM] payload.notification:", payload.notification);
-              console.log("[FCM] Service Worker状態（通知表示前）:", {
-                active: registration.active?.state,
-                scope: registration.scope,
-              });
-              
-              // Chromeでは、showNotificationがPromiseを返すが、エラーが発生しても
-              // 例外を投げない場合があるため、明示的にチェック
-              // また、成功を返しても実際には通知が表示されない場合があるため、
-              // Service Worker経由と直接Notification APIの両方を試みる
-              let serviceWorkerNotificationSuccess = false;
-              
-              try {
-                const notificationPromise = registration.showNotification(notificationTitle, notificationOptions);
-                
-                // 通知の表示を待つ（タイムアウト付き）
-                await Promise.race([
-                  notificationPromise,
-                  new Promise((_, reject) => 
-                    setTimeout(() => reject(new Error("通知表示がタイムアウトしました")), 3000)
-                  ),
-                ]);
-                
-                console.log("[FCM] Service Worker経由の通知表示成功");
-                serviceWorkerNotificationSuccess = true;
-                
-                // Chromeでの追加チェック: 通知が実際に表示されたか確認
-                setTimeout(() => {
-                  console.log("[FCM] 通知表示後の確認 - Service Worker状態:", registration.active?.state);
-                }, 100);
-              } catch (notificationError) {
-                console.error("[FCM] Service Worker経由の通知表示中にエラー:", notificationError);
-                // エラーが発生した場合は、フォールバック処理に進む
-              }
-              
-              // Chromeでは、Service Worker経由の通知が成功を返しても
-              // 実際には表示されない場合があるため、直接Notification APIも試みる
-              // これはChromeの既知の問題に対する回避策です
-              if (!serviceWorkerNotificationSuccess || isChromeBrowser) {
-                console.log("[FCM] Chromeブラウザのため、直接Notification APIも試みます");
-                
-                // Chromeの通知設定を確認
-                console.log("[FCM] Chrome通知設定確認:", {
-                  permission: Notification.permission,
-                });
-                
-                try {
-                  // tagを削除して、重複通知を防ぐのではなく表示を優先する
-                  // Chromeでは、同じtagの通知が表示されない場合がある
-                  // また、requireInteractionをtrueにすることで、通知が確実に表示される
-                  const directNotificationOptions: NotificationOptions = {
-                    body: notificationBody,
-                    icon: "/favicon.ico",
-                    badge: "/favicon.ico",
-                    // tagを削除: Chromeで通知が表示されない問題を回避
-                    requireInteraction: true, // ユーザーが操作するまで通知を表示し続ける
-                    silent: false,
-                    // Chromeで通知を確実に表示するために、追加のオプションを設定
-                    dir: "auto",
-                    lang: "ja",
-                  };
-                  
-                  console.log("[FCM] 直接Notification APIオプション:", directNotificationOptions);
-                  
-                  const directNotification = new Notification(notificationTitle, directNotificationOptions);
-                  
-                  // 通知オブジェクトの状態を確認
-                  console.log("[FCM] 通知オブジェクト作成成功:", {
-                    title: directNotification.title,
-                    body: directNotification.body,
-                    tag: directNotification.tag,
-                    icon: directNotification.icon,
-                    badge: directNotification.badge,
-                  });
-                  
-                  // 通知が実際に表示されたかを確認するため、短い遅延後に状態を確認
-                  setTimeout(() => {
-                    console.log("[FCM] 通知オブジェクト状態確認:", {
-                      title: directNotification.title,
-                      body: directNotification.body,
-                    });
-                  }, 500);
-                  
-                  // 通知がクリックされたときのイベント
-                  directNotification.onclick = () => {
-                    console.log("[FCM] 通知がクリックされました");
-                    window.focus();
-                    directNotification.close();
-                  };
-                  
-                  // 通知が閉じられたときのイベント
-                  directNotification.onclose = () => {
-                    console.log("[FCM] 通知が閉じられました");
-                  };
-                  
-                  // 通知が表示されたときのイベント（Chromeではサポートされていない場合がある）
-                  directNotification.onshow = () => {
-                    console.log("[FCM] 通知が表示されました");
-                  };
-                  
-                  // 通知でエラーが発生したときのイベント
-                  directNotification.onerror = (error) => {
-                    console.error("[FCM] 通知でエラーが発生しました:", error);
-                  };
-                  
-                  console.log("[FCM] 直接Notification APIによる通知表示成功");
-                } catch (directNotificationError) {
-                  console.error("[FCM] 直接Notification APIによる通知表示も失敗:", directNotificationError);
-                  console.error("[FCM] エラー詳細:", {
-                    name: (directNotificationError as Error).name,
-                    message: (directNotificationError as Error).message,
-                    stack: (directNotificationError as Error).stack,
-                  });
-                  
-                  // Service Worker経由が成功している場合は、このエラーは無視する
-                  if (!serviceWorkerNotificationSuccess) {
-                    throw directNotificationError; // 両方とも失敗した場合はエラーを再スロー
-                  }
-                }
-              }
-              
+              await registration.showNotification(notificationTitle, notificationOptions);
+              console.log("[FCM] 通知表示成功");
             } catch (error) {
               console.error("[FCM] 通知の表示に失敗:", error);
-              console.error("[FCM] エラー詳細:", {
-                name: (error as Error).name,
-                message: (error as Error).message,
-                stack: (error as Error).stack,
-              });
-              
-              // Chromeでの代替方法: 直接Notification APIを使用（フォールバック）
-              // 注意: これはService Worker経由ではないため、制限がある
-              // Chromeでは、Service Worker経由で通知を表示できない場合があるため、
-              // 直接Notification APIを使用する
-              try {
-                console.log("[FCM] フォールバック: 直接Notification APIを使用");
-                const notificationTitle = payload.notification?.title || "通知";
-                const notificationBody = payload.notification?.body || "通知本文";
-                
-                // Chromeでは、直接Notification APIを使用する場合、いくつかの制限がある
-                // ただし、フォアグラウンドでは動作する
-                const fallbackNotification = new Notification(notificationTitle, {
-                  body: notificationBody,
-                  icon: "/favicon.ico",
-                  badge: "/favicon.ico",
-                  tag: payload.messageId || `notification-${Date.now()}`,
-                  requireInteraction: false,
-                  silent: false,
-                });
-                
-                console.log("[FCM] フォールバック通知表示成功");
-                
-                // 通知が閉じられたときのイベント
-                fallbackNotification.onclick = () => {
-                  console.log("[FCM] フォールバック通知がクリックされました");
-                  window.focus();
-                  fallbackNotification.close();
-                };
-              } catch (fallbackError) {
-                console.error("[FCM] フォールバック通知も失敗:", fallbackError);
-                console.error("[FCM] フォールバックエラー詳細:", {
-                  name: (fallbackError as Error).name,
-                  message: (fallbackError as Error).message,
-                  stack: (fallbackError as Error).stack,
-                });
-              }
             }
           } else {
             console.warn("[FCM] 通知の許可が取得できていません。permission:", Notification.permission);
           }
         });
-        console.log("[FCM] onMessage ハンドラ登録完了");
       } catch (error) {
         console.error("[FCM] セットアップ中にエラー:", error);
       }
