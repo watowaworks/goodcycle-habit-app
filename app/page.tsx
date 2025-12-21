@@ -29,7 +29,12 @@ export default function HomePage() {
   const lastCheckedDateRef = useRef(getTodayString());
   const lastNotifiedTimeRef = useRef<string>("");
 
-  const { isSupported, permission, requestNotificationPermission, sendHabitReminder } = useNotifications();
+  const {
+    isSupported,
+    permission,
+    requestNotificationPermission,
+    sendHabitReminder,
+  } = useNotifications();
 
   const { fcmToken } = useFirebaseMessaging();
   if (fcmToken) {
@@ -76,11 +81,7 @@ export default function HomePage() {
     // 日付が変わったかどうかを定期的にチェック
     const checkDateChange = setInterval(async () => {
       const currentDate = getTodayString();
-      if (
-        currentDate !== lastCheckedDateRef.current &&
-        auth.currentUser &&
-        loggedIn
-      ) {
+      if (currentDate !== lastCheckedDateRef.current && auth.currentUser) {
         lastCheckedDateRef.current = currentDate;
         await fetchHabits();
       }
@@ -91,7 +92,7 @@ export default function HomePage() {
       clearInterval(checkDateChange);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loggedIn]);
+  }, []); // onAuthStateChangedは一度登録すれば認証状態の変化を自動監視するため、依存配列は空でOK
 
   // ログイン時は Firestore のみ、非ログイン時は localHabits のみ
   const allHabits = loggedIn ? habits : localHabits;
@@ -119,7 +120,7 @@ export default function HomePage() {
       />
 
       <div className="mx-auto max-w-3xl px-4 py-8">
-        {loading ?(
+        {loading ? (
           <div className="flex items-center justify-center py-20">
             <LoadingSpinner size="lg" text="読み込み中..." />
           </div>
