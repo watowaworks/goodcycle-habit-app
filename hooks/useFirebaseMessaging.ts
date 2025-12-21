@@ -153,6 +153,10 @@ export function useFirebaseMessaging() {
           console.log("[FCM] Notification.permission:", Notification.permission);
           console.log("[FCM] ブラウザ:", navigator.userAgent);
           
+          // ブラウザ判定（onMessageハンドラ内で使用）
+          const userAgent = navigator.userAgent;
+          const isChromeBrowser = /Chrome/.test(userAgent) && /Google Inc/.test(navigator.vendor);
+          
           // フォアグラウンドでも通知を表示（Service Worker経由）
           if (Notification.permission === "granted") {
             try {
@@ -205,6 +209,10 @@ export function useFirebaseMessaging() {
               
               // Chromeでは、showNotificationがPromiseを返すが、エラーが発生しても
               // 例外を投げない場合があるため、明示的にチェック
+              // また、成功を返しても実際には通知が表示されない場合があるため、
+              // Service Worker経由と直接Notification APIの両方を試みる
+              let serviceWorkerNotificationSuccess = false;
+              
               try {
                 const notificationPromise = registration.showNotification(notificationTitle, notificationOptions);
                 
@@ -216,15 +224,53 @@ export function useFirebaseMessaging() {
                   ),
                 ]);
                 
-                console.log("[FCM] 通知表示成功");
+                console.log("[FCM] Service Worker経由の通知表示成功");
+                serviceWorkerNotificationSuccess = true;
                 
                 // Chromeでの追加チェック: 通知が実際に表示されたか確認
                 setTimeout(() => {
                   console.log("[FCM] 通知表示後の確認 - Service Worker状態:", registration.active?.state);
                 }, 100);
               } catch (notificationError) {
-                console.error("[FCM] 通知表示中にエラー:", notificationError);
-                throw notificationError; // エラーを再スローしてフォールバック処理に進む
+                console.error("[FCM] Service Worker経由の通知表示中にエラー:", notificationError);
+                // エラーが発生した場合は、フォールバック処理に進む
+              }
+              
+              // Chromeでは、Service Worker経由の通知が成功を返しても
+              // 実際には表示されない場合があるため、直接Notification APIも試みる
+              // これはChromeの既知の問題に対する回避策です
+              if (!serviceWorkerNotificationSuccess || isChromeBrowser) {
+                console.log("[FCM] Chromeブラウザのため、直接Notification APIも試みます");
+                try {
+                  const directNotification = new Notification(notificationTitle, {
+                    body: notificationBody,
+                    icon: "/favicon.ico",
+                    badge: "/favicon.ico",
+                    tag: payload.messageId || `notification-${Date.now()}`,
+                    requireInteraction: false,
+                    silent: false,
+                  });
+                  
+                  console.log("[FCM] 直接Notification APIによる通知表示成功");
+                  
+                  // 通知がクリックされたときのイベント
+                  directNotification.onclick = () => {
+                    console.log("[FCM] 通知がクリックされました");
+                    window.focus();
+                    directNotification.close();
+                  };
+                  
+                  // 通知が閉じられたときのイベント
+                  directNotification.onclose = () => {
+                    console.log("[FCM] 通知が閉じられました");
+                  };
+                } catch (directNotificationError) {
+                  console.error("[FCM] 直接Notification APIによる通知表示も失敗:", directNotificationError);
+                  // Service Worker経由が成功している場合は、このエラーは無視する
+                  if (!serviceWorkerNotificationSuccess) {
+                    throw directNotificationError; // 両方とも失敗した場合はエラーを再スロー
+                  }
+                }
               }
               
             } catch (error) {
