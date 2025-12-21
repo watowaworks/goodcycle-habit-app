@@ -9,7 +9,6 @@ import {
   getCustomCategories as getCustomCategoriesFromFirestore,
   addCustomCategory as addCustomCategoryToFirestore,
   deleteCustomCategory as deleteCustomCategoryFromFirestore,
-  updateUserNotificationTimes,
 } from "@/lib/firestore";
 import { auth } from "@/lib/firebase";
 import { calculateStreaks, getTodayString, isHabitDueOnDate } from "./utils";
@@ -96,8 +95,9 @@ export const useStore = create<Store>()(
             await updateHabit(id, updates);
           }
 
-          // 通知時刻リストを更新（既存ユーザーのマイグレーションも含む）
-          await updateUserNotificationTimes();
+          // 通知時刻リストの更新は削除
+          // 理由: 習慣の追加・更新・削除時に既に更新されているため、fetchHabitsで毎回呼ぶ必要はない
+          // マイグレーションが必要な場合は、初回のみ実行するロジックを別途追加することも可能
 
           set({ habits: syncedHabits });
         } catch (error) {

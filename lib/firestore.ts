@@ -152,18 +152,19 @@ export async function deleteCustomCategory(categoryName: string): Promise<void> 
 }
 
 // ユーザーの通知時刻リストを更新する（習慣の追加・更新・削除時に呼び出す）
-export async function updateUserNotificationTimes(): Promise<void> {
+// habitsを渡すことで、再度Firestoreから取得する必要がなくなり、読み取り量を削減
+export async function updateUserNotificationTimes(habits?: Habit[]): Promise<void> {
   const user = auth.currentUser;
   if (!user) return;
 
   try {
-    // ユーザーの全習慣を取得
-    const habits = await getUserHabits();
+    // 習慣データが渡されていない場合のみ取得（既に取得済みの場合は再利用）
+    const habitsData = habits || await getUserHabits();
     
     // 通知が有効な習慣の通知時刻を集約
     const notificationTimesSet = new Set<string>();
     
-    for (const habit of habits) {
+    for (const habit of habitsData) {
       if (habit.notification?.enabled && habit.notification?.reminderTime) {
         notificationTimesSet.add(habit.notification.reminderTime);
       }
