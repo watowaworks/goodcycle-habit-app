@@ -185,7 +185,7 @@ export function useFirebaseMessaging() {
               const notificationTitle = payload.notification?.title || "通知";
               const notificationBody = payload.notification?.body || "通知本文";
               
-              const notificationOptions: NotificationOptions = {
+              const notificationOptions: NotificationOptions & { vibrate?: number[] } = {
                 body: notificationBody,
                 icon: "/favicon.ico",
                 badge: "/favicon.ico",
