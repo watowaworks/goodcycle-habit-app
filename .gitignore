@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# types folder - only type definitions should be here
+types/*.js
+types/*.js.map
