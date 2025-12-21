@@ -36,7 +36,8 @@ export default function DashboardPage() {
     return () => {
       unsubscribe();
     };
-  }, [fetchHabits]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // fetchHabitsはZustandストア関数のため、依存配列から除外
 
   // ログイン時は Firestore の習慣を使用
   const allHabits = habits;
