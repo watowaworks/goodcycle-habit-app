@@ -39,8 +39,6 @@ messaging.setBackgroundMessageHandler(function (payload) {
 
   console.log("[SW] 通知を表示します:", notificationTitle, notificationOptions);
   
-  // Chromeでは、showNotificationがPromiseを返すが、エラーが発生しても
-  // 例外を投げない場合があるため、明示的にチェック
   return self.registration.showNotification(notificationTitle, notificationOptions)
     .then(() => {
       console.log("[SW] 通知表示成功");
@@ -48,11 +46,6 @@ messaging.setBackgroundMessageHandler(function (payload) {
     })
     .catch((error) => {
       console.error("[SW] 通知表示エラー:", error);
-      console.error("[SW] エラー詳細:", {
-        name: error.name,
-        message: error.message,
-        stack: error.stack,
-      });
       throw error; // エラーを再スローしてFirebaseに伝える
     });
 });

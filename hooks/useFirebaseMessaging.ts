@@ -10,7 +10,7 @@ import { onAuthStateChanged } from "firebase/auth";
 
 export function useFirebaseMessaging() {
   const [fcmToken, setFcmToken] = useState<string | null>(null);
-  const [isSupported, setIsSupportedState] = useState(false);
+  const [isSupported, setIsSupported] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -47,7 +47,7 @@ export function useFirebaseMessaging() {
 
         // Firebase Messagingの初期化を試みる
         const messaging = getMessaging(app);
-        setIsSupportedState(true);
+        setIsSupported(true);
 
         // VAPIDキーを環境変数から取得
         const vapidKey = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY;

@@ -12,8 +12,6 @@ import {
   Timestamp,
   orderBy,
   getDoc,
-  arrayUnion,
-  arrayRemove,
   setDoc,
 } from "firebase/firestore";
 import { FrequencyType, Habit, FCMTokenWithOrigin, NotificationSettings } from "@/types";
