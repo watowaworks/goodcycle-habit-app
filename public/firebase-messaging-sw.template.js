@@ -49,3 +49,33 @@ messaging.setBackgroundMessageHandler(function (payload) {
       throw error; // エラーを再スローしてFirebaseに伝える
     });
 });
+
+self.addEventListener("notificationclick", function (event) {
+  console.log("[SW] 通知クリック:", event);
+
+  event.notification.close();
+
+  // 本番環境のURL（必要に応じて変更）
+  const targetUrl = "https://goodcycle-habit-app.vercel.app/";
+
+  event.waitUntil(
+    (async () => {
+      const allClients = await self.clients.matchAll({
+        type: "window",
+        includeUncontrolled: true,
+      });
+
+      // 既に本番URLのタブが開いていればそれをフォーカス
+      for (const client of allClients) {
+        if ("focus" in client && client.url.startsWith(targetUrl)) {
+          return client.focus();
+        }
+      }
+
+      // 開いていなければ新しいタブで開く
+      if (self.clients.openWindow) {
+        return self.clients.openWindow(targetUrl);
+      }
+    })()
+  );
+});
