@@ -68,9 +68,10 @@ export const sendTestNotification = onRequest(async (request, response) => {
   try {
     // FCM通知を送信
     const message = {
-      notification: {
+      data: {
         title: "テスト通知",
         body: "Cloud Functions からの通知テストです",
+        url: "https://goodcycle-habit-app.vercel.app",
       },
       token: token,
     };
@@ -203,9 +204,11 @@ export const checkAndSendNotifications = onSchedule({
       if (habitsToNotify.length > 0) {
         for (const habit of habitsToNotify) {
           const message = {
-            notification: {
+            data: {
               title: "習慣のリマインド",
               body: `本日も忘れずに「${habit.title}」を継続しましょう！`,
+              url: "https://goodcycle-habit-app.vercel.app",
+              habitId: habit.id,
             },
             tokens: fcmTokens, // 複数のトークンに対応
           };

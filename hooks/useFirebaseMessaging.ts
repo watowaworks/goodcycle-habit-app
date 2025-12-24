@@ -101,8 +101,9 @@ export function useFirebaseMessaging() {
             try {
               const registration = await getServiceWorkerRegistration();
               
-              const notificationTitle = payload.notification?.title || "通知";
-              const notificationBody = payload.notification?.body || "通知本文";
+              const notificationTitle = payload.data?.title || "通知";
+              const notificationBody = payload.data?.body || "通知本文";
+              const targetUrl = payload.data?.url || "https://goodcycle-habit-app.vercel.app";
               
               const notificationOptions: NotificationOptions & { vibrate?: number[] } = {
                 body: notificationBody,
@@ -112,7 +113,10 @@ export function useFirebaseMessaging() {
                 requireInteraction: false,
                 silent: false,
                 vibrate: [200, 100, 200],
-                data: payload.data || {},
+                data: {
+                  ...payload.data,
+                  url: targetUrl, // notificationclickで使用するURLを確実に含める
+                },
               };
               
               await registration.showNotification(notificationTitle, notificationOptions);

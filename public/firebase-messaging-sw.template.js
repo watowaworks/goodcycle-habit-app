@@ -19,12 +19,13 @@ const messaging = firebase.messaging();
 // バックグラウンドメッセージを受信したときのハンドラ
 messaging.setBackgroundMessageHandler(function (payload) {
   console.log("[SW] バックグラウンドメッセージ受信:", payload);
-  console.log("[SW] payload.notification:", payload.notification);
+  console.log("[SW] payload.data:", payload.data);
   console.log("[SW] ユーザーエージェント:", self.navigator.userAgent);
   
-  // notificationフィールドを使用
-  const notificationTitle = payload.notification?.title || "習慣のリマインド";
-  const notificationBody = payload.notification?.body || "通知本文";
+  // dataフィールドを使用
+  const notificationTitle = payload.data?.title || "習慣のリマインド";
+  const notificationBody = payload.data?.body || "通知本文";
+  const targetUrl = payload.data?.url || "https://goodcycle-habit-app.vercel.app";
   
   const notificationOptions = {
     body: notificationBody,
@@ -34,7 +35,10 @@ messaging.setBackgroundMessageHandler(function (payload) {
     requireInteraction: false,
     silent: false,
     vibrate: [200, 100, 200], // 通知の振動パターン
-    data: payload.data || {}, // 追加データを保持
+    data: {
+      ...payload.data,
+      url: targetUrl, // notificationclickで使用するURLを確実に含める
+    },
   };
 
   console.log("[SW] 通知を表示します:", notificationTitle, notificationOptions);
@@ -56,7 +60,7 @@ self.addEventListener("notificationclick", function (event) {
   event.notification.close();
 
   // 本番環境のURL（必要に応じて変更）
-  const targetUrl = "https://goodcycle-habit-app.vercel.app/";
+  const targetUrl = event.notification.data.url || "https://goodcycle-habit-app.vercel.app/";
 
   event.waitUntil(
     (async () => {
