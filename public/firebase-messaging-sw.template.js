@@ -55,7 +55,9 @@ messaging.setBackgroundMessageHandler(function (payload) {
 });
 
 self.addEventListener("notificationclick", function (event) {
-  console.log("[SW] 通知クリック:", event);
+  console.log("[SW] 通知クリックイベント発火:", event);
+  console.log("[SW] 通知データ:", event.notification);
+  console.log("[SW] 通知データ.data:", event.notification.data);
 
   event.notification.close();
 

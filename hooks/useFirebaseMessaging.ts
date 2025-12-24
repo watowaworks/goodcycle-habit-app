@@ -96,14 +96,20 @@ export function useFirebaseMessaging() {
         };
         
         onMessage(messaging, async (payload) => {
+          console.log("[FCM] フォアグラウンドメッセージ受信:", payload);
+          console.log("[FCM] payload.data:", payload.data);
+          console.log("[FCM] payload.notification:", payload.notification);
+          
           // フォアグラウンドでも通知を表示（Service Worker経由）
           if (Notification.permission === "granted") {
             try {
               const registration = await getServiceWorkerRegistration();
               
-              const notificationTitle = payload.data?.title || "通知";
+              const notificationTitle = payload.data?.title || "習慣のリマインド";
               const notificationBody = payload.data?.body || "通知本文";
               const targetUrl = payload.data?.url || "https://goodcycle-habit-app.vercel.app";
+              
+              console.log("[FCM] 通知を表示します:", notificationTitle, notificationBody);
               
               const notificationOptions: NotificationOptions & { vibrate?: number[] } = {
                 body: notificationBody,
