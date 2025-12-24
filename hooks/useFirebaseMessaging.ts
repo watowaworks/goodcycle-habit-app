@@ -105,8 +105,9 @@ export function useFirebaseMessaging() {
             try {
               const registration = await getServiceWorkerRegistration();
               
-              const notificationTitle = payload.data?.title || "習慣のリマインド";
-              const notificationBody = payload.data?.body || "通知本文";
+              // dataフィールドを優先し、なければnotificationフィールドを使用（後方互換性のため）
+              const notificationTitle = payload.data?.title || payload.notification?.title || "習慣のリマインド";
+              const notificationBody = payload.data?.body || payload.notification?.body || "通知本文";
               const targetUrl = payload.data?.url || "https://goodcycle-habit-app.vercel.app";
               
               console.log("[FCM] 通知を表示します:", notificationTitle, notificationBody);
