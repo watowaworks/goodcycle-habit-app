@@ -16,6 +16,39 @@ firebase.initializeApp(firebaseConfig);
 
 const messaging = firebase.messaging();
 
+// notificationclickイベントリスナーを最初に登録（Service Workerの初期化時）
+self.addEventListener("notificationclick", function (event) {
+  console.log("[SW] 通知クリックイベント発火:", event);
+  console.log("[SW] 通知データ:", event.notification);
+  console.log("[SW] 通知データ.data:", event.notification.data);
+
+  event.notification.close();
+
+  // 本番環境のURL（必要に応じて変更）
+  const targetUrl = event.notification.data?.url || "https://goodcycle-habit-app.vercel.app/";
+
+  event.waitUntil(
+    (async () => {
+      const allClients = await self.clients.matchAll({
+        type: "window",
+        includeUncontrolled: true,
+      });
+
+      // 既に本番URLのタブが開いていればそれをフォーカス
+      for (const client of allClients) {
+        if ("focus" in client && client.url.startsWith(targetUrl)) {
+          return client.focus();
+        }
+      }
+
+      // 開いていなければ新しいタブで開く
+      if (self.clients.openWindow) {
+        return self.clients.openWindow(targetUrl);
+      }
+    })()
+  );
+});
+
 // バックグラウンドメッセージを受信したときのハンドラ
 messaging.setBackgroundMessageHandler(function (payload) {
   console.log("[SW] バックグラウンドメッセージ受信:", payload);
@@ -52,36 +85,4 @@ messaging.setBackgroundMessageHandler(function (payload) {
       console.error("[SW] 通知表示エラー:", error);
       throw error; // エラーを再スローしてFirebaseに伝える
     });
-});
-
-self.addEventListener("notificationclick", function (event) {
-  console.log("[SW] 通知クリックイベント発火:", event);
-  console.log("[SW] 通知データ:", event.notification);
-  console.log("[SW] 通知データ.data:", event.notification.data);
-
-  event.notification.close();
-
-  // 本番環境のURL（必要に応じて変更）
-  const targetUrl = event.notification.data.url || "https://goodcycle-habit-app.vercel.app/";
-
-  event.waitUntil(
-    (async () => {
-      const allClients = await self.clients.matchAll({
-        type: "window",
-        includeUncontrolled: true,
-      });
-
-      // 既に本番URLのタブが開いていればそれをフォーカス
-      for (const client of allClients) {
-        if ("focus" in client && client.url.startsWith(targetUrl)) {
-          return client.focus();
-        }
-      }
-
-      // 開いていなければ新しいタブで開く
-      if (self.clients.openWindow) {
-        return self.clients.openWindow(targetUrl);
-      }
-    })()
-  );
 });
