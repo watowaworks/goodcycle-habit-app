@@ -18,10 +18,6 @@ const messaging = firebase.messaging();
 
 // notificationclickイベントリスナーを最初に登録（Service Workerの初期化時）
 self.addEventListener("notificationclick", function (event) {
-  console.log("[SW] 通知クリックイベント発火:", event);
-  console.log("[SW] 通知データ:", event.notification);
-  console.log("[SW] 通知データ.data:", event.notification.data);
-
   event.notification.close();
 
   // 本番環境のURL（必要に応じて変更）
@@ -51,10 +47,6 @@ self.addEventListener("notificationclick", function (event) {
 
 // バックグラウンドメッセージを受信したときのハンドラ
 messaging.setBackgroundMessageHandler(function (payload) {
-  console.log("[SW] バックグラウンドメッセージ受信:", payload);
-  console.log("[SW] payload.data:", payload.data);
-  console.log("[SW] ユーザーエージェント:", self.navigator.userAgent);
-  
   // dataフィールドを使用
   const notificationTitle = payload.data?.title || "習慣のリマインド";
   const notificationBody = payload.data?.body || "通知本文";
@@ -74,11 +66,8 @@ messaging.setBackgroundMessageHandler(function (payload) {
     },
   };
 
-  console.log("[SW] 通知を表示します:", notificationTitle, notificationOptions);
-  
   return self.registration.showNotification(notificationTitle, notificationOptions)
     .then(() => {
-      console.log("[SW] 通知表示成功");
       return null; // 成功時はnullを返す（Firebaseの要件）
     })
     .catch((error) => {

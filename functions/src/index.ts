@@ -214,7 +214,6 @@ export const checkAndSendNotifications = onSchedule({
           };
           
           logger.info(`[スケジュール] 通知送信開始: ${habit.title} (トークン数: ${fcmTokens.length})`);
-          logger.info(`[スケジュール] 送信メッセージ:`, JSON.stringify(message, null, 2));
           
           try {
             const result = await admin.messaging().sendEachForMulticast(message);
