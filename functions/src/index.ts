@@ -3,7 +3,6 @@ import { onRequest } from "firebase-functions/https";
 import { onSchedule } from "firebase-functions/scheduler";
 import * as logger from "firebase-functions/logger";
 import * as admin from "firebase-admin";
-import { FCMTokenWithOrigin } from "../../types/index";
 
 // Firebase Admin SDK の初期化
 admin.initializeApp();
@@ -22,6 +21,10 @@ interface Habit {
     enabled: boolean;
     reminderTime?: string;
   };
+}
+interface FCMTokenWithOrigin {
+  token: string;
+  origin: string; // 例: "https://goodcycle-habit-app.vercel.app" または "http://localhost:3000"
 }
 
 // 本番環境のオリジン

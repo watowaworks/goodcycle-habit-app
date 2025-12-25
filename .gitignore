@@ -46,3 +46,6 @@ types/*.js.map
 
 # Generated Service Worker file (build script generates this from template)
 public/firebase-messaging-sw.js
+
+# Firebase Functions build output
+functions/lib/
