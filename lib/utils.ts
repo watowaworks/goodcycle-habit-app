@@ -382,3 +382,34 @@ export function isHabitDueOnDate(habit: Habit, date: string): boolean {
       return false;
   }
 }
+
+// 成長度を計算
+export function calculateGrowthRate(habit: Habit): number {
+  // createdAtをDateオブジェクトに変換
+  const createdAtDate = habit.createdAt instanceof Date 
+    ? habit.createdAt 
+    : new Date(habit.createdAt);
+
+  // 全期間の完了率を計算（既存の関数を活用）
+  const startDate = formatDateToString(createdAtDate);
+  const endDate = getTodayString();
+  const completionRate = calculateCompletionRate(habit, startDate, endDate);
+
+  // ストリークボーナス（最大30日で20%）
+  const currentStreak = habit.currentStreak ?? 0;
+  const maxStreakBonus = 30;
+  const streakBonus = Math.min(currentStreak, maxStreakBonus) / maxStreakBonus * 20;
+
+  // 成長度 = 完了率（80%） + ストリークボーナス（20%）
+  const growthRate = completionRate * 0.8 + streakBonus;
+
+  return Math.min(100, Math.max(0, growthRate));
+}
+
+export function getTreeModelLevel(growthRate: number): number {
+  if (growthRate >= 100) return 100;
+  if (growthRate >= 75) return 75;
+  if (growthRate >= 50) return 50;
+  if (growthRate >= 25) return 25;
+  return 0;
+}

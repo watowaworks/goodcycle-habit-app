@@ -21,7 +21,6 @@ export default function DashboardPage() {
       if (auth.currentUser) {
         await fetchHabits();
       }
-      setLoading(false);
     };
     fetchData();
 
@@ -31,6 +30,8 @@ export default function DashboardPage() {
       if (user) {
         await fetchHabits();
       }
+
+      setLoading(false); // 認証状態が確定してからloadingをfalseにする
     });
 
     return () => {
