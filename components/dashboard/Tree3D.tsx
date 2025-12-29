@@ -37,14 +37,14 @@ export default function Tree3D({ habit }: Props) {
   return (
     <div className="w-full h-[400px] bg-gray-50 dark:bg-gray-900 rounded-lg">
       <Canvas
-        camera={{ position: [0, 0, 12], fov: 50 }}
+        camera={{ position: [0, 5, 12], fov: 50 }}
         dpr={[1, 2]} // パフォーマンス調整
       >
         <OrbitControls 
           enableZoom={true}
-          enablePan={false}
+          enablePan={true}
           enableRotate={true}
-          minDistance={8}
+          minDistance={3}
           maxDistance={20}
           target={[0, 5, 0]} // カメラが向く中心点（木の中心）
         />
