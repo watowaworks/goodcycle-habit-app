@@ -112,6 +112,7 @@ export default function HomePage() {
         navLinks={[
           { label: "ホーム", href: "/" },
           { label: "ダッシュボード", href: "/dashboard" },
+          { label: "ガーデン", href: "/garden" },
           { label: "お問い合わせ", href: "/contact" },
         ]}
       />

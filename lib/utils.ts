@@ -407,9 +407,41 @@ export function calculateGrowthRate(habit: Habit): number {
 }
 
 export function getTreeModelLevel(growthRate: number): number {
-  if (growthRate >= 100) return 100;
-  if (growthRate >= 75) return 75;
-  if (growthRate >= 50) return 50;
-  if (growthRate >= 25) return 25;
-  return 0;
+  if (growthRate >= 100) return 5;
+  if (growthRate >= 75) return 4;
+  if (growthRate >= 50) return 3;
+  if (growthRate >= 25) return 2;
+  return 1;
+}
+
+// 庭全体の天気を決定
+export function calculateGardenWeather(habits: Habit[]): "clear" | "sunny" | "cloudy" | "rainy" {
+  // 1. 習慣がない場合の処理
+  if (habits.length === 0) {
+    return 'cloudy'; // デフォルトは曇り
+  }
+
+  // 2. 直近7日の日付範囲を計算
+  const today = getTodayString();
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  const startDate = formatDateToString(sevenDaysAgo);
+
+  // 3. 各習慣の直近7日の完了率を計算し、平均を求める
+  const totalCompletionRate = habits.reduce((sum, habit) => {
+    const completionRate = calculateCompletionRate(habit, startDate, today);
+    return sum + completionRate;
+  }, 0);
+  const averageCompletionRate = totalCompletionRate / habits.length;
+
+  // 4. 平均完了率に応じて天気を決定
+  if (averageCompletionRate >= 75) {
+    return 'clear';
+  } else if (averageCompletionRate >= 50) {
+    return 'sunny';
+  } else if (averageCompletionRate >= 25) {
+    return 'cloudy';
+  } else {
+    return 'rainy';
+  }
 }
