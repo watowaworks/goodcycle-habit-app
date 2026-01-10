@@ -52,7 +52,7 @@ export default function GardenPage() {
           { label: "お問い合わせ", href: "/contact" },
         ]}
       />
-      <div className="w-full h-screen">
+      <div className="w-full h-[calc(100vh-4rem)] pb-8">
         {loading ? (
           <LoadingSpinner />
         ) : !loggedIn ? (

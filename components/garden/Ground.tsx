@@ -1,10 +1,18 @@
 "use client";
 
+import { useGLTF } from "@react-three/drei";
+import { useMemo } from "react";
+
 export default function Ground() {
+  const { scene } = useGLTF("/models/ground.glb");
+  // シーンをクローンして独立したコピーを作成（必要に応じて）
+  const clonedScene = useMemo(() => scene.clone(), [scene]);
+
   return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
-      <planeGeometry args={[50, 50]} />
-      <meshBasicMaterial color="#90EE90" />
-    </mesh>
+    <primitive 
+      object={clonedScene}
+      position={[0, -1.6, 0]}
+      scale={1}
+    />
   );
 }
