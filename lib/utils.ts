@@ -415,7 +415,7 @@ export function getTreeModelLevel(growthRate: number): number {
 }
 
 // 庭全体の天気を決定
-export function calculateGardenWeather(habits: Habit[]): "clear" | "sunny" | "cloudy" | "rainy" {
+export function calculateGardenWeather(habits: Habit[]): "sunny" | "cloudy" | "rainy" | "stormy" {
   // 1. 習慣がない場合の処理
   if (habits.length === 0) {
     return 'cloudy'; // デフォルトは曇り
@@ -435,13 +435,14 @@ export function calculateGardenWeather(habits: Habit[]): "clear" | "sunny" | "cl
   const averageCompletionRate = totalCompletionRate / habits.length;
 
   // 4. 平均完了率に応じて天気を決定
+  // 晴れ: 75%以上、曇り: 50-75%、雨: 25-50%、雷雨: 25%未満
   if (averageCompletionRate >= 75) {
-    return 'clear';
-  } else if (averageCompletionRate >= 50) {
     return 'sunny';
-  } else if (averageCompletionRate >= 25) {
+  } else if (averageCompletionRate >= 50) {
     return 'cloudy';
-  } else {
+  } else if (averageCompletionRate >= 25) {
     return 'rainy';
+  } else {
+    return 'stormy';
   }
 }
