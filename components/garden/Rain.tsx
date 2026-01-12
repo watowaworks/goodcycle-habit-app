@@ -21,7 +21,7 @@ export default function Rain({ weather }: Props) {
     return null;
   }
 
-  const rainCount = (weather === "stormy" ? 2000 : 1000); // 雨粒の数
+  const rainCount = weather === "stormy" ? 2000 : 1000; // 雨粒の数
   const rainLength = 0.3; // 雨粒の長さ
 
   // 雨粒の初期位置を生成（useMemoで再生成を防ぐ）
@@ -45,11 +45,29 @@ export default function Rain({ weather }: Props) {
     });
   }, [weather, rainCount]);
 
-  const groupRef = useRef<THREE.Group>(null);
+  // ジオメトリとマテリアルは1つだけ作成（全インスタンスで共有）
+  const geometry = useMemo(
+    () => new THREE.CylinderGeometry(0.01, 0.01, rainLength, 4),
+    []
+  );
+
+  const material = useMemo(
+    () =>
+      new THREE.MeshBasicMaterial({
+        color: 0x88ccff,
+        opacity: 0.8,
+        transparent: true,
+      }),
+    []
+  );
+
+  const instancedMeshRef = useRef<THREE.InstancedMesh>(null);
+  // インスタンスの位置を設定するための一時オブジェクト
+  const tempObject = useMemo(() => new THREE.Object3D(), []);
 
   // アニメーションループ
   useFrame(() => {
-    if (!groupRef.current) return;
+    if (!instancedMeshRef.current) return;
 
     rainDrops.forEach((drop, index) => {
       drop.y -= drop.speed;
@@ -65,22 +83,20 @@ export default function Rain({ weather }: Props) {
         drop.z = Math.sin(angle) * distance;
       }
 
-      // メッシュの位置を更新
-      const mesh = groupRef.current!.children[index] as THREE.Mesh;
-      if (mesh) {
-        mesh.position.set(drop.x, drop.y, drop.z);
-      }
+      // インスタンスの位置を設定
+      tempObject.position.set(drop.x, drop.y, drop.z);
+      tempObject.updateMatrix();
+      instancedMeshRef.current!.setMatrixAt(index, tempObject.matrix);
     });
+
+    // インスタンス行列の更新を通知（GPUに反映）
+    instancedMeshRef.current.instanceMatrix.needsUpdate = true;
   });
 
   return (
-    <group ref={groupRef}>
-      {rainDrops.map((drop, index) => (
-        <mesh key={index} position={[drop.x, drop.y, drop.z]}>
-          <cylinderGeometry args={[0.01, 0.01, rainLength, 4]} />
-          <meshBasicMaterial color={0x88ccff} opacity={0.8} transparent />
-        </mesh>
-      ))}
-    </group>
+    <instancedMesh
+      ref={instancedMeshRef}
+      args={[geometry, material, rainCount]}
+    />
   );
 }

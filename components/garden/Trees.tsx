@@ -3,7 +3,6 @@
 import { calculateGrowthRate, getTreeModelLevel } from "@/lib/utils";
 import { Habit } from "@/types";
 import TreeModel from "./TreeModel";
-import { useEffect } from "react";
 
 type Props = {
   habits: Habit[];
@@ -18,7 +17,7 @@ function calculateTreePositions(index: number, total: number): [number, number, 
   return [x, 0, z];
 }
 
-export default function GardenTrees({ habits }: Props) {
+export default function Trees({ habits }: Props) {
   return (
     <>
       {habits.map((habit, index) => {

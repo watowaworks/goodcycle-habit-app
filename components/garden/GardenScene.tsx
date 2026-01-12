@@ -5,7 +5,7 @@ import { OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import Sky from "./Sky";
 import Ground from "./Ground";
-import GardenTrees from "./GardenTrees";
+import GardenTrees from "./Trees";
 import Rain from "./Rain";
 import Lightning from "./Lightning";
 
