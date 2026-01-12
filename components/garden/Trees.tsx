@@ -6,10 +6,13 @@ import TreeModel from "./TreeModel";
 
 type Props = {
   habits: Habit[];
-}
+};
 
 // 木の位置を計算（円形に配置）
-function calculateTreePositions(index: number, total: number): [number, number, number] {
+function calculateTreePositions(
+  index: number,
+  total: number
+): [number, number, number] {
   const angle = (index / total) * Math.PI * 2;
   const radius = 5;
   const x = Math.cos(angle) * radius;
@@ -26,10 +29,11 @@ export default function Trees({ habits }: Props) {
         const position = calculateTreePositions(index, habits.length);
 
         return (
-          <TreeModel 
+          <TreeModel
             key={habit.id}
             level={modelLevel}
             position={position}
+            habit={habit}
           />
         );
       })}
