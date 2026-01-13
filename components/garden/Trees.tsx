@@ -6,6 +6,8 @@ import TreeModel from "./TreeModel";
 
 type Props = {
   habits: Habit[];
+  selectedTreeId: string | null;
+  onTreeSelect: (treeId: string | null) => void;
 };
 
 // 木の位置を計算（円形に配置）
@@ -20,7 +22,7 @@ function calculateTreePositions(
   return [x, 0, z];
 }
 
-export default function Trees({ habits }: Props) {
+export default function Trees({ habits, selectedTreeId, onTreeSelect }: Props) {
   return (
     <>
       {habits.map((habit, index) => {
@@ -34,6 +36,11 @@ export default function Trees({ habits }: Props) {
             level={modelLevel}
             position={position}
             habit={habit}
+            isSelected={selectedTreeId === habit.id}
+            onSelect={() => {
+              // 既に選択されている場合は解除、そうでなければ選択
+              onTreeSelect(selectedTreeId === habit.id ? null : habit.id);
+            }}
           />
         );
       })}

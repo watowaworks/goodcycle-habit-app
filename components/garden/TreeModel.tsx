@@ -11,9 +11,17 @@ type Props = {
   level: number;
   position: [number, number, number];
   habit: Habit;
+  isSelected: boolean;
+  onSelect: () => void;
 };
 
-export default function TreeModel({ level, position, habit }: Props) {
+export default function TreeModel({
+  level,
+  position,
+  habit,
+  isSelected,
+  onSelect,
+}: Props) {
   const { scene } = useGLTF(`/models/trees/tree-${level}.glb`);
   const [isHovered, setIsHovered] = useState(false);
   const groupRef = useRef<THREE.Group>(null);
@@ -32,7 +40,7 @@ export default function TreeModel({ level, position, habit }: Props) {
   useFrame(() => {
     if (!groupRef.current) return;
 
-    const targetScale = isHovered ? 0.95 : 0.8;
+    const targetScale = isHovered || isSelected ? 0.95 : 0.8;
 
     // スムーズな補間（lerp）
     groupRef.current.scale.lerp(
@@ -40,6 +48,14 @@ export default function TreeModel({ level, position, habit }: Props) {
       0.1
     );
   });
+
+  // タップ/クリックでツールチップを表示/非表示
+  const handleClick = (e: any) => {
+    e.stopPropagation();
+    // 木であることを示すフラグを設定（Canvasのクリックハンドラーで判定用）
+    e.object.userData.isTree = true;
+    onSelect();
+  };
 
   return (
     <>
@@ -54,9 +70,10 @@ export default function TreeModel({ level, position, habit }: Props) {
           onPointerOut={() => {
             setIsHovered(false);
           }}
+          onClick={handleClick}
         />
       </group>
-      {isHovered && (
+      {(isHovered || isSelected) && (
         <Html position={[position[0], position[1] + 2, position[2]]} center>
           <div className="bg-linear-to-br from-emerald-400/90 via-teal-400/90 to-cyan-400/90 backdrop-blur-md text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap shadow-xl border border-emerald-300/30 animate-[fadeInScale_0.3s_ease-out]">
             <div className="font-bold">{habit.title}</div>
