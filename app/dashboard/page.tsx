@@ -75,7 +75,7 @@ export default function DashboardPage() {
         ) : !loggedIn ? (
           <div className="mt-8 rounded-2xl border border-dashed border-emerald-200 dark:border-emerald-800 bg-emerald-50/60 dark:bg-emerald-900/20 p-6 text-center">
             <p className="text-md font-medium text-emerald-800 dark:text-emerald-300 mb-2">
-              このダッシュボード機能は、ログインするとご利用いただけます。
+              ダッシュボード機能は、ログインするとご利用いただけます。
             </p>
             <p className="text-sm text-emerald-900/80 dark:text-emerald-400 mb-4">
               アカウントを作成して習慣を登録すると、達成状況のグラフやカレンダー表示など、より詳しい可視化が利用できます。

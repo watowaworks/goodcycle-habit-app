@@ -54,9 +54,26 @@ export default function GardenPage() {
       />
       <div className="w-full h-[calc(100vh-4rem)] pb-8">
         {loading ? (
-          <LoadingSpinner />
+          <div className="flex items-center justify-center py-20">
+            <LoadingSpinner size="lg" text="データを読み込んでいます..." />
+          </div>
         ) : !loggedIn ? (
-          <div>ログインが必要です</div>
+          <div className="mx-auto max-w-3xl px-4 pt-8">
+            <div className="rounded-2xl border border-dashed border-emerald-200 dark:border-emerald-800 bg-emerald-50/60 dark:bg-emerald-900/20 p-6 text-center mt-8">
+              <p className="text-md font-medium text-emerald-800 dark:text-emerald-300 mb-2">
+                ガーデン機能は、ログインするとご利用いただけます。
+              </p>
+              <p className="text-sm text-emerald-900/80 dark:text-emerald-400 mb-4">
+                アカウントを作成して習慣を登録すると、継続度や完了率に応じて変化する3Dガーデンで、現在の状態を直感的に振り返ることができます。
+              </p>
+              <a
+                href="/"
+                className="inline-flex items-center justify-center rounded-full bg-emerald-500 dark:bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-600 dark:hover:bg-emerald-700"
+              >
+                ホームに戻る
+              </a>
+            </div>
+          </div>
         ) : (
           <GardenScene habits={habits} weather={weather} />
         )}
