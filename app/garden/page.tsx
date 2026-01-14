@@ -1,17 +1,23 @@
 "use client";
 
 import { auth, onAuthStateChanged } from "@/lib/firebase";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useStore } from "@/lib/store";
 import { calculateGardenWeather } from "@/lib/utils";
 import Header from "@/components/Header";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import GardenScene from "@/components/garden/GardenScene";
+import { useClickOutside } from "@/hooks/useClickOutside";
 
 export default function GardenPage() {
   const { habits, fetchHabits } = useStore();
   const [loading, setLoading] = useState(true);
   const [loggedIn, setLoggedIn] = useState<boolean>(!!auth.currentUser);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const popoverRef = useRef<HTMLDivElement>(null);
+
+  // 外側クリックでポップオーバーを閉じる
+  useClickOutside(popoverRef, () => setIsPopoverOpen(false), isPopoverOpen);
 
   // 初回ロード: Firestoreデータ取得
   useEffect(() => {
@@ -75,7 +81,65 @@ export default function GardenPage() {
             </div>
           </div>
         ) : (
-          <GardenScene habits={habits} weather={weather} />
+          <div className="relative w-full h-full">
+            {/* 情報アイコンボタンとポップオーバー */}
+            <div ref={popoverRef} className="absolute top-4 right-4 z-10">
+              {/* 情報アイコンボタン */}
+              <button
+                onClick={() => setIsPopoverOpen(!isPopoverOpen)}
+                className="w-15 h-15 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-lg hover:bg-emerald-600 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2"
+                aria-label="ガーデンの使い方"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-10 w-10"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </button>
+
+              {/* ポップオーバー */}
+              {isPopoverOpen && (
+                <div className="absolute top-18 right-0 w-80 rounded-2xl border border-dashed border-emerald-200 dark:border-emerald-800 bg-emerald-50/60 dark:bg-emerald-900/20 p-6 shadow-xl animate-[fadeInScale_0.3s_ease-out]">
+                  <h3 className="text-lg font-semibold text-emerald-800 dark:text-emerald-300 mb-4">
+                    💡 Tips
+                  </h3>
+
+                  <div className="space-y-4">
+                    {/* 習慣の木について */}
+                    <div>
+                      <h4 className="text-md font-medium text-emerald-800 dark:text-emerald-300 mb-2">
+                        習慣の木について
+                      </h4>
+                      <p className="text-sm text-emerald-900/80 dark:text-emerald-400">
+                        全期間の完了率と現在の継続数から算出される成長度に応じて、5段階のモデルに変化します。
+                      </p>
+                    </div>
+
+                    {/* 天気について */}
+                    <div>
+                      <h4 className="text-md font-medium text-emerald-800 dark:text-emerald-300 mb-2">
+                        天気について
+                      </h4>
+                      <p className="text-sm text-emerald-900/80 dark:text-emerald-400">
+                        すべての習慣の直近7日の完了率の平均に応じて変化します。完了率が高いと晴れ、低いと雨や雷雨になります。
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <GardenScene habits={habits} weather={weather} />
+          </div>
         )}
       </div>
     </>

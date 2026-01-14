@@ -407,8 +407,8 @@ export function calculateGrowthRate(habit: Habit): number {
 }
 
 export function getTreeModelLevel(growthRate: number): number {
-  if (growthRate >= 100) return 5;
-  if (growthRate >= 75) return 4;
+  if (growthRate >= 90) return 5;
+  if (growthRate >= 70) return 4;
   if (growthRate >= 50) return 3;
   if (growthRate >= 25) return 2;
   return 1;
