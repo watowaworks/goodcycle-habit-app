@@ -50,7 +50,7 @@ export default function GardenPage() {
   return (
     <>
       <Header
-        title="GoodCycle♾️"
+        title="GoodCycle"
         navLinks={[
           { label: "ホーム", href: "/" },
           { label: "ダッシュボード", href: "/dashboard" },
