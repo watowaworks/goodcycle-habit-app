@@ -54,8 +54,8 @@ messaging.setBackgroundMessageHandler(function (payload) {
   
   const notificationOptions = {
     body: notificationBody,
-    icon: "/favicon.ico",
-    badge: "/favicon.ico",
+    icon: "/icons/icon-192.png",
+    badge: "/icons/icon-192.png",
     tag: payload.messageId || `notification-${Date.now()}`, // Chromeで重複通知を防ぐ
     requireInteraction: false,
     silent: false,
