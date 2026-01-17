@@ -17,7 +17,7 @@ function getSkyGradientColors(weather: string): {
       // 明るい青（上） → 白（下）（晴れ）
       return {
         topColor: new THREE.Vector3(0.53, 0.81, 0.92), // #87CEEB（明るい青）
-        bottomColor: new THREE.Vector3(1.0, 1.0, 1.0), // 白
+        bottomColor: new THREE.Vector3(0.74, 0.89, 0.97), // #BDE3F7（薄い青）
       };
     case "cloudy":
       // 濃いグレー（上） → 薄いグレー（下）（曇り）

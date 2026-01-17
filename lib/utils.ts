@@ -19,7 +19,8 @@ export function parseDateString(dateString: string): Date {
 }
 
 // 前回の実施予定日を取得
-export function getPreviousDueDate(habit: Habit, currentDate: string): string | null{
+
+export function getPreviousDueDate(habit: Habit, currentDate: string): string | null {
   const current = parseDateString(currentDate);
 
   switch (habit.frequencyType) {
@@ -38,7 +39,7 @@ export function getPreviousDueDate(habit: Habit, currentDate: string): string | 
       const previousDayOfWeek = sortedDays.filter(day => day < currentDayOfWeek).sort((a, b) => b - a)[0];
 
       let daysToSubtract: number;
-      
+
       if (previousDayOfWeek !== undefined) {
         daysToSubtract = currentDayOfWeek - previousDayOfWeek;
       } else {
@@ -89,10 +90,10 @@ export function calculateStreaks(habit: Habit): {
   for (let i = 1; i < sortedDates.length; i++) {
     const prevDate = sortedDates[i - 1];
     const currDate = sortedDates[i];
-    
+
     // 前回の実施予定日を取得
     const previousDueDate = getPreviousDueDate(habit, currDate);
-    
+
     if (prevDate === previousDueDate) {
       // 連続している
       tempStreak++;
@@ -181,22 +182,22 @@ export function getWeekRange(date?: Date): {
 } {
   // 日付が指定されていない場合は今日を使用
   const targetDate = date || new Date();
-  
+
   // 曜日を取得（0=日曜、1=月曜、2=火曜...）
   const dayOfWeek = targetDate.getDay();
-  
+
   // 月曜日までの日数を計算
   // 日曜日（0）の場合は6日前、月曜日（1）の場合は0日前、火曜日（2）の場合は1日前...
   const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-  
+
   // 週の開始日（月曜日）を計算
   const monday = new Date(targetDate);
   monday.setDate(monday.getDate() - daysToMonday);
-  
+
   // 週の終了日（日曜日）を計算（月曜日の6日後）
   const sunday = new Date(monday);
   sunday.setDate(sunday.getDate() + 6);
-  
+
   return {
     startDate: formatDateToString(monday),
     endDate: formatDateToString(sunday),
@@ -210,7 +211,7 @@ export function getPreviousWeekRange(date?: Date): {
   const thisWeekRange = getWeekRange(date);
   const startDate = parseDateString(thisWeekRange.startDate);
   const endDate = parseDateString(thisWeekRange.endDate);
-  
+
   startDate.setDate(startDate.getDate() - 7);
   endDate.setDate(endDate.getDate() - 7);
   return {
@@ -225,11 +226,11 @@ export function getCurrentMonthRange(): {
   endDate: string;
 } {
   const today = new Date();
-  
+
   // 今月の1日を取得（年と月はそのままで、日だけ1日に設定）
   const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
   const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-  
+
   return {
     startDate: formatDateToString(firstDay),
     endDate: formatDateToString(lastDay),
@@ -239,21 +240,21 @@ export function getCurrentMonthRange(): {
 // 開始日から終了日までのすべての日付を配列として生成
 export function generateDateRange(startDate: string, endDate: string): string[] {
   const dates: string[] = [];
-  
+
   // 開始日をDateオブジェクトに変換
   const start = parseDateString(startDate);
   const end = parseDateString(endDate);
-  
+
   // 開始日から終了日まで、1日ずつ進めながら日付を追加
   const currentDate = new Date(start);
-  
+
   // 終了日を超えるまでループ
   while (currentDate <= end) {
     dates.push(formatDateToString(currentDate));
     // 次の日に進む
     currentDate.setDate(currentDate.getDate() + 1);
   }
-  
+
   return dates;
 }
 
@@ -263,17 +264,17 @@ export function calculateCompletionRate(habit: Habit, startDate: string, endDate
   const dateRange = generateDateRange(startDate, endDate);
   const scheduledDates = dateRange.filter(date => isHabitDueOnDate(habit, date));
   const targetDays = scheduledDates.length;
-  
+
   // 期間内に日付がない場合、またはcompletedDatesが存在しない場合は0%を返す
   if (targetDays === 0 || !habit.completedDates || habit.completedDates.length === 0) {
     return 0;
   }
-  
+
   // 期間内の完了日数をカウント
-  const completedDays = scheduledDates.filter(date => 
+  const completedDays = scheduledDates.filter(date =>
     habit.completedDates!.includes(date)
   ).length;
-  
+
   // 完了率を計算（小数点以下1桁に丸める）
   const completionRate = (completedDays / targetDays) * 100;
   return Math.round(completionRate * 10) / 10;
@@ -284,8 +285,8 @@ export function getCompletionStatusForPeriod(
   habit: Habit,
   startDate: string,
   endDate: string
-): { 
-  date: string; 
+): {
+  date: string;
   completed: boolean;
   isDue: boolean;
 }[] {
@@ -299,7 +300,7 @@ export function getCompletionStatusForPeriod(
       isDue,
     }
   })
-  
+
   return result;
 }
 
@@ -313,21 +314,21 @@ export function calculateMonthlyTrend(habit: Habit): {
   const startDate = monthRange.startDate;
   // 終了日を今日にする
   const endDate = getTodayString();
-  
+
   // 期間内のすべての日付を生成
   const dateRange = generateDateRange(startDate, endDate);
-  
+
   // 各日について、1日からその日までの累積完了率を計算
   const trendData = dateRange.map((currentDate) => {
     // 1日から現在の日付までの完了率を計算
     const completionRate = calculateCompletionRate(habit, startDate, currentDate);
-    
+
     return {
       date: currentDate,
       completionRate,
     };
   });
-  
+
   return trendData;
 }
 
@@ -337,25 +338,25 @@ export function findMostConsistentHabit(habits: Habit[]): Habit[] {
   if (habits.length === 0) {
     return [];
   }
-  
+
   // 最大ストリークを探す
   let maxStreak = -1;
-  
+
   for (const habit of habits) {
     // currentStreakが存在しない場合は0として扱う
     const currentStreak = habit.currentStreak ?? 0;
-    
+
     // より長いストリークを見つけたら更新
     if (currentStreak > maxStreak) {
       maxStreak = currentStreak;
     }
   }
-  
+
   // すべての習慣のストリークが0以下の場合は空配列を返す
   if (maxStreak <= 0) {
     return [];
   }
-  
+
   // 最大ストリークを持つすべての習慣を返す
   return habits.filter((habit) => (habit.currentStreak ?? 0) === maxStreak);
 }
@@ -386,14 +387,26 @@ export function isHabitDueOnDate(habit: Habit, date: string): boolean {
 // 成長度を計算
 export function calculateGrowthRate(habit: Habit): number {
   // createdAtをDateオブジェクトに変換
-  const createdAtDate = habit.createdAt instanceof Date 
-    ? habit.createdAt 
+  const createdAtDate = habit.createdAt instanceof Date
+    ? habit.createdAt
     : new Date(habit.createdAt);
 
-  // 全期間の完了率を計算（既存の関数を活用）
+  // 全期間の完了率を計算（分母に下限を設けて急上昇を防ぐ）
   const startDate = formatDateToString(createdAtDate);
   const endDate = getTodayString();
-  const completionRate = calculateCompletionRate(habit, startDate, endDate);
+  const dateRange = generateDateRange(startDate, endDate);
+  const scheduledDates = dateRange.filter(date => isHabitDueOnDate(habit, date));
+  const targetDays = scheduledDates.length;
+  const minTargetDays = 7;
+
+  let completionRate = 0;
+  if (targetDays > 0 && habit.completedDates && habit.completedDates.length > 0) {
+    const completedDays = scheduledDates.filter(date =>
+      habit.completedDates!.includes(date)
+    ).length;
+    const denominator = Math.max(targetDays, minTargetDays);
+    completionRate = Math.round((completedDays / denominator) * 100 * 10) / 10;
+  }
 
   // ストリークボーナス（最大30日で20%）
   const currentStreak = habit.currentStreak ?? 0;
