@@ -8,15 +8,15 @@ type Props = {
 };
 
 export default function Ground({ onGroundClick }: Props) {
-  const { scene } = useGLTF("/models/ground.glb");
+  const { scene } = useGLTF("/models/temp.glb");
   // シーンをクローンして独立したコピーを作成（必要に応じて）
   const clonedScene = useMemo(() => scene.clone(), [scene]);
 
   return (
     <primitive
       object={clonedScene}
-      position={[0, -1.6, 0]}
-      scale={1}
+      position={[0, 0, 0]}
+      scale={0.3}
       onClick={
         onGroundClick
           ? (e: any) => {
