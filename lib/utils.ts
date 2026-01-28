@@ -431,7 +431,7 @@ export function getTreeModelLevel(growthRate: number): number {
 export function calculateGardenWeather(habits: Habit[]): "sunny" | "cloudy" | "rainy" | "stormy" {
   // 1. 習慣がない場合の処理
   if (habits.length === 0) {
-    return 'cloudy'; // デフォルトは曇り
+    return 'sunny'; // デフォルトは曇り
   }
 
   // 2. 直近7日の日付範囲を計算

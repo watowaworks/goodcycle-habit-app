@@ -20,13 +20,17 @@ export default function GardenScene({ habits, weather }: Props) {
   const [selectedTreeId, setSelectedTreeId] = useState<string | null>(null);
 
   return (
-    <Canvas camera={{ position: [0, 10, 20], fov: 50 }} dpr={[1, 2]}>
+    <Canvas camera={{ position: [0, 4, 14], fov: 50 }} dpr={[1, 2]}>
       <OrbitControls
         enableZoom={true}
-        enablePan={true}
+        enablePan={false}
         enableRotate={true}
-        minDistance={3}
-        maxDistance={50}
+        minDistance={10}
+        maxDistance={18}
+        minPolarAngle={Math.PI * 0.30}
+        maxPolarAngle={Math.PI * 0.50}
+        minAzimuthAngle={-Math.PI * 0.12}
+        maxAzimuthAngle={Math.PI * 0.12}
       />
       <Sky weather={weather} />
       <Rain weather={weather} />

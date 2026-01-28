@@ -19,7 +19,7 @@ function calculateTreePositions(
   const radius = 5;
   const x = Math.cos(angle) * radius;
   const z = Math.sin(angle) * radius;
-  return [x, 0, z];
+  return [x, -1, z];
 }
 
 export default function Trees({ habits, selectedTreeId, onTreeSelect }: Props) {
