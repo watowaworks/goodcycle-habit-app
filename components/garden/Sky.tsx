@@ -70,10 +70,10 @@ function getCloudParams(weather: string): {
       };
     default:
       return {
-        cloudCoverage: 0.5,
-        cloudSoftness: 0.16,
-        cloudOpacity: 0.45,
-        cloudScale: 2.4,
+        cloudCoverage: 0.9,
+        cloudSoftness: 0.20,
+        cloudOpacity: 0.7,
+        cloudScale: 2.2,
         cloudColor: new THREE.Vector3(1.0, 0.98, 0.95),
       };
   }
