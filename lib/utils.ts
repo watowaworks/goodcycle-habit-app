@@ -440,14 +440,22 @@ export function calculateGardenWeather(habits: Habit[]): "sunny" | "cloudy" | "r
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
   const startDate = formatDateToString(sevenDaysAgo);
 
-  // 3. 各習慣の直近7日の完了率を計算し、平均を求める
-  const totalCompletionRate = habits.reduce((sum, habit) => {
+  // 3. 実績が1回もない習慣は平均から除外
+  const targetHabits = habits.filter(
+    habit => habit.completedDates && habit.completedDates.length > 0
+  );
+  if (targetHabits.length === 0) {
+    return 'sunny';
+  }
+
+  // 4. 各習慣の直近7日の完了率を計算し、平均を求める
+  const totalCompletionRate = targetHabits.reduce((sum, habit) => {
     const completionRate = calculateCompletionRate(habit, startDate, today);
     return sum + completionRate;
   }, 0);
-  const averageCompletionRate = totalCompletionRate / habits.length;
+  const averageCompletionRate = totalCompletionRate / targetHabits.length;
 
-  // 4. 平均完了率に応じて天気を決定
+  // 5. 平均完了率に応じて天気を決定
   // 晴れ: 75%以上、曇り: 50-75%、雨: 25-50%、雷雨: 25%未満
   if (averageCompletionRate >= 75) {
     return 'sunny';
