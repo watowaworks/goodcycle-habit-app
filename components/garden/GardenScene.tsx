@@ -22,7 +22,7 @@ function ResponsiveCamera({ isNarrow }: { isNarrow: boolean }) {
   useEffect(() => {
     const perspectiveCamera = camera as THREE.PerspectiveCamera;
     if (isNarrow) {
-      perspectiveCamera.fov = 65;
+      perspectiveCamera.fov = 70;
     } else {
       perspectiveCamera.fov = 50;
     }
