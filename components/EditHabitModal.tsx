@@ -261,7 +261,7 @@ export default function EditHabitModal({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-sm sm:max-w-md mx-auto my-4 max-h-[calc(100dvh-12rem)] bg-white dark:bg-gray-800 rounded-xl shadow dark:shadow-gray-900/50 overflow-hidden flex flex-col min-w-0"
+        className="w-full max-w-sm sm:max-w-md mx-auto my-4 max-h-[calc(100dvh-12rem)] rounded-xl border border-emerald-200/60 dark:border-emerald-700/50 bg-emerald-50 dark:bg-emerald-950 shadow-xl shadow-emerald-900/10 dark:shadow-emerald-900/40 overflow-hidden flex flex-col min-w-0"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="overflow-y-auto p-4 min-w-0">

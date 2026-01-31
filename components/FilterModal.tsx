@@ -80,7 +80,7 @@ export default function FilterModal({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-sm sm:max-w-md mx-auto my-4 h-auto overflow-hidden bg-white dark:bg-gray-800 rounded-xl shadow dark:shadow-gray-900/50 flex flex-col"
+        className="w-full max-w-sm sm:max-w-md mx-auto my-4 h-auto overflow-hidden border border-amber-200/60 dark:border-amber-700/50 bg-amber-50 dark:bg-amber-950 rounded-xl shadow-xl shadow-amber-900/10 dark:shadow-amber-900/40 flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="overflow-y-auto flex-1 p-4 m-4">
@@ -166,7 +166,7 @@ export default function FilterModal({
               onClick={handleApply}
               className="w-full py-2 rounded-lg font-semibold transition bg-blue-500 dark:bg-blue-600 text-white hover:bg-blue-600 dark:hover:bg-blue-700"
             >
-              決定
+              適用
             </button>
           </div>
         </div>

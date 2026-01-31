@@ -431,13 +431,13 @@ export function getTreeModelLevel(growthRate: number): number {
 export function calculateGardenWeather(habits: Habit[]): "sunny" | "cloudy" | "rainy" | "stormy" {
   // 1. 習慣がない場合の処理
   if (habits.length === 0) {
-    return 'sunny'; // デフォルトは曇り
+    return 'sunny'; // デフォルトはsunny
   }
 
   // 2. 直近7日の日付範囲を計算
   const today = getTodayString();
   const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
   const startDate = formatDateToString(sevenDaysAgo);
 
   // 3. 実績が1回もない習慣は平均から除外
@@ -448,9 +448,16 @@ export function calculateGardenWeather(habits: Habit[]): "sunny" | "cloudy" | "r
     return 'sunny';
   }
 
-  // 4. 各習慣の直近7日の完了率を計算し、平均を求める
+  // 4. 直近7日（実施日のみ対象）の完了率を計算し、平均を求める
+  //    習慣の作成日より前は対象外
   const totalCompletionRate = targetHabits.reduce((sum, habit) => {
-    const completionRate = calculateCompletionRate(habit, startDate, today);
+    const createdAtDate =
+      habit.createdAt instanceof Date ? habit.createdAt : new Date(habit.createdAt);
+    const createdAtString = formatDateToString(createdAtDate);
+    const effectiveStartDate = createdAtDate > sevenDaysAgo
+      ? createdAtString
+      : startDate;
+    const completionRate = calculateCompletionRate(habit, effectiveStartDate, today);
     return sum + completionRate;
   }, 0);
   const averageCompletionRate = totalCompletionRate / targetHabits.length;

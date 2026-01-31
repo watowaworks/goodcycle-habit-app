@@ -22,6 +22,7 @@ export default function AddHabitModal({
   notificationPermission,
   requestNotificationPermission,
 }: Props) {
+  const MAX_HABITS = 12;
   // 関数は個別に取得
   const addHabit = useStore((state) => state.addHabit);
   const addCategory = useStore((state) => state.addCategory);
@@ -77,6 +78,8 @@ export default function AddHabitModal({
   }, [isOpen]);
 
   const isLoggedIn = !!auth.currentUser;
+  const totalHabits = isLoggedIn ? habits.length : localHabits.length;
+  const isAtHabitLimit = totalHabits >= MAX_HABITS;
 
   // カテゴリを追加
   const handleAddCategory = async () => {
@@ -133,6 +136,10 @@ export default function AddHabitModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (isAtHabitLimit) {
+      return alert(`習慣は最大${MAX_HABITS}件まで登録できます。`);
+    }
 
     if (!title.trim()) return alert("習慣のタイトルを入力してください");
     if (!category) return alert("カテゴリを選択してください");
@@ -259,7 +266,7 @@ export default function AddHabitModal({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-sm sm:max-w-md mx-auto my-4 max-h-[calc(100dvh-12rem)] bg-white dark:bg-gray-800 rounded-xl shadow dark:shadow-gray-900/50 overflow-hidden flex flex-col min-w-0"
+        className="w-full max-w-sm sm:max-w-md mx-auto my-4 max-h-[calc(100dvh-12rem)] rounded-xl border border-emerald-200/60 dark:border-emerald-700/50 bg-emerald-50 dark:bg-emerald-950 shadow-xl shadow-emerald-900/10 dark:shadow-emerald-900/40 overflow-hidden flex flex-col min-w-0"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="overflow-y-auto p-4 min-w-0">
@@ -612,9 +619,9 @@ export default function AddHabitModal({
               {/* 送信ボタン */}
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || isAtHabitLimit}
                 className={`flex-1 py-2 rounded-lg font-semibold transition ${
-                  loading
+                  loading || isAtHabitLimit
                     ? "bg-gray-400 dark:bg-gray-600 text-white cursor-not-allowed"
                     : "bg-blue-500 dark:bg-blue-600 text-white hover:bg-blue-600 dark:hover:bg-blue-700"
                 }`}
@@ -622,6 +629,11 @@ export default function AddHabitModal({
                 {loading ? "追加中..." : "追加する"}
               </button>
             </div>
+            {isAtHabitLimit && (
+              <p className="text-sm text-red-500 dark:text-red-400">
+                習慣は最大{MAX_HABITS}件まで登録できます。
+              </p>
+            )}
           </form>
         </div>
       </div>

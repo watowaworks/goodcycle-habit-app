@@ -188,7 +188,7 @@ export default function Sky({ weather }: Props) {
 
   return (
     <mesh>
-      <sphereGeometry args={[100, 32, 32]} />
+      <sphereGeometry args={[300, 32, 32]} />
       <shaderMaterial
         vertexShader={vertexShader}
         fragmentShader={fragmentShader}

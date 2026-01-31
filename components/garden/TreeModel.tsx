@@ -32,7 +32,7 @@ export default function TreeModel({
   // 初期スケールを設定
   useEffect(() => {
     if (groupRef.current) {
-      groupRef.current.scale.set(0.8, 0.8, 0.8);
+      groupRef.current.scale.set(1, 1, 1);
     }
   }, []);
 
@@ -40,7 +40,7 @@ export default function TreeModel({
   useFrame(() => {
     if (!groupRef.current) return;
 
-    const targetScale = isHovered || isSelected ? 0.95 : 0.8;
+    const targetScale = isHovered || isSelected ? 1.2 : 1;
 
     // スムーズな補間（lerp）
     groupRef.current.scale.lerp(
@@ -62,7 +62,7 @@ export default function TreeModel({
       <group ref={groupRef} position={position}>
         <primitive
           object={clonedScene}
-          scale={0.8}
+          scale={1}
           onPointerOver={(e: any) => {
             e.stopPropagation();
             setIsHovered(true);
