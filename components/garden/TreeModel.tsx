@@ -62,7 +62,7 @@ export default function TreeModel({
       <group ref={groupRef} position={position}>
         <primitive
           object={clonedScene}
-          scale={1}
+          scale={3}
           onPointerOver={(e: any) => {
             e.stopPropagation();
             setIsHovered(true);

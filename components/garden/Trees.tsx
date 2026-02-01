@@ -13,11 +13,11 @@ type Props = {
 // 木の位置を計算（グリッドに配置）
 function calculateTreePositions(index: number): [number, number, number] {
   const columns = 4;
-  const spacing = 12;
+  const spacing = 32;
   const col = index % columns;
   const row = Math.floor(index / columns);
   const x = (col - 1.5) * spacing;
-  const z = (row - 1.5) * spacing;
+  const z = (row - 0.9) * spacing;
   return [x, -3, z];
 }
 

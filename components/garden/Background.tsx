@@ -15,7 +15,7 @@ export default function Background({ onBackgroundClick }: Props) {
   return (
     <primitive
       object={clonedScene}
-      position={[0, -50, -50]}
+      position={[0, -30, -130]}
       scale={[1, 1, 1]}
       rotation={[0, 0, 0]}
       onClick={

@@ -11,6 +11,7 @@ import GardenTrees from "./Trees";
 import Rain from "./Rain";
 import Lightning from "./Lightning";
 import Background from "./Background";
+import Fence from "./Fence";
 
 type Props = {
   habits: Habit[];
@@ -24,13 +25,13 @@ function ResponsiveCamera({ isNarrow }: { isNarrow: boolean }) {
     const perspectiveCamera = camera as THREE.PerspectiveCamera;
     
     if (isNarrow) {
-      perspectiveCamera.position.set(0, 20, 30);
+      perspectiveCamera.position.set(0, 60, 90);
     } else {
-      perspectiveCamera.position.set(0, 15, 25);
+      perspectiveCamera.position.set(0, 60, 90);
     }
 
     if (isNarrow) {
-      perspectiveCamera.fov = 85;
+      perspectiveCamera.fov = 80;
     } else {
       perspectiveCamera.fov = 50;
     }
@@ -59,23 +60,24 @@ export default function GardenScene({ habits, weather }: Props) {
   }, []);
 
   return (
-    <Canvas camera={{ position: [0, 15, 25], fov: 50 }} dpr={[1, 2]}>
+    <Canvas dpr={[1, 2]}>
       <ResponsiveCamera isNarrow={isNarrow} />
       <OrbitControls
         enableZoom={true}
         enablePan={false}
         enableRotate={true}
         minDistance={10}
-        maxDistance={50}
+        maxDistance={isNarrow ? 150 : 120}
         minPolarAngle={Math.PI * 0.20}
         maxPolarAngle={Math.PI * 0.50}
-        minAzimuthAngle={-Math.PI * 0.12}
-        maxAzimuthAngle={Math.PI * 0.12}
+        minAzimuthAngle={-Math.PI * 0.24}
+        maxAzimuthAngle={Math.PI * 0.24}
       />
       <Sky weather={weather} />
       <Rain weather={weather} />
       <Lightning weather={weather} />
       <Ground onGroundClick={() => setSelectedTreeId(null)} />
+      <Fence />
       <Background onBackgroundClick={() => setSelectedTreeId(null)} />
       {/* 背景用の透明なメッシュ（Canvas内のどこかをクリックしたらツールチップを閉じる） */}
       <mesh

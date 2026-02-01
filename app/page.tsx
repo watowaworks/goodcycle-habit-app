@@ -140,7 +140,7 @@ export default function HomePage() {
               <div className="flex text-xl ml-auto">
                 <div className="text-gray-500 dark:text-gray-400">習慣数：</div>
                 <div className="text-emerald-500">{allHabits.length}</div>
-                <div className="text-gray-500 dark:text-gray-400">/15</div>
+                <div className="text-gray-500 dark:text-gray-400">/12</div>
               </div>
             </div>
 

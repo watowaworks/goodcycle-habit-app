@@ -16,7 +16,7 @@ export default function Ground({ onGroundClick }: Props) {
     <primitive
       object={clonedScene}
       position={[0, -3, 0]}
-      scale={[2, 1, 0.5]}
+      scale={[10, 1, 2]}
       rotation={[0, 0, 0]}
       onClick={
         onGroundClick
