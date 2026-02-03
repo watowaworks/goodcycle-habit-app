@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import * as THREE from "three";
 
 export default function Fence() {
-  const { scene } = useGLTF("/models/Fence.glb");
+  const { scene } = useGLTF("/models/fence.glb");
   const { size, min } = useMemo(() => {
     const box = new THREE.Box3().setFromObject(scene);
     const size = new THREE.Vector3();

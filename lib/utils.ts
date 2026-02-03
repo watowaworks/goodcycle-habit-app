@@ -427,29 +427,27 @@ export function getTreeModelLevel(growthRate: number): number {
   return 1;
 }
 
-// 庭全体の天気を決定
-export function calculateGardenWeather(habits: Habit[]): "sunny" | "cloudy" | "rainy" | "stormy" {
-  // 1. 習慣がない場合の処理
+// 庭全体の平均完了率を算出（直近7日・実施日のみ対象）
+export function calculateGardenAverageCompletionRate(
+  habits: Habit[]
+): number | null {
   if (habits.length === 0) {
-    return 'sunny'; // デフォルトはsunny
+    return null;
   }
 
-  // 2. 直近7日の日付範囲を計算
   const today = getTodayString();
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
   const startDate = formatDateToString(sevenDaysAgo);
 
-  // 3. 実績が1回もない習慣は平均から除外
+  // 実績が1回もない習慣は平均から除外
   const targetHabits = habits.filter(
     habit => habit.completedDates && habit.completedDates.length > 0
   );
   if (targetHabits.length === 0) {
-    return 'sunny';
+    return null;
   }
 
-  // 4. 直近7日（実施日のみ対象）の完了率を計算し、平均を求める
-  //    習慣の作成日より前は対象外
   const totalCompletionRate = targetHabits.reduce((sum, habit) => {
     const createdAtDate =
       habit.createdAt instanceof Date ? habit.createdAt : new Date(habit.createdAt);
@@ -460,7 +458,17 @@ export function calculateGardenWeather(habits: Habit[]): "sunny" | "cloudy" | "r
     const completionRate = calculateCompletionRate(habit, effectiveStartDate, today);
     return sum + completionRate;
   }, 0);
-  const averageCompletionRate = totalCompletionRate / targetHabits.length;
+
+  return totalCompletionRate / targetHabits.length;
+}
+
+// 庭全体の天気を決定
+export function calculateGardenWeather(habits: Habit[]): "sunny" | "cloudy" | "rainy" | "stormy" {
+  // 直近7日（実施日のみ対象）の平均完了率を取得
+  const averageCompletionRate = calculateGardenAverageCompletionRate(habits);
+  if (averageCompletionRate === null) {
+    return 'sunny'; // デフォルトはsunny
+  }
 
   // 5. 平均完了率に応じて天気を決定
   // 晴れ: 75%以上、曇り: 50-75%、雨: 25-50%、雷雨: 25%未満

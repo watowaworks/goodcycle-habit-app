@@ -3,7 +3,7 @@
 import { Habit } from "@/types";
 import { OrbitControls } from "@react-three/drei";
 import { Canvas, useThree } from "@react-three/fiber";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import * as THREE from "three";
 import Sky from "./Sky";
 import Ground from "./Ground";
@@ -12,6 +12,8 @@ import Rain from "./Rain";
 import Lightning from "./Lightning";
 import Background from "./Background";
 import Fence from "./Fence";
+import Signboard from "./Signboard";
+import { calculateGardenAverageCompletionRate } from "@/lib/utils";
 
 type Props = {
   habits: Habit[];
@@ -44,6 +46,7 @@ function ResponsiveCamera({ isNarrow }: { isNarrow: boolean }) {
 export default function GardenScene({ habits, weather }: Props) {
   const [selectedTreeId, setSelectedTreeId] = useState<string | null>(null);
   const [isNarrow, setIsNarrow] = useState(false);
+  const averageCompletionRate = useMemo(() => calculateGardenAverageCompletionRate(habits), [habits]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 768px)");
@@ -70,14 +73,15 @@ export default function GardenScene({ habits, weather }: Props) {
         maxDistance={isNarrow ? 150 : 120}
         minPolarAngle={Math.PI * 0.20}
         maxPolarAngle={Math.PI * 0.50}
-        minAzimuthAngle={-Math.PI * 0.24}
-        maxAzimuthAngle={Math.PI * 0.24}
+        // minAzimuthAngle={-Math.PI * 0.24}
+        // maxAzimuthAngle={Math.PI * 0.24}
       />
       <Sky weather={weather} />
       <Rain weather={weather} />
       <Lightning weather={weather} />
       <Ground onGroundClick={() => setSelectedTreeId(null)} />
       <Fence />
+      <Signboard weather={weather} averageCompletionRate={averageCompletionRate} />
       <Background onBackgroundClick={() => setSelectedTreeId(null)} />
       {/* 背景用の透明なメッシュ（Canvas内のどこかをクリックしたらツールチップを閉じる） */}
       <mesh
