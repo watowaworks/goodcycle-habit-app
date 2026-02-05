@@ -27,9 +27,9 @@ function ResponsiveCamera({ isNarrow }: { isNarrow: boolean }) {
     const perspectiveCamera = camera as THREE.PerspectiveCamera;
     
     if (isNarrow) {
-      perspectiveCamera.position.set(0, 60, 90);
+      perspectiveCamera.position.set(0, 40, 100);
     } else {
-      perspectiveCamera.position.set(0, 60, 90);
+      perspectiveCamera.position.set(0, 40, 100);
     }
 
     if (isNarrow) {
@@ -46,7 +46,10 @@ function ResponsiveCamera({ isNarrow }: { isNarrow: boolean }) {
 export default function GardenScene({ habits, weather }: Props) {
   const [selectedTreeId, setSelectedTreeId] = useState<string | null>(null);
   const [isNarrow, setIsNarrow] = useState(false);
-  const averageCompletionRate = useMemo(() => calculateGardenAverageCompletionRate(habits), [habits]);
+  const averageCompletionRate = useMemo(
+    () => calculateGardenAverageCompletionRate(habits),
+    [habits]
+  );
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 768px)");
@@ -73,16 +76,16 @@ export default function GardenScene({ habits, weather }: Props) {
         maxDistance={isNarrow ? 150 : 120}
         minPolarAngle={Math.PI * 0.20}
         maxPolarAngle={Math.PI * 0.50}
-        // minAzimuthAngle={-Math.PI * 0.24}
-        // maxAzimuthAngle={Math.PI * 0.24}
+        minAzimuthAngle={-Math.PI * 0.24}
+        maxAzimuthAngle={Math.PI * 0.24}
       />
       <Sky weather={weather} />
       <Rain weather={weather} />
       <Lightning weather={weather} />
-      <Ground onGroundClick={() => setSelectedTreeId(null)} />
+      <Ground />
       <Fence />
       <Signboard weather={weather} averageCompletionRate={averageCompletionRate} />
-      <Background onBackgroundClick={() => setSelectedTreeId(null)} />
+      <Background />
       {/* 背景用の透明なメッシュ（Canvas内のどこかをクリックしたらツールチップを閉じる） */}
       <mesh
         position={[0, 0, 0]}
