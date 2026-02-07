@@ -114,7 +114,7 @@ export default function Signboard({
 
     let stateText = "";
     if (incompleteHabits.length > 0) {
-      stateText = `未完了の習慣が${incompleteHabits.length}個...\n余裕があればやってみよう！`;
+      stateText = `未完了の習慣は${incompleteHabits.length}個\n余裕があればやってみよう！`;
     } else {
       stateText = "習慣をすべて完了しました！\n🎉お疲れ様でした🎉";
     }
@@ -128,13 +128,13 @@ export default function Signboard({
           : weather === "rainy"
             ? "雨🌧️"
             : "雷雨⛈️";
-    drawBoard(weatherCtx, weatherText, 80, "#66FF66");
+    drawBoard(weatherCtx, `【ガーデンの天気】\n${weatherText}`, 60, "#66FF66");
 
     const rateText =
       averageCompletionRate === null
         ? "—"
         : `${Math.round(averageCompletionRate * 10) / 10}%`;
-    drawBoard(rateCtx, `7日間の平均完了率:${rateText}`, 60, "#66CCFF");
+    drawBoard(rateCtx, `【7日間の平均完了率】\n${rateText}`, 60, "#66CCFF");
 
     stateTexture.needsUpdate = true;
     weatherTexture.needsUpdate = true;

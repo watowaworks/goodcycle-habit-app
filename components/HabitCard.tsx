@@ -16,6 +16,7 @@ export default function HabitCard({ habit }: Props) {
   const deleteHabit = useStore((state) => state.deleteHabit);
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [showStars, setShowStars] = useState(false);
 
   const isLoggedIn = !!auth.currentUser;
 
@@ -69,11 +70,24 @@ export default function HabitCard({ habit }: Props) {
       {/* コンテンツ用のdiv（opacityの影響を受けない） */}
       <div className="relative flex items-center justify-between p-4 shadow hover:shadow-md dark:shadow-gray-800/50 transition">
         <>
-          <div className="flex items-center gap-3">
+          <div className="relative flex items-center gap-3">
+            {showStars && (
+              <div className="absolute -left-1  pointer-events-none">
+                <span className="star star-1">✨</span>
+                <span className="star star-2">✨</span>
+                <span className="star star-3">✨</span>
+              </div>
+            )}
             <input
               type="checkbox"
               checked={habit.completed}
-              onChange={() => toggleHabitStatus(habit.id)}
+              onChange={() => {
+                toggleHabitStatus(habit.id);
+                if (!habit.completed) {
+                  setShowStars(true);
+                  setTimeout(() => setShowStars(false), 600);
+                }
+              }}
               className="w-5 h-5 accent-blue-500 dark:accent-blue-400 cursor-pointer"
               disabled={!isDue}
             />

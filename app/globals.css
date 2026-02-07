@@ -38,3 +38,19 @@ body {
     transform: scale(1);
   }
 }
+
+@keyframes popStar {
+  0% { transform: translate(0, 0) scale(0); opacity: 0; }
+  40%  { transform: translate(var(--x), var(--y)) scale(1); opacity: 1; }
+  100% { transform: translate(var(--x), var(--y)) scale(0.6); opacity: 0; }
+}
+
+.star {
+  position: absolute;
+  font-size: 14px;
+  animation: popStar 0.6s ease-out forwards;
+}
+
+.star-1 { --x: 24px; --y: -28px; }
+.star-2 { --x: 8px;  --y: -36px; }
+.star-3 { --x: 30px; --y: -40px; }
