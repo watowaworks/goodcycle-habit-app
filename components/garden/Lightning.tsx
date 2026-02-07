@@ -14,7 +14,7 @@ function createLightningShape(
   end: [number, number, number]
 ): THREE.Vector3[] {
   const points: THREE.Vector3[] = [new THREE.Vector3(...start)];
-  const segments = 8; // ジグザグのセグメント数
+  const segments = 15; // ジグザグのセグメント数
 
   for (let i = 1; i < segments; i++) {
     const t = i / segments;
@@ -75,13 +75,13 @@ export default function Lightning({ weather }: Props) {
     setLightningVisible(true);
 
     // 稲妻の位置をランダムに生成
-    const startX = (Math.random() - 0.5) * 30;
-    const startZ = (Math.random() - 0.5) * 30;
-    const start: [number, number, number] = [startX, 40, startZ];
+    const startX = (Math.random() - 0.5) * 200;
+    const startZ = (Math.random() - 0.5) * 200;
+    const start: [number, number, number] = [startX, 100, startZ];
     const end: [number, number, number] = [
-      startX + (Math.random() - 0.5) * 5,
+      startX + (Math.random() - 0.5) * 20,
       0,
-      startZ + (Math.random() - 0.5) * 5,
+      startZ + (Math.random() - 0.5) * 20,
     ];
 
     const points = createLightningShape(start, end);

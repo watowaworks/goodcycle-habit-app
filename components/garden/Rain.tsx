@@ -21,14 +21,14 @@ export default function Rain({ weather }: Props) {
     return null;
   }
 
-  const rainCount = weather === "stormy" ? 2000 : 1000; // 雨粒の数
+  const rainCount = weather === "stormy" ? 4000 : 2000; // 雨粒の数
   const rainLength = 0.3; // 雨粒の長さ
 
   // 雨粒の初期位置を生成（useMemoで再生成を防ぐ）
   // Skyの球の半径100以内に配置
   const rainDrops = useMemo<RainDrop[]>(() => {
-    const baseSpeed = weather === "stormy" ? 0.5 : 0.3;
-    const sphereRadius = 100; // Skyの球の半径
+    const baseSpeed = weather === "stormy" ? 0.8 : 0.5;
+    const sphereRadius = 300; // Skyの球の半径
     return Array.from({ length: rainCount }, () => {
       // 円形の範囲内にランダムに配置（XZ平面）
       const angle = Math.random() * Math.PI * 2;
@@ -47,7 +47,7 @@ export default function Rain({ weather }: Props) {
 
   // ジオメトリとマテリアルは1つだけ作成（全インスタンスで共有）
   const geometry = useMemo(
-    () => new THREE.CylinderGeometry(0.01, 0.01, rainLength, 4),
+    () => new THREE.CylinderGeometry(0.05, 0.05, rainLength, 4),
     []
   );
 

@@ -277,7 +277,7 @@ export function calculateCompletionRate(habit: Habit, startDate: string, endDate
 
   // 完了率を計算（小数点以下1桁に丸める）
   const completionRate = (completedDays / targetDays) * 100;
-  return Math.round(completionRate * 10) / 10;
+  return Math.round(completionRate);
 }
 
 // 開始日から終了日の各日の完了状態を取得（カレンダー表示用）
@@ -459,7 +459,7 @@ export function calculateGardenAverageCompletionRate(
     return sum + completionRate;
   }, 0);
 
-  return totalCompletionRate / targetHabits.length;
+  return Math.round(totalCompletionRate / targetHabits.length);
 }
 
 // 庭全体の天気を決定

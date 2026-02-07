@@ -108,7 +108,7 @@ export default function GardenPage() {
 
               {/* ポップオーバー */}
               {isPopoverOpen && (
-                <div className="absolute top-18 right-0 w-80 rounded-2xl border border-dashed border-emerald-200 dark:border-emerald-800 bg-emerald-50/60 dark:bg-emerald-900/20 p-6 shadow-xl animate-[fadeInScale_0.3s_ease-out]">
+                <div className="absolute top-18 right-0 w-80 rounded-2xl border border-dashed border-emerald-200 dark:border-emerald-800 bg-white/90 dark:bg-gray-900/80 p-6 shadow-xl animate-[fadeInScale_0.3s_ease-out]">
                   <h3 className="text-lg font-semibold text-emerald-800 dark:text-emerald-300 mb-4">
                     💡 Tips
                   </h3>
@@ -119,7 +119,7 @@ export default function GardenPage() {
                       <h4 className="text-md font-medium text-emerald-800 dark:text-emerald-300 mb-2">
                         習慣の木について
                       </h4>
-                      <p className="text-sm text-emerald-900/80 dark:text-emerald-400">
+                      <p className="text-sm text-gray-700 dark:text-gray-300">
                         全期間の完了率と現在の継続数から算出される成長度に応じて、5段階のモデルに変化します。
                       </p>
                     </div>
@@ -129,9 +129,29 @@ export default function GardenPage() {
                       <h4 className="text-md font-medium text-emerald-800 dark:text-emerald-300 mb-2">
                         天気について
                       </h4>
-                      <p className="text-sm text-emerald-900/80 dark:text-emerald-400">
+                      <p className="text-sm text-gray-700 dark:text-gray-300">
                         すべての習慣の直近7日の完了率の平均に応じて変化します。完了率が高いと晴れ、低いと雨や雷雨になります。
                       </p>
+                    </div>
+                    {/* フラッグの状態説明 */}
+                    <div>
+                      <h4 className="text-md font-medium text-emerald-800 dark:text-emerald-300 mb-2">
+                        フラッグ🏴の状態
+                      </h4>
+                      <div className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
+                        <div className="flex items-center gap-2">
+                          <span className="inline-block h-2.5 w-2.5 rounded-full bg-emerald-300" />
+                          完了済みの習慣
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="inline-block h-2.5 w-2.5 rounded-full bg-red-400" />
+                          未完了の習慣
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="inline-block h-2.5 w-2.5 rounded-full bg-gray-400" />
+                          実施日ではない習慣
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>

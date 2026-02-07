@@ -3,9 +3,11 @@
 import { useGLTF } from "@react-three/drei";
 import { useEffect, useMemo } from "react";
 import * as THREE from "three";
-import { getTodayString } from "@/lib/utils";
+import { getTodayString, isHabitDueOnDate } from "@/lib/utils";
+import { Habit } from "@/types";
 
 type Props = {
+  habits: Habit[];
   weather: "sunny" | "rainy" | "cloudy" | "stormy";
   averageCompletionRate: number | null;
   position?: [number, number, number];
@@ -14,6 +16,7 @@ type Props = {
 };
 
 export default function Signboard({
+  habits,
   weather,
   averageCompletionRate,
   position = [0, -3, 60],
@@ -23,7 +26,7 @@ export default function Signboard({
   const { scene } = useGLTF("/models/Signboard.glb");
   const clonedScene = useMemo(() => scene.clone(true), [scene]);
 
-  const dateCanvas = useMemo(() => {
+  const stateCanvas = useMemo(() => {
     const c = document.createElement("canvas");
     c.width = 1024;
     c.height = 512;
@@ -44,9 +47,9 @@ export default function Signboard({
     return c;
   }, []);
 
-  const dateTexture = useMemo(
-    () => new THREE.CanvasTexture(dateCanvas),
-    [dateCanvas]
+  const stateTexture = useMemo(
+    () => new THREE.CanvasTexture(stateCanvas),
+    [stateCanvas]
   );
   const weatherTexture = useMemo(
     () => new THREE.CanvasTexture(weatherCanvas),
@@ -58,10 +61,10 @@ export default function Signboard({
   );
 
   useEffect(() => {
-    const dateCtx = dateCanvas.getContext("2d");
+    const stateCtx = stateCanvas.getContext("2d");
     const weatherCtx = weatherCanvas.getContext("2d");
     const rateCtx = rateCanvas.getContext("2d");
-    if (!dateCtx || !weatherCtx || !rateCtx) return;
+    if (!stateCtx || !weatherCtx || !rateCtx) return;
 
     const drawBoard = (
       ctx: CanvasRenderingContext2D,
@@ -76,15 +79,10 @@ export default function Signboard({
       ctx.fillStyle = backgroundColor;
       ctx.fillRect(0, 0, w, h);
 
-      // 枠
-      ctx.strokeStyle = "#cbb48a";
-      ctx.lineWidth = 10;
-      ctx.strokeRect(24, 24, w - 48, h - 48);
-
       const left = w - 920;
       const right = w - 80;
       const top = h - 200;
-      const bottom = h - 30;
+      const bottom = h - 20;
       const centerX = (left + right) / 2;
       const centerY = (top + bottom) / 2;
 
@@ -92,41 +90,59 @@ export default function Signboard({
       ctx.save();
       ctx.translate(0, h);
       ctx.scale(1, -1);
-      ctx.fillStyle = "#4a3b2a";
+      ctx.fillStyle = "#171716";
       ctx.font = `bold ${fontSize}px sans-serif`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillText(text, centerX, h - centerY);
+      const lines = text.split("\n");
+      const orderedLines = lines.slice().reverse();
+      const lineHeight = fontSize * 1.2;
+      const startY = centerY - ((orderedLines.length - 1) * lineHeight) / 2;
+      orderedLines.forEach((line, index) => {
+        ctx.fillText(line, centerX, h - (startY + index * lineHeight));
+      });
       ctx.restore();
     };
 
-    const today = new Date();
-    const formattedDate = `${today.getFullYear()}年 ${today.getMonth() + 1}月 ${today.getDate()}日`;
-    drawBoard(dateCtx, formattedDate, 70, "lightpink");
+    const today = getTodayString();
+    const incompleteHabits = habits.filter((habit) => {
+      const isDueToday = isHabitDueOnDate(habit, today);
+      const isCompletedToday = habit.completedDates?.includes(today);
+
+      return isDueToday && !isCompletedToday;
+    });
+
+    let stateText = "";
+    if (incompleteHabits.length > 0) {
+      stateText = `未完了の習慣が${incompleteHabits.length}個...\n余裕があればやってみよう！`;
+    } else {
+      stateText = "習慣をすべて完了しました！\n🎉お疲れ様でした🎉";
+    }
+    drawBoard(stateCtx, stateText, 45, "#FF99CC");
 
     const weatherText =
       weather === "sunny"
         ? "晴れ☀️"
         : weather === "cloudy"
-          ? "曇り☁️"
+          ? "くもり☁️"
           : weather === "rainy"
             ? "雨🌧️"
             : "雷雨⛈️";
-    drawBoard(weatherCtx, weatherText, 80, "lightgreen");
+    drawBoard(weatherCtx, weatherText, 80, "#66FF66");
 
     const rateText =
       averageCompletionRate === null
         ? "—"
         : `${Math.round(averageCompletionRate * 10) / 10}%`;
-    drawBoard(rateCtx, `7日間の平均完了率:${rateText}`, 60, "lightblue");
+    drawBoard(rateCtx, `7日間の平均完了率:${rateText}`, 60, "#66CCFF");
 
-    dateTexture.needsUpdate = true;
+    stateTexture.needsUpdate = true;
     weatherTexture.needsUpdate = true;
     rateTexture.needsUpdate = true;
   }, [
     averageCompletionRate,
-    dateCanvas,
-    dateTexture,
+    stateCanvas,
+    stateTexture,
     rateCanvas,
     rateTexture,
     weather,
@@ -145,7 +161,7 @@ export default function Signboard({
       const cloned = material.clone();
       const standard = cloned as THREE.MeshStandardMaterial;
       if (name === "board_1") {
-        standard.map = dateTexture;
+        standard.map = stateTexture;
         standard.color = new THREE.Color(0xffffff);
         cloned.needsUpdate = true;
         obj.material = cloned;
@@ -163,7 +179,7 @@ export default function Signboard({
         obj.material = cloned;
       }
     });
-  }, [clonedScene, dateTexture, rateTexture, weatherTexture]);
+  }, [clonedScene, stateTexture, rateTexture, weatherTexture]);
 
   return (
     <primitive

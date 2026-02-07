@@ -84,7 +84,7 @@ export default function GardenScene({ habits, weather }: Props) {
       <Lightning weather={weather} />
       <Ground />
       <Fence />
-      <Signboard weather={weather} averageCompletionRate={averageCompletionRate} />
+      <Signboard habits={habits} weather={weather} averageCompletionRate={averageCompletionRate} />
       <Background />
       {/* 背景用の透明なメッシュ（Canvas内のどこかをクリックしたらツールチップを閉じる） */}
       <mesh
@@ -98,7 +98,7 @@ export default function GardenScene({ habits, weather }: Props) {
           setSelectedTreeId(null);
         }}
       >
-        <planeGeometry args={[200, 200]} />
+        <planeGeometry args={[1000, 1000]} />
         <meshBasicMaterial transparent opacity={0} side={THREE.DoubleSide} />
       </mesh>
       <ambientLight intensity={2} />
