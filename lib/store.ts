@@ -239,7 +239,7 @@ export const useStore = create<Store>()(
           const shouldRecalculateStreaks = fields.frequencyType !== undefined && 
                                            fields.frequencyType !== existingHabit.frequencyType;
 
-          let finalFields = { ...fields };
+          const finalFields = { ...fields };
 
           if (shouldRecalculateStreaks) {
             const { longestStreak, currentStreak } = calculateStreaks(updatedHabit);

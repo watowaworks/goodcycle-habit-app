@@ -110,7 +110,7 @@ export async function updateHabit(
   if (!user) throw new Error("ログインが必要です");
 
   // notificationオブジェクトを構築（reminderTimeがundefinedの場合は除外）
-  const processedFields: Record<string, any> = { ...updatedFields };
+  const processedFields: Record<string, unknown> = { ...updatedFields };
   if (updatedFields.notification !== undefined) {
     if (updatedFields.notification === null) {
       // nullの場合は削除（Firestoreではnullでフィールドを削除できる）

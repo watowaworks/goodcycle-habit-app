@@ -136,10 +136,15 @@ export default function Signboard({
         : `${Math.round(averageCompletionRate * 10) / 10}%`;
     drawBoard(rateCtx, `【7日間の平均完了率】\n${rateText}`, 60, "#66CCFF");
 
+    // Three.js CanvasTexture の更新フラグ（必須のため eslint-disable）
+    // eslint-disable-next-line react-hooks/immutability -- Three.js texture requires needsUpdate
     stateTexture.needsUpdate = true;
+    // eslint-disable-next-line react-hooks/immutability -- Three.js texture requires needsUpdate
     weatherTexture.needsUpdate = true;
+    // eslint-disable-next-line react-hooks/immutability -- Three.js texture requires needsUpdate
     rateTexture.needsUpdate = true;
   }, [
+    habits,
     averageCompletionRate,
     stateCanvas,
     stateTexture,

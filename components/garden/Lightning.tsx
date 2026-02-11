@@ -29,11 +29,6 @@ function createLightningShape(
 }
 
 export default function Lightning({ weather }: Props) {
-  // 雷が発生する天気の時のみ表示
-  if (weather !== "stormy") {
-    return null;
-  }
-
   const { scene } = useThree();
   const [isFlashing, setIsFlashing] = useState(false);
   const [lightningVisible, setLightningVisible] = useState(false);
@@ -94,8 +89,10 @@ export default function Lightning({ weather }: Props) {
     }, 300); // 0.15秒で消える
   };
 
-  // ランダムな間隔で雷を発生
+  // ランダムな間隔で雷を発生（stormy の時のみ）
   useFrame((state) => {
+    if (weather !== "stormy") return;
+
     // ライトの初期化（初回のみ）
     initializeLights();
 
@@ -165,6 +162,11 @@ export default function Lightning({ weather }: Props) {
 
     return geometry;
   }, [lightningPoints]);
+
+  // 雷が発生する天気の時のみ表示
+  if (weather !== "stormy") {
+    return null;
+  }
 
   return (
     <>

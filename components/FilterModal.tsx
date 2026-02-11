@@ -32,6 +32,7 @@ export default function FilterModal({
   // モーダルが開いた時に、親の状態をローカルステートにコピー
   useEffect(() => {
     if (isOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- モーダル開閉時の親状態の同期
       setTempFilter(filter);
       setTempSelectedCategories(selectedCategories);
     }
@@ -40,6 +41,7 @@ export default function FilterModal({
   // モーダルを閉じた時にローカルステートをリセット
   useEffect(() => {
     if (!isOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- モーダル閉じた時のリセット
       setTempFilter(filter);
       setTempSelectedCategories(selectedCategories);
     }

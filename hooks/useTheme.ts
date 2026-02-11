@@ -13,6 +13,7 @@ export function useTheme() {
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") as Theme | null;
     if (savedTheme) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- localStorage からの初期テーマ復元
       setTheme(savedTheme);
     }
     setMounted(true);
@@ -37,6 +38,7 @@ export function useTheme() {
       actualTheme = theme;
     }
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- DOM との同期（root.classList）
     setResolvedTheme(actualTheme);
     root.classList.add(actualTheme);
   }, [theme, mounted]);

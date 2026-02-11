@@ -2,7 +2,7 @@
 
 import { Habit } from "@/types";
 import { OrbitControls } from "@react-three/drei";
-import { Canvas, useThree } from "@react-three/fiber";
+import { Canvas, useThree, type ThreeEvent } from "@react-three/fiber";
 import { useEffect, useMemo, useState } from "react";
 import * as THREE from "three";
 import Sky from "./Sky";
@@ -25,18 +25,21 @@ function ResponsiveCamera({ isNarrow }: { isNarrow: boolean }) {
 
   useEffect(() => {
     const perspectiveCamera = camera as THREE.PerspectiveCamera;
-    
+
     if (isNarrow) {
       perspectiveCamera.position.set(0, 40, 100);
     } else {
       perspectiveCamera.position.set(0, 40, 100);
     }
 
+    // Three.js カメラの FOV 変更（Three.js のカメラは mutable）
+    /* eslint-disable react-hooks/immutability -- Three.js PerspectiveCamera is mutable by design */
     if (isNarrow) {
       perspectiveCamera.fov = 80;
     } else {
       perspectiveCamera.fov = 50;
     }
+    /* eslint-enable react-hooks/immutability */
     camera.updateProjectionMatrix();
   }, [camera, isNarrow]);
 
@@ -89,7 +92,7 @@ export default function GardenScene({ habits, weather }: Props) {
       {/* 背景用の透明なメッシュ（Canvas内のどこかをクリックしたらツールチップを閉じる） */}
       <mesh
         position={[0, 0, 0]}
-        onClick={(e: any) => {
+        onClick={(e: ThreeEvent<PointerEvent>) => {
           // 木をクリックした場合は何もしない（TreeModelで処理）
           if (e.object?.userData?.isTree) {
             return;

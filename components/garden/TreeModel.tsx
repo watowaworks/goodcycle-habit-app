@@ -3,7 +3,7 @@
 import { Habit } from "@/types";
 import { useGLTF, Html } from "@react-three/drei";
 import { useMemo, useState, useRef, useEffect } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, type ThreeEvent } from "@react-three/fiber";
 import * as THREE from "three";
 import { calculateGrowthRate, formatDateToString, getTodayString, isHabitDueOnDate } from "@/lib/utils";
 
@@ -61,7 +61,7 @@ export default function TreeModel({
   });
 
   // タップ/クリックでツールチップを表示/非表示
-  const handleClick = (e: any) => {
+  const handleClick = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
     // 木であることを示すフラグを設定（Canvasのクリックハンドラーで判定用）
     e.object.userData.isTree = true;
@@ -74,7 +74,7 @@ export default function TreeModel({
         <primitive
           object={clonedScene}
           scale={3}
-          onPointerOver={(e: any) => {
+          onPointerOver={(e: ThreeEvent<PointerEvent>) => {
             e.stopPropagation();
             setIsHovered(true);
           }}

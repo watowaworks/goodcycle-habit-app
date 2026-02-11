@@ -16,17 +16,13 @@ type RainDrop = {
 };
 
 export default function Rain({ weather }: Props) {
-  // 雨が降る天気の時のみ表示
-  if (weather !== "rainy" && weather !== "stormy") {
-    return null;
-  }
-
   const rainCount = weather === "stormy" ? 4000 : 2000; // 雨粒の数
   const rainLength = 0.3; // 雨粒の長さ
 
   // 雨粒の初期位置を生成（useMemoで再生成を防ぐ）
-  // Skyの球の半径100以内に配置
+  // Math.random は意図的に使用（初期配置のランダム性）
   const rainDrops = useMemo<RainDrop[]>(() => {
+    /* eslint-disable react-hooks/purity -- Math.random for procedural rain placement */
     const baseSpeed = weather === "stormy" ? 0.8 : 0.5;
     const sphereRadius = 300; // Skyの球の半径
     return Array.from({ length: rainCount }, () => {
@@ -43,6 +39,7 @@ export default function Rain({ weather }: Props) {
         speed: baseSpeed + Math.random() * 0.2, // 少しランダム性を持たせる
       };
     });
+    /* eslint-enable react-hooks/purity */
   }, [weather, rainCount]);
 
   // ジオメトリとマテリアルは1つだけ作成（全インスタンスで共有）
@@ -65,8 +62,9 @@ export default function Rain({ weather }: Props) {
   // インスタンスの位置を設定するための一時オブジェクト
   const tempObject = useMemo(() => new THREE.Object3D(), []);
 
-  // アニメーションループ
+  // アニメーションループ（rainy/stormy の時のみ）
   useFrame(() => {
+    if (weather !== "rainy" && weather !== "stormy") return;
     if (!instancedMeshRef.current) return;
 
     rainDrops.forEach((drop, index) => {
@@ -92,6 +90,11 @@ export default function Rain({ weather }: Props) {
     // インスタンス行列の更新を通知（GPUに反映）
     instancedMeshRef.current.instanceMatrix.needsUpdate = true;
   });
+
+  // 雨が降る天気の時のみ表示
+  if (weather !== "rainy" && weather !== "stormy") {
+    return null;
+  }
 
   return (
     <instancedMesh
