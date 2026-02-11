@@ -8,6 +8,7 @@ import HabitTabs from "@/components/dashboard/HabitTabs";
 import HabitDashboardContent from "@/components/dashboard/HabitDashboardContent";
 import Header from "@/components/Header";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import Link from "next/link";
 
 export default function DashboardPage() {
   const { habits, fetchHabits } = useStore();
@@ -80,12 +81,12 @@ export default function DashboardPage() {
             <p className="text-sm text-emerald-900/80 dark:text-emerald-400 mb-4">
               アカウントを作成して習慣を登録すると、達成状況のグラフやカレンダー表示など、より詳しい可視化が利用できます。
             </p>
-            <a
-              href="/"
+            <Link
+              href="/app"
               className="inline-flex items-center justify-center rounded-full bg-emerald-500 dark:bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-600 dark:hover:bg-emerald-700"
             >
               ホームに戻る
-            </a>
+            </Link>
           </div>
         ) : allHabits.length === 0 ? (
           <p className="pt-10 text-center text-gray-500 dark:text-gray-400">

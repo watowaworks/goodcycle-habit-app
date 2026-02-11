@@ -32,7 +32,14 @@ export default function CompletionCalendar({ habit }: Props) {
         thisMonth.endDate
       );
     }
-  }, [habit, range]);
+  }, [
+    habit,
+    range,
+    thisWeek.startDate,
+    thisWeek.endDate,
+    thisMonth.startDate,
+    thisMonth.endDate,
+  ]);
 
   // 日付をフォーマット（MM/DD形式）
   const formatDate = (dateString: string) => {

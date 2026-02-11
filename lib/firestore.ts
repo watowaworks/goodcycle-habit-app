@@ -34,7 +34,8 @@ export async function addHabit(habit: Habit): Promise<string> {
   }
 
   // notificationフィールドを除外してから、条件付きで追加
-  const { notification: _, ...habitWithoutNotification } = habit;
+  // notification を除外（意図的に未使用）
+  const { notification: _, ...habitWithoutNotification } = habit; // eslint-disable-line @typescript-eslint/no-unused-vars
   
   const docRef = await addDoc(collection(db, "users", user.uid, "habits"), {
     ...habitWithoutNotification,

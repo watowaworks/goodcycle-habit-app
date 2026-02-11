@@ -43,7 +43,7 @@ export default function FilterModal({
       setTempFilter(filter);
       setTempSelectedCategories(selectedCategories);
     }
-  }, [isOpen]);
+  }, [isOpen, filter, selectedCategories]);
 
   // カテゴリーのトグル処理（ローカルステートのみ更新）
   const toggleCategory = (category: string) => {

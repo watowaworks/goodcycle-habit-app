@@ -92,7 +92,7 @@ export const sendTestNotification = onRequest(async (request, response) => {
 export const checkAndSendNotifications = onSchedule({
   schedule: "every 1 minutes", // 1分ごとに実行
   timeZone: "Asia/Tokyo", // タイムゾーンを指定
-}, async (event) => {
+}, async () => {
   // 現在時刻を取得（JST: Asia/Tokyo）
   // Intl.DateTimeFormat を使ってタイムゾーンを指定
   const now = new Date();

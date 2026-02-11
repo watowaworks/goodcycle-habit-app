@@ -8,6 +8,7 @@ import Header from "@/components/Header";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import GardenScene from "@/components/garden/GardenScene";
 import { useClickOutside } from "@/hooks/useClickOutside";
+import Link from "next/link";
 
 export default function GardenPage() {
   const { habits, fetchHabits } = useStore();
@@ -72,12 +73,12 @@ export default function GardenPage() {
               <p className="text-sm text-emerald-900/80 dark:text-emerald-400 mb-4">
                 アカウントを作成して習慣を登録すると、継続度や完了率に応じて変化する3Dガーデンで、現在の状態を直感的に振り返ることができます。
               </p>
-              <a
-                href="/"
+              <Link
+                href="/app"
                 className="inline-flex items-center justify-center rounded-full bg-emerald-500 dark:bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-600 dark:hover:bg-emerald-700"
               >
                 ホームに戻る
-              </a>
+              </Link>
             </div>
           </div>
         ) : (

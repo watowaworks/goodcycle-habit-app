@@ -94,8 +94,8 @@ export default function AddHabitModal({
       await addCategory(trimmed);
       setCategory(trimmed); // 追加したカテゴリを自動選択
       setNewCategoryName("");
-    } catch (error: any) {
-      alert(error.message || "カテゴリの追加に失敗しました");
+    } catch (error: unknown) {
+      alert(error instanceof Error ? error.message : "カテゴリの追加に失敗しました");
     } finally {
       setAddingCategory(false);
     }
@@ -127,8 +127,8 @@ export default function AddHabitModal({
       if (category === categoryToDelete) {
         setCategory("");
       }
-    } catch (error: any) {
-      alert(error.message || "カテゴリの削除に失敗しました");
+    } catch (error: unknown) {
+      alert(error instanceof Error ? error.message : "カテゴリの削除に失敗しました");
     }
   };
 

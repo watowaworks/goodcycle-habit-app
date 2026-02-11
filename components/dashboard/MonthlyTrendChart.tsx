@@ -17,33 +17,37 @@ type Props = {
   habit: Habit;
 };
 
+// 日付をフォーマット（M/D形式）
+function formatDate(dateString: string) {
+  const date = new Date(dateString + "T00:00:00");
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  return `${month}/${day}`;
+}
+
+type CustomTooltipProps = {
+  active?: boolean;
+  payload?: Array<{ value: number; payload: { date: string } }>;
+};
+
+function CustomTooltip({ active, payload }: CustomTooltipProps) {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white dark:bg-gray-800 p-3 border dark:border-gray-700 rounded shadow-lg">
+        <p className="font-semibold text-gray-900 dark:text-gray-100">{formatDate(payload[0].payload.date)}</p>
+        <p className="text-emerald-600 dark:text-emerald-400">
+          完了率: {payload[0].value.toFixed(1)}%
+        </p>
+      </div>
+    );
+  }
+  return null;
+}
+
 export default function MonthlyTrendChart({ habit }: Props) {
   const trendData = useMemo(() => {
     return calculateMonthlyTrend(habit);
   }, [habit]);
-
-  // 日付をフォーマット（M/D形式）
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString + "T00:00:00");
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
-    return `${month}/${day}`;
-  };
-
-  // カスタムツールチップ
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-white dark:bg-gray-800 p-3 border dark:border-gray-700 rounded shadow-lg">
-          <p className="font-semibold text-gray-900 dark:text-gray-100">{formatDate(payload[0].payload.date)}</p>
-          <p className="text-emerald-600 dark:text-emerald-400">
-            完了率: {payload[0].value.toFixed(1)}%
-          </p>
-        </div>
-      );
-    }
-    return null;
-  };
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900/50 p-6">
@@ -73,7 +77,7 @@ export default function MonthlyTrendChart({ habit }: Props) {
                 style: { fill: "#6b7280" },
               }}
             />
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={(props) => <CustomTooltip {...props} />} />
             <Line
               type="monotone"
               dataKey="completionRate"

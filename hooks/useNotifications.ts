@@ -54,7 +54,7 @@ export function useNotifications() {
           
           try {
             result = await Promise.race([permissionResult, timeoutPromise]);
-          } catch (timeoutError) {
+          } catch {
             console.warn("[useNotifications] タイムアウト、直接確認します");
             // タイムアウトした場合、直接Notification.permissionを確認
             result = Notification.permission;

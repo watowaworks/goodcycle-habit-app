@@ -21,7 +21,7 @@ export default function AuthButton() {
         prompt: "select_account",
       });
       await signInWithPopup(auth, provider);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("ログインエラー:", err);
       setError("ログインに失敗しました。もう一度お試しください。");
     }
@@ -32,7 +32,7 @@ export default function AuthButton() {
     try {
       setError(null);
       await signOut(auth);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("ログアウトエラー:", err);
       setError("ログアウトに失敗しました。");
     }
