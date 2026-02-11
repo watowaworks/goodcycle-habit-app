@@ -7,7 +7,8 @@
     "dev": "node scripts/build-sw.js && next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint .",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
