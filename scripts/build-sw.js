@@ -45,13 +45,22 @@ const envVarNames = {
 
 const missingEnvVars = Object.entries(envVarNames).filter(([key]) => !firebaseConfig[key]);
 
+// CI 環境（GitHub Actions など）ではダミー値を生成してビルドを通す
+const isCI = process.env.CI === 'true';
 if (missingEnvVars.length > 0) {
-  console.error('❌ 以下の環境変数が設定されていません:');
-  missingEnvVars.forEach(([, envVarName]) => {
-    console.error(`   - ${envVarName}`);
-  });
-  console.error('\n.env.localファイルに環境変数を設定してください。');
-  process.exit(1);
+  if (isCI) {
+    console.log('⚠️ CI 環境のため、Service Worker にプレースホルダーを設定します。');
+    missingEnvVars.forEach(([key]) => {
+      firebaseConfig[key] = `PLACEHOLDER_${key}`;
+    });
+  } else {
+    console.error('❌ 以下の環境変数が設定されていません:');
+    missingEnvVars.forEach(([, envVarName]) => {
+      console.error(`   - ${envVarName}`);
+    });
+    console.error('\n.env.localファイルに環境変数を設定してください。');
+    process.exit(1);
+  }
 }
 
 // テンプレートファイルを読み込む
