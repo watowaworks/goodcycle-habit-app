@@ -7,12 +7,20 @@ import ThemeProvider from "@/components/ThemeProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "GoodCycle",
-  description: "習慣を可視化して継続を支援するトラッカーアプリ",
+  metadataBase: new URL("https://goodcycle-habit-app.vercel.app"),
+  title: "GoodCycle - 成長が見える習慣トラッカー",
+  description:
+    "頑張りたいのに続かない人のための習慣アプリ。記録・3D可視化・振り返りで、努力が続く実感に変わります。",
   manifest: "/manifest.webmanifest",
   icons: {
     icon: "/icons/icon-192.png",
     apple: "/icons/icon-192.png",
+  },
+  openGraph: {
+    title: "GoodCycle - 成長が見える習慣トラッカー",
+    description:
+      "頑張りたいのに続かない人のための習慣アプリ。記録・3D可視化・振り返りで、努力が続く実感に変わります。",
+    images: ["/icons/ogp.png"],
   },
 };
 

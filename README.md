@@ -144,15 +144,15 @@ Next.js (App Router)、Firebase、React Three Fiberを使って作成した、**
 
 ## 画面イメージ
 
-- トップページ（アプリ概要・ログイン導線）
-- ダッシュボード（習慣一覧＋達成状況）
-- 月間カレンダー / グラフ表示
-- ガーデン (3D 空間)
+- ランディングページ（LP：アプリ紹介・導入）
+- ホームページ（習慣の追加・編集・記録）
+- ダッシュボード（達成状況＋カレンダー）
+- ガーデン (3D空間)
 - お問い合わせページ
 
+![Landing](public/screenshots/landing.png)
 ![Home](public/screenshots/home.png)
 ![Dashboard](public/screenshots/dashboard.png)
-![Graph](public/screenshots/graph.png)
 ![Garden](public/screenshots/garden.png)
 ![Contact](public/screenshots/contact.png)
 

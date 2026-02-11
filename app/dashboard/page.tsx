@@ -60,7 +60,7 @@ export default function DashboardPage() {
       <Header
         title="GoodCycle"
         navLinks={[
-          { label: "ホーム", href: "/" },
+          { label: "ホーム", href: "/app" },
           { label: "ダッシュボード", href: "/dashboard" },
           { label: "ガーデン", href: "/garden" },
           { label: "お問い合わせ", href: "/contact" },
