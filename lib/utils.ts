@@ -18,8 +18,30 @@ export function parseDateString(dateString: string): Date {
   return new Date(dateString + "T00:00:00");
 }
 
-// 前回の実施予定日を取得
+// 指定日が習慣の実施日かどうかを判定
+export function isHabitDueOnDate(habit: Habit, date: string): boolean {
+  const targetDate = parseDateString(date);
 
+  switch (habit.frequencyType) {
+    case "daily":
+      return true;
+    case "weekly":
+      return habit.daysOfWeek?.includes(targetDate.getDay()) ?? false;
+    case "interval":
+      if (!habit.startDate || !habit.intervalDays) {
+        return false;
+      }
+      const startDate = parseDateString(habit.startDate!);
+      const diffMs = targetDate.getTime() - startDate.getTime();
+      if (diffMs < 0) return false;
+      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      return diffDays % habit.intervalDays === 0;
+    default:
+      return false;
+  }
+}
+
+// 前回の実施予定日を取得
 export function getPreviousDueDate(habit: Habit, currentDate: string): string | null {
   const current = parseDateString(currentDate);
 
@@ -76,7 +98,7 @@ export function getPreviousDueDate(habit: Habit, currentDate: string): string | 
   }
 }
 
-export function calculateStreaks(habit: Habit): {
+export function calculateStreaks(habit: Habit, todayOverride?: string): {
   longestStreak: number;
   currentStreak: number;
 } {
@@ -104,8 +126,8 @@ export function calculateStreaks(habit: Habit): {
     }
   }
 
-  // 現在ストリークの計算
-  const today = getTodayString();
+  // 現在ストリークの計算（todayOverride はテスト用）
+  const today = todayOverride ?? getTodayString();
   let currentStreak = 0;
 
   // 今日が実施日かどうかを確認
@@ -359,29 +381,6 @@ export function findMostConsistentHabit(habits: Habit[]): Habit[] {
 
   // 最大ストリークを持つすべての習慣を返す
   return habits.filter((habit) => (habit.currentStreak ?? 0) === maxStreak);
-}
-
-// 指定日が習慣の実施日かどうかを判定
-export function isHabitDueOnDate(habit: Habit, date: string): boolean {
-  const targetDate = parseDateString(date);
-
-  switch (habit.frequencyType) {
-    case "daily":
-      return true;
-    case "weekly":
-      return habit.daysOfWeek?.includes(targetDate.getDay()) ?? false;
-    case "interval":
-      if (!habit.startDate || !habit.intervalDays) {
-        return false;
-      }
-      const startDate = parseDateString(habit.startDate!);
-      const diffMs = targetDate.getTime() - startDate.getTime();
-      if (diffMs < 0) return false;
-      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-      return diffDays % habit.intervalDays === 0;
-    default:
-      return false;
-  }
 }
 
 // 成長度を計算

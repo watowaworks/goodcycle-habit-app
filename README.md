@@ -191,11 +191,12 @@ NEXT_PUBLIC_EMAILJS_PUBLIC_KEY=...
 
 ---
 
-## デプロイ
+## デプロイ・CI/CD
 
 - **ホスティング**: Vercel（フロントエンド）
 - **Cloud Functions**: Firebase（バックエンド）
 - GitHub への push をトリガーに、自動でビルド & デプロイされます。
+- **GitHub Actions**: push および pull_request 時に、lint・型チェック・ビルドを自動実行します。
 - 本番環境では、Firebase Authentication の「承認済みドメイン」に  
   `*.vercel.app`（実際の URL）を追加する必要があります。
 - **Cloud Functions のデプロイ**: `functions` フォルダで `npm run deploy` を実行してデプロイします。
