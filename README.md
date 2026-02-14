@@ -122,12 +122,12 @@ Next.js (App Router)、Firebase、React Three Fiberを使って作成した、**
 - **React Three Fiber (R3F)**: 3D ガーデンのレンダリング
 - **@react-three/drei**: 3D シーンの補助機能（OrbitControls、useGLTF、Html など）
 - **Three.js**: 3D グラフィックスライブラリ（R3F の基盤）
-- **自作コンポーネント**:
-  - ダッシュボードカード（完了率、カレンダー、グラフ）
-  - タブ UI（習慣切り替え）
-  - モーダル（習慣追加・編集、フィルタ、カテゴリ管理）
-  - 習慣カード（完了状態切り替え、編集・削除）
-  - 3D ガーデンコンポーネント（木モデル、天気エフェクト、ツールチップ）
+
+### テスト
+
+- **単体テスト**: Vitest による `lib/utils.ts` のロジックテスト
+  - 日付変換、実施日判定、ストリーク計算、完了率・成長率計算などをカバー
+  - CI（GitHub Actions）で自動実行
 
 ### 実装の特徴
 
@@ -196,7 +196,7 @@ NEXT_PUBLIC_EMAILJS_PUBLIC_KEY=...
 - **ホスティング**: Vercel（フロントエンド）
 - **Cloud Functions**: Firebase（バックエンド）
 - GitHub への push をトリガーに、自動でビルド & デプロイされます。
-- **GitHub Actions**: push および pull_request 時に、lint・型チェック・ビルドを自動実行します。
+- **GitHub Actions**: push および pull_request 時に、lint・型チェック・単体テスト・ビルドを自動実行します。
 - 本番環境では、Firebase Authentication の「承認済みドメイン」に  
   `*.vercel.app`（実際の URL）を追加する必要があります。
 - **Cloud Functions のデプロイ**: `functions` フォルダで `npm run deploy` を実行してデプロイします。
